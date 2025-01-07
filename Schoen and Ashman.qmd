@@ -1,0 +1,158 @@
+---
+title: "Longevity_Model"
+format: html
+editor: visual
+---
+
+# Schoen and Ashman models
+
+1.  Basic Floral Longevity Model (Homogamous Flowers):
+
+Key Variables:
+
+-   t: flower longevity (days)
+
+-   m: daily maintenance cost relative to construction cost
+
+-   c: construction cost per flower
+
+-   R: total resource pool
+
+-   p: proportion of pollen remaining each day (1-p is daily pollen fitness gain)
+
+-   g: proportion of unfertilized ovules remaining each day (1-g is daily seed fitness gain)
+
+```{r}
+# Basic model
+basic_floral_fitness <- function(t1, t2, m, p, g) {
+  w <- (1/2) * # Equal weight to male/female components
+      ((1/(1 + t1*m))/(1/(1 + t2*m))) * # Resource allocation ratio
+      ((1 - p^t1)/(1 - p^t2) + (1 - g^t1)/(1 - g^t2)) # Fitness gains ratio
+  return(w)
+}
+```
+
+## Code to generate figure 2
+
+This code creates a reproduction of Figure 2 with three panels showing isoclines of optimal floral longevity. Key features of the implementation:
+
+1.  Basic fitness function implementing the Shaw-Mohler based model
+2.  Function to find optimal longevity by comparing fitness values
+3.  Grid creation for parameter combinations
+4.  Contour plots showing isoclines of optimal longevity
+5.  Three panels for different maintenance costs (m = 0.02, 0.05, 0.25)
+
+The visualization shows: - X-axis: Daily seed fitness accrual (1-g) - Y-axis: Daily pollen fitness accrual (1-p) - Contour lines: Optimal floral longevity values - Three panels for different maintenance costs
+
+The patterns match those described in the paper: - Short-lived flowers (t=1) when maintenance costs and fitness accrual rates are high - Longer-lived flowers when maintenance costs and fitness accrual rates are low - Curved isoclines showing trade-offs between pollen and seed fitness accrual
+
+```{r}
+#| 
+# Required libraries
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(metR)  # for geom_text_contour
+
+# Basic fitness function with error checking
+basic_floral_fitness <- function(t1, t2, m, p, g) {
+  # Return 0 fitness if any parameters are invalid
+  if(t1 <= 0 || t2 <= 0 || m < 0 || p < 0 || p > 1 || g < 0 || g > 1) {
+    return(0)
+  }
+  
+  w <- (1/2) * 
+      ((1/(1 + t1*m))/(1/(1 + t2*m))) * 
+      ((1 - p^t1)/(1 - p^t2) + (1 - g^t1)/(1 - g^t2))
+  
+  # Return 0 if calculation resulted in NA/NaN/Inf
+  if(is.na(w) || is.nan(w) || is.infinite(w)) {
+    return(0)
+  }
+  
+  return(w)
+}
+
+# Function to find optimal longevity for given parameters
+find_optimal_t <- function(m, p, g, max_t = 15) {
+  t_values <- 1:max_t
+  max_fitness <- -Inf
+  optimal_t <- 1
+  
+  for(t1 in t_values) {
+    # Compare against population with t2 = t1
+    fitness <- basic_floral_fitness(t1, t1, m, p, g)
+    
+    # Only update if we get a valid fitness value
+    if(!is.na(fitness) && !is.nan(fitness) && !is.infinite(fitness) && fitness > max_fitness) {
+      max_fitness <- fitness
+      optimal_t <- t1
+    }
+  }
+  return(optimal_t)
+}
+
+# Create grid of parameters
+create_parameter_grid <- function(m) {
+  expand.grid(
+    seed_fitness = seq(0.01, 0.99, length.out = 50),  # Avoid 0 and 1
+    pollen_fitness = seq(0.01, 0.99, length.out = 50), # Avoid 0 and 1
+    m = m
+  ) %>%
+  mutate(
+    p = 1 - pollen_fitness,
+    g = 1 - seed_fitness
+  )
+}
+
+# Calculate optimal longevity for each parameter combination
+calculate_optimal_longevities <- function(m) {
+  grid <- create_parameter_grid(m)
+  
+  grid$optimal_t <- mapply(function(p, g) {
+    find_optimal_t(m, p, g)
+  }, grid$p, grid$g)
+  
+  return(grid)
+}
+
+# Generate data for three maintenance cost scenarios
+m_values <- c(0.02, 0.05, 0.25)
+results_list <- lapply(m_values, calculate_optimal_longevities)
+
+# Create plots
+create_longevity_plot <- function(data, m_value) {
+  ggplot(data, aes(x = seed_fitness, y = pollen_fitness)) +
+    geom_contour(aes(z = optimal_t, color = ..level..), 
+                 breaks = c(1,3,5,7,9,11)) +
+    geom_text_contour(aes(z = optimal_t), 
+                      breaks = c(1,3,5,7,9,11),
+                      skip = 1) +
+    scale_color_viridis_c() +
+    labs(
+      x = "SEED FITNESS ACCRUED PER DAY (1-g)",
+      y = "POLLEN FITNESS ACCRUED PER DAY (1-p)",
+      title = paste("m =", m_value)
+    ) +
+    theme_minimal() +
+    coord_cartesian(expand = FALSE) +
+    theme(
+      aspect.ratio = 1,
+      plot.title = element_text(hjust = 0.5)
+    )
+}
+
+# Create the three panels
+plots <- lapply(seq_along(results_list), function(i) {
+  create_longevity_plot(results_list[[i]], m_values[i])
+})
+
+# Combine plots vertically using patchwork
+combined_plot <- plots[[1]] / plots[[2]] / plots[[3]]
+
+# Display the plot
+print(combined_plot)
+
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
