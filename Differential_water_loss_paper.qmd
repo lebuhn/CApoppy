@@ -63,18 +63,131 @@ All statistical analyses were done using RStudio.
 
 ###Ovary Temperature
 
-Ovary temperatures were not significantly lower than ambient temperture.
+Ovary temperatures were not significantly lower than ambient temperature.
 
 ```{r}
 #| echo: false
 
 ```
 
-You can add options to executable code like this
+###Daytime Petal Water Content
+
+Water content of petals declined across time.
 
 ```{r}
-#| echo: false
+#|echo: false
+# Import required R packages.
+
+#library("googlesheets4")
+library(reshape2)
+library(dplyr)
+library(broom)
+library(ggplot2)
+library(nlme)
+
+
+# Define paths to data sets. If you don't keep your data in the same directory as the code, adapt the path names.
+
+setwd("/Users/gretchen/Library/CloudStorage/Box-Box/1. Lab research/CApoppy/data")
+
+#data <- read_sheet("https://docs.google.com/spreadsheets/d/1E-IBa1wWjJXVLBjhe6bojlOcMyZRfDINiFydXIVs17s/edit#gid=0")
+data <- read.csv("Petal_water.csv", header=TRUE, stringsAsFactors=TRUE)
+
+data<-data[-c(1,2,3,4),]
+
+data$Time_cat <- as.factor(data$Time_cat)
+#remove outlier
+data <- data[-c(76),]
+data <- data[-c(79),]
+#convert lists to numeric variables
+# data$Wet_weight_mg<-as.numeric(unlist(data$Wet_weight_mg))
+# data$Dry_weight_mg<-as.numeric(unlist(data$Dry_weight_mg))
+# data$Petal_area_cm2<-as.numeric(unlist(data$Petal_area_cm2))
+
+
+## Simple Linear Regression.  Does Wet_weight predict dry weight?
+
+plot(data$Dry_weight_mg, data$Wet_weight_mg, xlab="Wet weight", ylab="Dry Weight")
+
+model <- lm(Dry_weight_mg ~ Wet_weight_mg, data=data)
+summary(model)
+
 
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+```{r}
+
+#Graphs with different estimates of water content
+ggplot(data, aes(x=Dry_weight_mg, y=Petal_area_cm2, col=Time_cat)) + geom_point() +
+  geom_smooth(method="lm", se=FALSE)
+
+
+```
+
+```{r}
+#|echo: false
+#water_mg ~ petal area
+ggplot(data, aes(x=Petal_area_cm2, y=water_mg, col=Time_cat)) + geom_point() +
+  geom_smooth(method="lm", se=FALSE)
+
+
+```
+
+```{r}
+#|echo: false
+
+data %>% group_by(Time_cat) %>% do(tidy(lm(Petal_area_cm2 ~ water_mg, data=.)))
+
+#water_mg ~ dryweight
+ggplot(data, aes(x=Dry_weight_mg, y=water_mg, col=Time_cat)) + geom_point() +
+  geom_smooth(method="lm", se=FALSE)
+
+
+```
+
+```{r}
+
+data %>% group_by(Time_cat) %>% do(tidy(lm(Dry_weight_mg ~ water_mg, data=.)))
+
+#water_cm2 ~ petal area
+ggplot(data, aes(x=Petal_area_cm2, y=water_cm2, col=Time_cat)) + geom_point() +
+  geom_smooth(method="lm", se=FALSE)
+
+
+```
+
+```{r}
+#|echo: false
+#|
+data %>% group_by(Time_cat) %>% do(tidy(lm(Petal_area_cm2 ~ water_cm2, data=.)))
+
+#water_cm2 ~ dryweight
+ggplot(data, aes(x=Dry_weight_mg, y=water_cm2, col=Time_cat)) + geom_point() +
+  geom_smooth(method="lm", se=FALSE)
+
+
+```
+
+```{r}
+#|echo: false
+#|
+data %>% group_by(Time_cat) %>% do(tidy(lm(Dry_weight_mg ~ water_cm2, data=.)))
+
+#anova
+one.way <- aov(water_mg ~ Time_cat, data = data)
+
+summary(one.way)
+
+  
+```
+
+```{r}
+#|echo: false
+#|
+plot1<- ggplot(data, aes(group = Time_cat, y = water_mg, fill = Time_cat)) + 
+  stat_boxplot(geom = "errorbar",
+               width = 0.75) + 
+  geom_boxplot()
+
+plot1
+```

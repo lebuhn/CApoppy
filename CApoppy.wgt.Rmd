@@ -1,0 +1,56 @@
+---
+title: "Poppy dry weight"
+author: "Gretchen LeBuhn"
+date: '2022-07-01'
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Import required packages.
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+#library(vioplot)
+library(corrplot)
+library(gmodels)
+library(matrixStats)
+library(reshape)
+```
+
+## California Poppy Petal data
+
+We started to analyze data collected on California poppies from SFSU campus. We collected petals at two different times of day (9 am and 2 pm), weighed them, digitized a photo to get area and dried them for 48 hours to get dry weights.
+
+```{r import data}
+
+setwd('/Users/gretchen/Library/CloudStorage/Box-Box/1. Lab research/CApoppy/data')
+weight <- read.csv("CApoppy.weight.csv", header=TRUE, stringsAsFactors=TRUE)
+weight$uv.index <-as.factor(weight$uv.index)
+weight$Plant<-as.factor(weight$Plant)
+meltWeight <- melt(weight)
+
+```
+
+We started by looking at box plots for the variables. water_cm2 is the (Wet.weight - Dry.weight)/petal.size. tissue_cm2 is the Dry weight/petal.size. water.dry.wgt is the (Wet.weight-Dry.weight)/Dry.weight
+
+```{r pressure, echo=FALSE}
+###  Boxplots
+
+ggplot(meltWeight,aes(x = Petal.status,y = value)) + facet_wrap(~variable, scales = "free_y") + geom_boxplot() 
+```
+
+Here we test for differences between the water_cm2, tissue_cm2 and water/dry weight
+
+```{r, anovas of water and dry weight}
+wilcox.test(water_cm2 ~ Petal.status, data = weight)
+wilcox.test(tissue_cm2 ~ Petal.status, data = weight)
+wilcox.test(water.dry.wgt ~ Petal.status, data = weight)
+
+
+```
+
+There is no significant difference between water or dry weight of petals at 9 am (closed) and 2 pm (open).
