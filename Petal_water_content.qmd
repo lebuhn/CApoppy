@@ -9,7 +9,8 @@ editor: visual
 Petal wet weight predicts dry weight.
 
 ```{r}
-#|echo: false
+#| label: wetwgt.drywgt
+#| warning: false
 # Import required R packages.
 
 #library("googlesheets4")
@@ -63,7 +64,7 @@ ggplot(data, aes(x=Dry_weight_mg, y=Petal_area_cm2, col=Time_cat)) + geom_point(
 #|echo: false
 #water_mg ~ petal area
 ggplot(data, aes(x=Petal_area_cm2, y=water_mg, col=Time_cat)) + geom_point() +
-  geom_smooth(method="lm", se=FALSE)
+  geom_smooth(method="lm", se=TRUE)
 ```
 Water content increases with petal area at all time periods. The slope of the relationship is different at 14:00 which is just prior to flowers closing. 
 
@@ -76,7 +77,7 @@ data %>% group_by(Time_cat) %>% do(tidy(lm(Petal_area_cm2 ~ water_mg, data=.)))
 
 #water_mg ~ dryweight
 ggplot(data, aes(x=Dry_weight_mg, y=water_mg, col=Time_cat)) + geom_point() +
-  geom_smooth(method="lm", se=FALSE)
+  geom_smooth(method="lm", se=TRUE)
 
 ```
 
@@ -90,7 +91,7 @@ data %>% group_by(Time_cat) %>% do(tidy(lm(Dry_weight_mg ~ water_mg, data=.)))
 
 #water_cm2 ~ petal area
 ggplot(data, aes(x=Petal_area_cm2, y=water_cm2, col=Time_cat)) + geom_point() +
-  geom_smooth(method="lm", se=FALSE)
+  geom_smooth(method="lm", se=TRUE)
 ```
 No, as petal area increases, the amount of water per unit area decreases at all times of day.
 
@@ -103,7 +104,15 @@ data %>% group_by(Time_cat) %>% do(tidy(lm(Petal_area_cm2 ~ water_cm2, data=.)))
 
 #water_cm2 ~ dryweight
 ggplot(data, aes(x=Dry_weight_mg, y=water_cm2, col=Time_cat)) + geom_point() +
-  geom_smooth(method="lm", se=FALSE)
+  geom_smooth(method="lm", se=TRUE)
+
+#data %>% group_by(Time_cat) %>% do(tidy(lm(Dry_weight_mg ~ water_cm2, data=.)))
+
+#anova
+one.way <- aov(water_mg ~ Time_cat, data = data)
+
+summary(one.way)
+
 
 ```
 As dry weight of a petal increases, the amount of water per unit area in that petal increases at all time periods.  At closing, there is a significantly higher amount of water per unit area for all sizes of petal.

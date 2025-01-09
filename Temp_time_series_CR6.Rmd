@@ -104,8 +104,8 @@ head(df1, 3)
 
 
 AllTemp3 <- ggplot(df3, aes(DateTime, value)) +
-           geom_line(aes(colour=variable, group=variable)) + # colour, group both depend on variable
-           geom_point(aes(colour=variable),                # colour depends on variable
+           geom_line(aes(colour=sensor, group=sensor)) + # colour, group both depend on variable
+           geom_point(aes(colour=sensor),                # colour depends on variable
                size=1)+
          ggtitle("Temp every 5 min May 29-30, 2022 4 flowers, ovary and bowl") +
          xlab("Date") + ylab("Air Temperature (C)")
@@ -116,8 +116,8 @@ df4 <- ov_temp4 %>%
 head(df1, 3)
 
 AllTemp4 <- ggplot(df4, aes(DateTime, value)) +
-           geom_line(aes(colour=variable, group=variable)) + # colour, group both depend on variable
-           geom_point(aes(colour=variable),                # colour depends on variable
+           geom_line(aes(colour=sensor, group=sensor)) + # colour, group both depend on variable
+           geom_point(aes(colour=sensor),                # colour depends on variable
                size=1)+
          ggtitle("Temp every 5 min May 30-31, 2022- one flower ovary and bowl") +
          xlab("Date") + ylab("Air Temperature (C)")
