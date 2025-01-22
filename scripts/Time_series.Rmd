@@ -1,0 +1,98 @@
+---
+title: "Cal Poppy ovary temp"
+author: "Gretchen LeBuhn"
+date: "5/24/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+These are data collected to track flowering time in Eschscholzia californica.  This represents two nights on the first night, we held on flower open using wire.
+
+```{r set libraries and dir, echo=FALSE}
+library(lubridate) # for working with dates
+library(ggplot2)  # for creating graphs
+library(scales)   # to access breaks/formatting functions
+library(gridExtra) # for arranging plots
+library(tidyr) # for reshaping data
+library(dplyr)
+
+
+```
+
+```{r, set dir, echo = FALSE}
+setwd('~/Dropbox/CApoppy/data')
+#datadir="~/Dropbox/CApoppy/data"
+```
+I've modified the CR6 data by dropping the last header line and switching lines 2 and 3 so that line 2 becomes the header for the data.  I had to do text to columns and then save it as .csv for it to import correctly.
+```{r, import data, echo = FALSE}
+
+air_temp = read.csv("~/Dropbox/CApoppy/data/air_temp/55000000492FED21_052422.csv", skip= 14, header = T )
+ov_temp = read.csv("~/Dropbox/CApoppy/data/fl_temp/cr6_Ten_min.csv", header = T, stringsAsFactors=FALSE)
+
+
+#format date and time
+air_temp$DateTime <- as.POSIXct(paste(air_temp$Date, air_temp$Time, sep=" "), format="%Y-%m-%d %I:%M:%S %p", 
+                     tz = "UTC")
+ov_temp$DateTime <- as.POSIXct(ov_temp$TIMESTAMP, format="%m/%d/%y %I:%M", tz = "UTC")
+
+
+
+
+
+df1 <- merge(air_temp, ov_temp, by = 'DateTime', all=TRUE)
+df1 %>% select(-Date, -Time, -Unit,-Time2, -TIMESTAMP,-RECORD)
+
+df2 <- df1 %>%
+  select(DateTime, Value, PTemp_C, Temp_C.1., Temp_C.2. ) %>%
+  gather(key = "variable", value = "value", -DateTime)
+head(df2, 3)
+df2 <-na.omit(df2)
+
+
+
+
+```
+
+## Plotting temperature data
+
+Using this plotting tutorial
+https://www.neonscience.org/resources/learning-hub/tutorials/dc-time-series-plot-ggplot-r
+
+```{r airtemp, echo=FALSE}
+#plot(air_temp$Time,air_temp$Value)
+#ggplot(aes(x = DateTime, y = Value, colour=Date), data = air_temp) + geom_line()
+
+AirTemp10min <- ggplot(air_temp, aes(DateTime, Value)) +
+           geom_point(na.rm=TRUE, color="blue", size=3, pch=18) +
+          ggtitle("Temp every 10 min May 22-24, 2-22") +
+           xlab("Date") + ylab("Air Temperature (C)")
+
+#render plot
+AirTemp10min
+
+AirTemp10minb <- AirTemp10min + 
+  (scale_x_datetime(breaks=date_breaks("6 hours"),labels=date_format("%I %M")))
+
+#render plot
+AirTemp10minb
+
+
+
+
+AllTemp <- ggplot(df2, aes(DateTime, value)) +
+           geom_line(aes(colour=variable, group=variable)) + # colour, group both depend on variable
+           geom_point(aes(colour=variable),                # colour depends on variable
+               size=1)+
+         ggtitle("Temp every 10 min May 22-24, 2-22") +
+         xlab("Date") + ylab("Air Temperature (C)")
+
+#render plot
+AllTemp
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

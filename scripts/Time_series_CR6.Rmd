@@ -1,0 +1,182 @@
+---
+title: "Cal Poppy ovary temp"
+author: "Gretchen LeBuhn"
+date: "5/24/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+These are data collected to track flowering time in Eschscholzia californica.  This represents two nights on the first night, we held on flower open using wire.
+
+```{r set libraries and dir, echo=FALSE}
+library(lubridate) # for working with dates
+library(ggplot2)  # for creating graphs
+library(scales)   # to access breaks/formatting functions
+library(gridExtra) # for arranging plots
+library(tidyr) # for reshaping data
+library(dplyr)
+library(stringr)
+
+
+```
+
+```{r, set dir, echo = FALSE}
+setwd('~/Dropbox/CApoppy/data')
+#datadir="~/Dropbox/CApoppy/data"
+```
+I've modified the CR6 data by dropping the last header line and switching lines 2 and 3 so that line 2 becomes the header for the data.  I had to do text to columns and then save it as .csv for it to import correctly.  Data set ov_temp measures themocouples inserted into a flower that was closed and one that was open.  Data set ov_temp3 is two flowers each with a thermocouple in the ovary and one in the bowl.  Dataset ov_temp 4 is one flower so read just Temp 1 and 2 for the flower data.  The other 3 thermocouples were in the open.  Jun 4 night it rained until jun 5 at 11.
+```{r, import data, echo = FALSE}
+
+#ov_temp = read.csv("~/Dropbox/CApoppy/data/fl_temp/cr6_Temp.28.May.22.csv", header = T, stringsAsFactors=FALSE)
+#ov_temp2 = read.csv("~/Dropbox/CApoppy/data/fl_temp/cr6_Temp.31.May.22.csv", header = T, stringsAsFactors=FALSE)
+ov_temp_current= read.csv("~/Dropbox/CApoppy/data/fl_temp/cr6_Temp.5.Jun.22.csv", header = T, stringsAsFactors=FALSE)
+#format date and time
+#ov_temp$DateTime<- as.POSIXct(ov_temp$TIMESTAMP, format="%m/%d/%y %H:%M", tz = "UTC")
+#ov_temp2$DateTime<- as.POSIXct(ov_temp2$TIMESTAMP, format="%m/%d/%y %H:%M", tz = "UTC")
+ov_temp_current$DateTime<- as.POSIXct(ov_temp_current$TIMESTAMP, format="%m/%d/%y %H:%M", tz = "UTC")
+
+
+
+
+
+#Subset the second data set
+#ov_temp3 <- subset(ov_temp2, RECORD > 328 & RECORD < 624) 
+#ov_temp4 <-subset(ov_temp2, RECORD > 391 )
+
+```
+
+## Plotting temperature data for the first few days
+
+Using this plotting tutorial
+https://www.neonscience.org/resources/learning-hub/tutorials/dc-time-series-plot-ggplot-r
+
+```{r airtemp, echo=FALSE}
+
+df1 <- ov_temp%>%
+  select(DateTime, Temp_C_Avg.3., Temp_C_Avg.4., Temp_C_Avg.5. ) %>%
+  gather(key = "variable", value = "value", -DateTime)
+head(df1, 3)
+
+AllTemp1 <- ggplot(df1, aes(DateTime, value)) +
+           geom_line(aes(colour=variable, group=variable)) + # colour, group both depend on variable
+           geom_point(aes(colour=variable),                # colour depends on variable
+               size=1)+
+         ggtitle("Temp every 5 min May 27-28, 2-22") +
+         xlab("Date") + ylab("Air Temperature (C)")
+
+#render plot
+AllTemp1
+
+df2 <- ov_temp %>%
+  select(DateTime,  Temp_C_Avg.3., Temp_C_Avg.1., Temp_C_Avg.2. ) %>%
+  gather(key = "variable", value = "value", -DateTime)
+head(df1, 3)
+
+AllTemp2 <- ggplot(df2, aes(DateTime, value)) +
+           geom_line(aes(colour=variable, group=variable)) + # colour, group both depend on variable
+           geom_point(aes(colour=variable),                # colour depends on variable
+               size=1)+
+         ggtitle("Temp every 5 min May 27-28, 2-22") +
+         xlab("Date") + ylab("Air Temperature (C)")
+
+
+
+#render plot
+
+AllTemp2
+```
+Now, I am plotting data from two flowers for 24 hours.  Thermocouples 1 and 4 were inserted in the ovary.  Thermocouples 2 and 5 were suspended in the bowl.  Thermocouple 3 was in open air.
+The second graph isolates the first flower which continued to bloom for a second day.  Thermocouple 1 is in the ovary, Thermocouple 2 is suspended in the flower.  
+
+
+```{r}
+
+df3 <- ov_temp3 %>%
+  select(DateTime, Temp_C_Avg.1., Temp_C_Avg.2., Temp_C_Avg.3., Temp_C_Avg.4., Temp_C_Avg.5.) %>%
+  gather(key = "sensor", value = "value", -DateTime)
+head(df1, 3)
+
+
+AllTemp3 <- ggplot(df3, aes(DateTime, value)) +
+           geom_line(aes(colour=variable, group=variable)) + # colour, group both depend on variable
+           geom_point(aes(colour=variable),                # colour depends on variable
+               size=1)+
+         ggtitle("Temp every 5 min May 29-30, 2022 4 flowers, ovary and bowl") +
+         xlab("Date") + ylab("Air Temperature (C)")
+
+df4 <- ov_temp4 %>%
+  select(DateTime,  Temp_C_Avg.1., Temp_C_Avg.2., Temp_C_Avg.3. ) %>%
+  gather(key = "sensor", value = "value", -DateTime)
+head(df1, 3)
+
+AllTemp4 <- ggplot(df4, aes(DateTime, value)) +
+           geom_line(aes(colour=variable, group=variable)) + # colour, group both depend on variable
+           geom_point(aes(colour=variable),                # colour depends on variable
+               size=1)+
+         ggtitle("Temp every 5 min May 30-31, 2022- one flower ovary and bowl") +
+         xlab("Date") + ylab("Air Temperature (C)")
+
+#render plot
+AllTemp3
+AllTemp4
+```
+
+Now I am trying to plot by time using all the data.
+
+
+```{r}
+
+dfc <- ov_temp_current %>%
+  select(TIMESTAMP, Temp_C_Avg.1., Temp_C_Avg.2., Temp_C_Avg.3., Temp_C_Avg.4., Temp_C_Avg.5.) %>%
+  gather(key = "sensor", value = "value", -TIMESTAMP)
+head(dfc, 3)
+
+AllTempc <- ggplot(dfc, aes(TIMESTAMP, value)) +
+           geom_line(aes(colour=sensor, group=sensor)) + # colour, group both depend on variable
+           geom_point(aes(colour=sensor),                # colour depends on variable
+               size=1)+
+         ggtitle("Temp every 5 min , 2022") +
+         xlab("Date") + ylab("Air Temperature (C)") +
+         scale_x_discrete(guide = guide_axis(check.overlap = TRUE)) +
+        theme(axis.text.x=element_text(angle=60, hjust=1))
+AllTempc
+
+
+#gather data from sensors 1 and 2
+dfc2<-gather(ov_temp_current, key="sensor", value="value", 7:8)
+head(dfc2, 3)
+
+AllTempc2 <- ggplot(dfc2, aes(TIMESTAMP, value )) +
+           geom_line(aes(colour=sensor, group=sensor)) + # colour, group both depend on variable
+           geom_point(aes(colour=sensor),                # colour depends on variable
+               size=1)+
+         ggtitle("Temp every 5 min , 2022") +
+         xlab("Date") + ylab("Air Temperature (C)") +
+         scale_x_discrete(guide = guide_axis(check.overlap = TRUE)) +
+        theme(axis.text.x=element_text(angle=60, hjust=1))
+AllTempc2
+
+
+#gather data from columns sensors 4 and 5
+dfc3<-gather(ov_temp_current, key="sensor", value="value", 10:11)
+head(dfc2, 3)
+
+AllTempc3 <- ggplot(dfc3, aes(TIMESTAMP, value )) +
+           geom_line(aes(colour=sensor, group=sensor)) + # colour, group both depend on variable
+           geom_point(aes(colour=sensor),                # colour depends on variable
+               size=1)+
+         ggtitle("Temp every 5 min , 2022") +
+         xlab("Date") + ylab("Air Temperature (C)") +
+         scale_x_discrete(guide = guide_axis(check.overlap = TRUE)) +
+        theme(axis.text.x=element_text(angle=60, hjust=1))
+AllTempc3
+
+```
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
