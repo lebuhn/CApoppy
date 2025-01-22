@@ -1,9 +1,11 @@
 ---
+formats: 
+pdf:
 title: "Differential Water Loss from Adaxial and Abaxial Petal Surfaces Suggests an Adaptive Role for Nyctinastic Movements in *Eschscholzia californica*"
 author:  Kevin Simonin, Alyssa Miller, Annie Dang, Julia Rolls, Cameron Miller, Sean Britain, Kanchan Gautam, Griffin Wetzel, Lucy Gworek, Nicholas Rackard-Hilt and Gretchen LeBuhn
-format: html
+
 editor: visual
-#bibliography: references.bib
+bibliography: references.bib
 ---
 
 **Abstract**
@@ -60,7 +62,7 @@ All statistical analyses were done using RStudio.
 
 ***Ovary and flower temperature***
 
-Ovary and petal surface temperatures were not significantly lower than ambient temperature.
+Ovary and petal surface temperatures when the flower was closed were not significantly lower than ambient temperature.
 
 NB:Data were collected from two flowers for 24 hours. Thermocouples 1 and 4 were inserted in the ovary. Thermocouples 2 and 5 were suspended in the bowl. Thermocouple 3 was in open air.
 
@@ -87,7 +89,10 @@ library(stringr)
 setwd("/Users/gretchen/Library/CloudStorage/Box-Box/1. Lab research/CApoppy/data/fl_temp")
 
 #read in data and classify date variable
+ov_temp = read.csv("cr6_Temp.28.May.22.csv", header = T, stringsAsFactors=FALSE)
 ov_temp2 = read.csv("cr6_Temp.31.May.22.csv", header = T, stringsAsFactors=FALSE)
+
+ov_temp$DateTime<- as.POSIXct(ov_temp$TIMESTAMP, format="%m/%d/%y %H:%M", tz = "UTC")
 ov_temp2$DateTime<- as.POSIXct(ov_temp2$TIMESTAMP, format="%m/%d/%y %H:%M", tz = "UTC")
 
 
@@ -107,7 +112,7 @@ AllTemp3 <- ggplot(df3, aes(DateTime, value)) +
            geom_point(aes(colour=sensor),                # colour depends on variable
                size=1)+
          ggtitle("Figure 1. Flower and ovary temperatures on two flowers, ovary and bowl") +
-         xlab("Date") + ylab("Air Temperature (C)")
+         xlab("Date") + ylab("Temperature (C)")
 
 #render plot
 AllTemp3
@@ -115,7 +120,9 @@ AllTemp3
 
 ```
 
-The second graph isolates the first flower which continued to bloom for a second day. Thermocouple 1 is in the ovary, Thermocouple 2 is suspended in the flower. Thermocouple 3 was in open air.
+The second graph isolates the first flower where data was recorded continuously for 48 hours. Thermocouple 1 is in the ovary, Thermocouple 2 is touching the surface of an inner flower petal. Thermocouple 3 was in open air.
+
+There was no significant difference in the ovary temperatures at night between the petal surface, ovary and air temperature.
 
 ```{r}
 #| echo: false
@@ -131,12 +138,51 @@ AllTemp4 <- ggplot(df4, aes(DateTime, value)) +
            geom_line(aes(colour=sensor, group=sensor)) + # colour, group both depend on variable
            geom_point(aes(colour=sensor),                # colour depends on variable
                size=1)+
-         ggtitle("Figure 2. Flower and ovary temperature on second day of bloom- one flower ovary and bowl-2nd day of bloom") +
-         xlab("Date") + ylab("Air Temperature (C)")
+         ggtitle("Figure 2. Flower and ovary temperature - one flower ovary and bowl") +
+         xlab("Date") + ylab("Temperature (C)")
 
 #render plot
 
 AllTemp4
+```
+
+These data track temperatures from themocouples inserted into a flower that was closed and one that was open. This represents two nights on the first night, we held on flower open using wire.
+
+```{r}
+#| echo: false
+#| warning: false
+
+df1 <- ov_temp%>%
+  select(DateTime, Temp_C_Avg.3., Temp_C_Avg.4., Temp_C_Avg.5. ) %>%
+  gather(key = "variable", value = "value", -DateTime)
+head(df1, 3)
+
+AllTemp1 <- ggplot(df1, aes(DateTime, value)) +
+           geom_line(aes(colour=variable, group=variable)) + # colour, group both depend on variable
+           geom_point(aes(colour=variable),                # colour depends on variable
+               size=1)+
+         ggtitle("Temp every 5 min May 27-28, 2022") +
+         xlab("Date") + ylab("Air Temperature (C)")
+
+
+
+df2 <- ov_temp %>%
+  select(DateTime,  Temp_C_Avg.3., Temp_C_Avg.1., Temp_C_Avg.2. ) %>%
+  gather(key = "variable", value = "value", -DateTime)
+#head(df1, 3)
+
+AllTemp2 <- ggplot(df2, aes(DateTime, value)) +
+           geom_line(aes(colour=variable, group=variable)) + # colour, group both depend on variable
+           geom_point(aes(colour=variable),                # colour depends on variable
+               size=1)+
+         ggtitle("Temp every 5 min May 27-28, 2022") +
+         xlab("Date") + ylab("Air Temperature (C)")
+
+
+
+#render plot
+AllTemp1
+AllTemp2
 ```
 
 ***Daytime Petal Water Content***
