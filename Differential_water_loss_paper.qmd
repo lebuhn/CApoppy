@@ -32,7 +32,9 @@ Here, we test the hypothesis that nyctinastic closure reduces water loss by comp
 
 ***Petal and Ovary Temperatures***
 
-*In situ* measurements of petal and ovary temperatures were made on one flower from each of two *Eschscholzia californica* plants in Corte Madera (Marin county), California (38.0197° N 122.5022° W). On May 29-31, 2022, the temperature inside and outside the flower was measured using a Perfect Prime TL0201, 0.1mm diameter, K-Type Sensor Probe for K-Type thermocouple.  Single probes were placed touching the surface of the petal as well as being inserted into the ovary.  A fourth probe was placed adjacent to the flower to measure air temperature.  Probes were left in for 48 hours and data was recorded on a CR-6. Temperature was collected every 5 minutes. Thermocouples 1 and 4 were inserted in the ovary. Thermocouples 2 and 5 were suspended in the bowl. Thermocouple 3 was in open air. Data from the second flower on the second day was not collected as the petals abscised after the first 24 hours.
+*In situ* measurements of petal and ovary temperatures were made on one flower from each of two *Eschscholzia californica* plants in Corte Madera (Marin county), California (38.0197° N 122.5022° W). On May 22-24,2022, the temperature inside the flower was measured using a Perfect Prime TL0201, 0.1mm diameter, K-Type Sensor Probe for K-Type thermocouple.  Single probes were placed touching the surface of the petals. Plant 1 was a control and plant 2 was held open by inserting a metal ring into the corolla.
+
+On May 29-31, 2022, the temperature inside and outside the flower was measured using a Perfect Prime TL0201, 0.1mm diameter, K-Type Sensor Probe for K-Type thermocouple.  Single probes were placed touching the surface of the petal as well as being inserted into the ovary.  A fifth probe was placed adjacent to the flower to measure air temperature.  Probes were left in for 48 hours and data was recorded on a CR-6. Temperature was collected every 5 minutes. Thermocouples 1 and 4 were inserted in the ovary. Thermocouples 2 and 5 were suspended in the bowl. Thermocouple 3 was in open air. Data from the second flower on the second day was not collected as the petals abscised after the first 24 hours.
 
 ***Daytime Petal Water Content***
 
@@ -86,11 +88,10 @@ library(tidyr) # for reshaping data
 library(stringr)
 
 
-setwd("/Users/gretchen/Library/CloudStorage/Box-Box/1. Lab research/CApoppy/data/fl_temp")
 
 #read in data and classify date variable
-ov_temp = read.csv("cr6_Temp.28.May.22.csv", header = T, stringsAsFactors=FALSE)
-ov_temp2 = read.csv("cr6_Temp.31.May.22.csv", header = T, stringsAsFactors=FALSE)
+ov_temp = read.csv("~/GitHub/CApoppy/data/raw/fl_temp/cr6_22_may_22.csv", header = T, stringsAsFactors=FALSE)
+ov_temp2 = read.csv("~/GitHub/CApoppy/data/raw/fl_temp/cr6_Temp.31.May.22.csv", header = T, stringsAsFactors=FALSE)
 
 ov_temp$DateTime<- as.POSIXct(ov_temp$TIMESTAMP, format="%m/%d/%y %H:%M", tz = "UTC")
 ov_temp2$DateTime<- as.POSIXct(ov_temp2$TIMESTAMP, format="%m/%d/%y %H:%M", tz = "UTC")
@@ -195,10 +196,7 @@ AllTemp2
 
 # Define paths to data sets. If you don't keep your data in the same directory as the code, adapt the path names.
 
-setwd("/Users/gretchen/Library/CloudStorage/Box-Box/1. Lab research/CApoppy/data")
-
-#data <- read_sheet("https://docs.google.com/spreadsheets/d/1E-IBa1wWjJXVLBjhe6bojlOcMyZRfDINiFydXIVs17s/edit#gid=0")
-data <- read.csv("Petal_water.csv", header=TRUE, stringsAsFactors=TRUE)
+data <- read.csv("~/GitHub/CApoppy/data/raw/Petal_water.csv", header=TRUE, stringsAsFactors=TRUE)
 
 data<-data[-c(1,2,3,4),]
 

@@ -66,7 +66,8 @@ ggplot(data, aes(x=Dry_weight_mg, y=Petal_area_cm2, col=Time_cat)) + geom_point(
 ggplot(data, aes(x=Petal_area_cm2, y=water_mg, col=Time_cat)) + geom_point() +
   geom_smooth(method="lm", se=TRUE)
 ```
-Water content increases with petal area at all time periods. The slope of the relationship is different at 14:00 which is just prior to flowers closing. 
+
+Water content increases with petal area at all time periods. The slope of the relationship is different at 14:00 which is just prior to flowers closing.
 
 ###Does dry weight predict total water content of petal at different times of day?
 
@@ -85,7 +86,6 @@ Flowers with a higher dry weight contain more water in the morning than they do 
 
 ### Does the petal area predict the water content per unit area of a petal?
 
-
 ```{r}
 data %>% group_by(Time_cat) %>% do(tidy(lm(Dry_weight_mg ~ water_mg, data=.)))
 
@@ -93,6 +93,7 @@ data %>% group_by(Time_cat) %>% do(tidy(lm(Dry_weight_mg ~ water_mg, data=.)))
 ggplot(data, aes(x=Petal_area_cm2, y=water_cm2, col=Time_cat)) + geom_point() +
   geom_smooth(method="lm", se=TRUE)
 ```
+
 No, as petal area increases, the amount of water per unit area decreases at all times of day.
 
 ###Does dry weight of a petal predict the amount of water per unit area of that petal?
@@ -115,5 +116,5 @@ summary(one.way)
 
 
 ```
-As dry weight of a petal increases, the amount of water per unit area in that petal increases at all time periods.  At closing, there is a significantly higher amount of water per unit area for all sizes of petal.
 
+As dry weight of a petal increases, the amount of water per unit area in that petal increases at all time periods. At closing, there is a significantly higher amount of water per unit area for all sizes of petal.
