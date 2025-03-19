@@ -8,53 +8,7 @@ editor: visual
 bibliography: references.bib
 ---
 
-**Abstract**
-
-\
-
-**Introduction**
-
-Plants employ diverse strategies to optimize reproductive success while minimizing the physiological cost of reproduction \[Ashman 1994, Schoen Asman 1995, Rody 2019, Galen \]. Although flowers represent a substantial resource investment, they are unique among plant organs in their relatively low dry matter content, relying largely on a hydrostatic skeleton rather than carbon-intensive structures for support [@niklas1992; Roddy et al. 2023]. This reliance on water for maintaining floral display, combined with the general absence of stomata, presents unique challenges for regulating floral water balance and minimizing the overall water cost of reproduction \[Galen 2005; Roddy et al 2016, Roddy et al. 2019\].
-
-As modified leaves, floral water relations differ greatly from their leaf origins \[Galen ??, Roddy et al. 2016, Roddy et al. 2019\]. While the majority of water loss through leaves occurs through stomata, flowers primarily lose water through cuticular conductance (Roddy et al 2023; Teixido & Valladares 2014 ). This means that the maintenance of turgor pressure, essential for floral display and function, depends entirely on the balance between water supply and cuticular water loss, which unlike stomata is unregulated in repsonse to short term changes in atmospheric demand (Roddy et al. BiorXiv). Despite the importance of understanding controls over cuticular water loss and overall flower water balance, rates of water loss from petal surfaces and the factors controlling the water cost of flowering remain poorly characterized.
-
-One aspect of floral structure and function that may provide short-term regulation of water use, despite the relative absence of stomata, is nyctinasty— the rhythmic opening and closing of flowers that persist over multiple days. While the adaptive significance of these petal movements remains debated, mounting evidence suggests they may serve multiple functions, including pollinator attraction and protection from environmental stresses [@vandoorn2003]. We propose that nyctinastic movement of petals may additionally function as a water conservation mechanism during the critical period of reproductive display.
-
-Nyctinastic movements show considerable variation in timing and duration across species, typically regulated by environmental cues such as light and temperature (add reference). These movements involve complex cellular mechanisms including ion transport and differential cell expansion, suggesting both energetic and water costs associated with repeated opening and closing (van Doorn and van Meeteren 2003).
-
-*Eschscholzia californica* (California poppy) provides an ideal system for investigating the water conservation hypothesis of nyctinastic movements. This species exhibits pronounced daily flower opening in mid-morning and closing in mid-afternoon, with individual flowers persisting for three to five days. The large, bowl-shaped corolla presents extensive surface area to environmental factors that may influence water loss, including solar radiation and wind.
-
-Here, we test the hypothesis that nyctinastic closure reduces water loss by comparing transpiration rates between adaxial and abaxial petal surfaces. We predict that the adaxial surface, which is protected during closure, will show higher rates of water loss than the abaxial surface, suggesting that flower closure serves to protect surfaces most vulnerable to water loss.\
-
-**Methods**
-
-*Eschscholzia californica* (California poppy) is a widespread herbaceous plant native to the western United States, characterized by large, showy flowers that open during the day and close at night. Individual flowers persist for 4-5 days, with petals opening each morning and closing in the late afternoon or early evening. This nyctinastic behavior occurs even under constant light conditions, suggesting an endogenous rhythm that is entrained by environmental cues. The flowers lack a rigid support structure, instead relying on hydrostatic pressure to maintain their characteristic cup shape when open. During closure, the petals fold inward forming a tight spiral that completely encloses the reproductive structures. This daily cycle of opening and closing continues for three to five days after which the petals abscise and fruit development begins. The species' adaptation to Mediterranean climates, where water availability can be unpredictable during the flowering season, makes it an ideal system for investigating water conservation strategies in flowers.
-
-***Petal and Ovary Temperatures***
-
-*In situ* measurements of petal and ovary temperatures were made on one flower from each of two *Eschscholzia californica* plants in Corte Madera (Marin county), California (38.0197° N 122.5022° W). On May 29-31, 2022, the temperature inside and outside the flower was measured using a Perfect Prime TL0201, 0.1mm diameter, K-Type Sensor Probe for K-Type thermocouple.  Single probes were placed touching the surface of the petal as well as being inserted into the ovary.  A fourth probe was placed adjacent to the flower to measure air temperature.  Probes were left in for 48 hours and data was recorded on a CR-6. Temperature was collected every 5 minutes. Thermocouples 1 and 4 were inserted in the ovary. Thermocouples 2 and 5 were suspended in the bowl. Thermocouple 3 was in open air. Data from the second flower on the second day was not collected as the petals abscised after the first 24 hours.
-
-***Daytime Petal Water Content***
-
-To examine the effect of time of day and floral opening on water content of flowers, we sampled one *Eschscholzia californica* petal from each of 30 different flowers per date on June 23, 26th and 28th , July 6th and August 10, 2022 located on San Francisco State University campus (add lat and long). No more than two flowers were sampled per individual plant.  Petals were held in a plastic container to minimize water loss until they could be weighted and photographed.  In the laboratory, each petal was photographed on a blue background next to a post-it used to calibrate ImageJ. A clear plastic sheet the size of standard lined paper (21.6 x 27.9 cm) was placed over the petal to flatten the petal to standardize measurements of area. Each reference photo was uploaded to ImageJ to estimate petal area.
-
-Petal samples were weighed individually on a Mettler Toledo AX204 balance. After individual weight was taken (“Wet weight”), each petal was placed into a small coin envelope and dried in an Fisher Scientific Isotemp Standard Oven 600 series at 60℃ for at least 48 hours. After drying each individual, petal was weighed on the same balance to obtain the dry weight of each petal.  Total petal water content was estimated as Wet weight - Dry weight.  Petal water content per gram was estimated as Total water content/Dry weight. Petal water content per area was estimated as Total petal water content/Petal area.
-
-***Petal Surface Conductance***
-
-In situ measurements of petal surface conductance were made on *Eschscholzia californica* plants from randomly selected locations within the greater San Francisco Bay area. Petal surface conductance measurements were taken from 54 individuals using a Li-Cor Li-600 Porometer/Fluorometer. For each plant sampled, one petal per poppy flower was randomly selected for six measurements. Three measurements were taken from the abaxial surface and three measurements were taken from the adaxial surface. Surface conductance measurements were taken during anthesis when flowers were fully opened. Collected data was then transferred from the porometer into a Microsoft Excel spreadsheet using the application Li-Cor Li-600 Software Version: 3.0.0. The spreadsheet was then converted into a comma separated values (csv) format for analysis using RStudio.
-
-***Petal Surface Area***
-
-All *Eschscholzia californica* flowers used for surface area measurements were sampled on the San Francisco State University campus grounds. 16 closed E. californica flowers were selected and marked to collect surface area measurements, as well as to return to when open. Closed flower measurements were taken between 7am-8:30am. Height and diameter measurements were taken using a standard ruler and caliper. Height was measured from the base of the receptacle to the tip of the petals. Diameter was measured at the widest part of the closed petal cone \[add picture for reference\]. Measurements were taken in inches and then later converted into cm2. The surface area of closed flowers were calculated using the formula for the surface area of a cone: A=rh^2^+r^2^.
-
-Marked *E. californica* flowers were revisited when open to collect and measure open surface area. Open surface area measurements were made digitally. For each flower, each individual petal was removed from its base and scanned for projected surface area using a document scanner (Cannon....). A sheet of glass was placed on top of the flower petals, flattening them to ensure the entire surface of the petals would be visible when scanning. A standard ruler was placed on the edge of the platen to be used as a standardized scale. Samples were scanned using the Canon IJ Scan Utility program for Windows. Images were analyzed for surface area using ImageJ through the distributor Fiji (Info for Fiji). Images were converted into binary and analyzed for surface area (cm^2^).
-
-***Lifetime Petal Water Use***
-
-We created a lifetime petal water use model to represent the variances of water use of E. californica flowers depending on the duration of floral opening and closing throughout their lifespan: SA ᐧ gsw ᐧ VPD ᐧ Time. SA represents surface area (m^2^), calculated above. G~sw~ represents mean surface conductance (mol m^-2^ s^-1^), obtained from the data collected from the Li-Cor Li-600 Porometer/Fluorometer. Average gsw was taken for both the abaxial and adaxial side of the flower petal. VPD, or vapor pressure deficit (kPa), was made as a constant of 1, removing the possibility of variability caused by differing VPD. Our time (s) variable used metadata collected from \[insert source\], finding that the average lifespan of E. californica flowers was 4 days. Within a 24 hour period, the flowers were closed for roughly 19 hours and open for 5 hours.
-
-***Statistical Analysis***
+***This document includes the statistical analyses for the Simonin et al paper .***
 
 All statistical analyses were done using RStudio.
 
@@ -67,10 +21,9 @@ Ovary and petal surface temperatures when the flower was closed were not signifi
 NB:Data were collected from two flowers for 24 hours. Thermocouples 1 and 4 were inserted in the ovary. Thermocouples 2 and 5 were suspended in the bowl. Thermocouple 3 was in open air.
 
 ```{r}
-#| label: Petal_temp_analysis
-#| echo: false
-#| warning: false
-#| 
+
+# Adding libraries and entering data
+
 # Import required R packages.
 
 #library("googlesheets4")
@@ -84,13 +37,15 @@ library(scales)   # to access breaks/formatting functions
 library(gridExtra) # for arranging plots
 library(tidyr) # for reshaping data
 library(stringr)
+library(car)
+library(FSA)
+library(knitr)
+library(flextable)  # Optional for better table formatting
 
-
-setwd("/Users/gretchen/Library/CloudStorage/Box-Box/1. Lab research/CApoppy/data/fl_temp")
 
 #read in data and classify date variable
-ov_temp = read.csv("cr6_Temp.28.May.22.csv", header = T, stringsAsFactors=FALSE)
-ov_temp2 = read.csv("cr6_Temp.31.May.22.csv", header = T, stringsAsFactors=FALSE)
+ov_temp = read.csv("~/GitHub/CApoppy/data/raw/fl_temp/cr6_Temp.28.May.22.csv", header = T, stringsAsFactors=FALSE)
+ov_temp2 = read.csv("~/GitHub/CApoppy/data/raw/fl_temp/cr6_Temp.31.May.22.csv", header = T, stringsAsFactors=FALSE)
 
 ov_temp$DateTime<- as.POSIXct(ov_temp$TIMESTAMP, format="%m/%d/%y %H:%M", tz = "UTC")
 ov_temp2$DateTime<- as.POSIXct(ov_temp2$TIMESTAMP, format="%m/%d/%y %H:%M", tz = "UTC")
@@ -101,21 +56,57 @@ ov_temp3 <- subset(ov_temp2, RECORD > 328 & RECORD < 624)
 ov_temp4 <-subset(ov_temp2, RECORD > 391 )
 
 
+
+```
+
+Petal temperature analysis
+
+```{r}
+#| label: Petal_temp_analysis
+#| echo: false
+#| warning: false
+#| 
+# Create a named vector to map column names to readable labels
+sensor_names <- c(
+  "Temp_C_Avg.1." = "Ovary 1",
+  "Temp_C_Avg.2." = "Bowl 1",
+  "Temp_C_Avg.3." = "Ambient",
+  "Temp_C_Avg.4." = "Ovary 2",
+  "Temp_C_Avg.5." = "Bowl 2"
+)
+
+# Modify your gather and rename in one step
 df3 <- ov_temp3 %>%
   select(DateTime, Temp_C_Avg.1., Temp_C_Avg.2., Temp_C_Avg.3., Temp_C_Avg.4., Temp_C_Avg.5.) %>%
-  gather(key = "sensor", value = "value", -DateTime)
+  gather(key = "sensor", value = "value", -DateTime) %>%
+  mutate(sensor = sensor_names[sensor])  # Replace sensor names with readable labels
 
 
-
+# Create the plot
 AllTemp3 <- ggplot(df3, aes(DateTime, value)) +
-           geom_line(aes(colour=sensor, group=sensor)) + # colour, group both depend on variable
-           geom_point(aes(colour=sensor),                # colour depends on variable
-               size=1)+
-         ggtitle("Figure 1. Flower and ovary temperatures on two flowers, ovary and bowl") +
-         xlab("Date") + ylab("Temperature (C)")
+  geom_line(aes(colour=sensor, group=sensor), size=1) + # Line size adjusted for clarity
+  geom_point(aes(colour=sensor), size=2) + # Increased point size for visibility
+  scale_colour_manual(values = c("Ovary 1" = "green", "Bowl 1" = "orange", "Ambient" = "blue", 
+                                "Ovary 2" = "darkgreen", "Bowl 2" = "darkorange")) + 
+  ggtitle("Figure X. Flower and ovary temperatures of two flowers") +
+  xlab("Date") + 
+  ylab("Temperature (°C)") +
+  theme_minimal() + # Clean theme 
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+    axis.title = element_text(size = 12, face = "bold"),
+    axis.text = element_text(size = 10),
+    legend.title = element_text(size = 12, face = "bold"),
+    legend.text = element_text(size = 10)
+  ) +
+  scale_x_datetime(date_labels = "%b %d", date_breaks = "1 week") # Adjusted for readability
 
-#render plot
-AllTemp3
+print(AllTemp3)
+
+# Export the plot
+ggsave("~/GitHub/CApoppy/plots/flower_ovary_temperatures.png", plot = AllTemp3, width = 8, height = 6, dpi = 300) 
+
+
 
 
 ```
@@ -152,37 +143,50 @@ These data track temperatures from themocouples inserted into a flower that was 
 #| echo: false
 #| warning: false
 
-df1 <- ov_temp%>%
-  select(DateTime, Temp_C_Avg.3., Temp_C_Avg.4., Temp_C_Avg.5. ) %>%
+# First graph remains the same
+df1 <- ov_temp %>%
+  select(DateTime, Temp_C_Avg.3., Temp_C_Avg.4., Temp_C_Avg.5.) %>%
   gather(key = "variable", value = "value", -DateTime)
 head(df1, 3)
 
 AllTemp1 <- ggplot(df1, aes(DateTime, value)) +
-           geom_line(aes(colour=variable, group=variable)) + # colour, group both depend on variable
-           geom_point(aes(colour=variable),                # colour depends on variable
-               size=1)+
-         ggtitle("Temp every 5 min May 27-28, 2022") +
-         xlab("Date") + ylab("Air Temperature (C)")
+           geom_line(aes(colour=variable, group=variable)) +
+           geom_point(aes(colour=variable), size=1) +
+           ggtitle("Temp every 5 min May 27-28, 2022") +
+           xlab("Date") + ylab("Air Temperature (C)")
 
-
-
+# Second graph with renamed variables
 df2 <- ov_temp %>%
-  select(DateTime,  Temp_C_Avg.3., Temp_C_Avg.1., Temp_C_Avg.2. ) %>%
+  select(DateTime, Temp_C_Avg.3., Temp_C_Avg.1., Temp_C_Avg.2.) %>%
+  # Rename columns before gathering
+  rename("ambient" = Temp_C_Avg.3.,
+         "close" = Temp_C_Avg.1.,
+         "open" = Temp_C_Avg.2.) %>%
   gather(key = "variable", value = "value", -DateTime)
-#head(df1, 3)
+
+head(df2, 3)
 
 AllTemp2 <- ggplot(df2, aes(DateTime, value)) +
-           geom_line(aes(colour=variable, group=variable)) + # colour, group both depend on variable
-           geom_point(aes(colour=variable),                # colour depends on variable
-               size=1)+
-         ggtitle("Temp every 5 min May 27-28, 2022") +
-         xlab("Date") + ylab("Air Temperature (C)")
+           geom_line(aes(colour=variable, group=variable)) +
+           geom_point(aes(colour=variable), size=1) +
+           ggtitle("Temperature Measurements May 27-28, 2022") +
+           xlab("Date") + ylab("Air Temperature (C)") +
+           # Add nicer theme and better legend title
+           theme_minimal() +
+           labs(colour = "Measurement Location") +
+           # Improve text readability
+           theme(text = element_text(size = 12),
+                 plot.title = element_text(size = 14, face = "bold"))
 
-
-
-#render plot
+# Render plots
 AllTemp1
 AllTemp2
+
+# Save the second plot (with renamed variables) as a high-resolution PNG
+# You can also save in other formats: pdf, jpeg, tiff, svg, etc.
+ggsave("temperature_plot.png", plot = AllTemp2, width = 10, height = 6, dpi = 300)
+
+
 ```
 
 ***Daytime Petal Water Content***
@@ -213,7 +217,90 @@ Total water content of petals is highest before opening in the morning (06:00), 
 ```{r}
 #| echo: false
 #| warning: false
-plot1<- ggplot(data, aes(group = Time_cat, y = water_mg, fill = Time_cat)) + 
+
+
+# plot  water content per unit surface area
+
+plot1<- ggplot(data, aes(group = Time_cat, y = water_cm2, fill = Time_cat)) + 
+  stat_boxplot(geom = "errorbar",
+               width = 0.75) + 
+  geom_boxplot() +
+        ggtitle("Figure 3. Water content per unit surface area (cm2) of petals at different times of day") +
+        xlab("Time collected") + ylab("Water content (cm2)") +
+        theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+
+plot1
+
+# Check assumptions
+shapiro.test(data$water_cm2)  # Test for normality
+leveneTest(water_cm2 ~ Time_cat, data = data)  # Test for homogeneity of variances (from car package)
+
+kruskal_test_cm <- kruskal.test(water_cm2 ~ Time_cat, data = data)
+print(kruskal_test_cm)
+
+# Convert Kruskal-Wallis results to a data frame
+kruskal_results_cm <- data.frame(
+  Statistic = kruskal_test_cm$statistic,
+  DF = kruskal_test_cm$parameter,
+  P_Value = kruskal_test_cm$p.value
+)
+
+# Create a well-formatted table that can be easily copied to documents
+kruskal_table_cm <- flextable(kruskal_results_cm) %>%
+  set_caption("Table 1: Kruskal-Wallis Test Results-Water per unit area") %>%
+  theme_vanilla() %>%     # Clean formatting that works well in most documents
+  autofit() %>%           # Automatically adjust column widths
+  bold(part = "header") %>%
+  fontsize(size = 11) %>% # Standard size for better readability
+  border_outer() %>%      # Add clear borders
+  align(align = "center", part = "all") # Center alignment for clean appearance
+
+# Display the table in R for easy copy-paste
+kruskal_table_cm
+
+# Pairwise comparisons (Dunn’s test)
+
+dunn_test <- dunnTest(water_cm2 ~ Time_cat, data = data, method = "bonferroni")
+print(dunn_test)
+
+
+# Convert results to a data frame
+dunn_results <- as.data.frame(dunn_test$res)
+
+# Rename columns for readability
+colnames(dunn_results) <- c("Comparison", "Z Score", "Unadjusted P", "Adjusted P")
+
+# Export results as a table using knitr::kable()
+#kable(dunn_results, caption = "Table 1: Dunn’s Test Pairwise Comparisons")
+
+# Create a styled flextable
+dunn_table <- flextable(dunn_results) %>%
+  set_caption("Table 1: Dunn's Test Pairwise Comparisons ") %>%
+  theme_vanilla() %>%  # Apply a clean theme
+  autofit() %>%        # Optimize column widths
+  bold(part = "header") %>%  # Bold the header
+  fontsize(size = 10, part = "all")  # Set consistent font size
+
+# Save as PNG using flextable's save_as_image function
+save_as_image(dunn_table, path = "~/GitHub/CApoppy/figures/dunn_test_results.png", zoom = 2)
+
+
+
+
+#p.adj → Adjusted p-value (Bonferroni or other method, used to control for Type I error).
+```
+
+Water content per unit surface area is highest before the flower opens (06:00), drops as soon as the flower has opened (09:00) and remains lower while the petals are open and then increases when the flower closes (15:00)
+
+```{r}
+#| echo: false
+#| warning: false
+
+
+# plot total water content
+
+plot2<- ggplot(data, aes(group = Time_cat, y = water_mg, fill = Time_cat)) + 
   stat_boxplot(geom = "errorbar",
                width = 0.75) + 
   geom_boxplot() +
@@ -222,24 +309,65 @@ plot1<- ggplot(data, aes(group = Time_cat, y = water_mg, fill = Time_cat)) +
         theme(axis.text.x=element_blank(),
         axis.ticks.x=element_blank())
 
-plot1
-```
-
-Water content per unit surface area is highest before the flower opens (06:00), drops as soon as the flower has opened (09:00) and remains lower while the petals are open and then increases when the flower closes (15:00)
-
-```{r}
-#| echo: false
-#| warning: false
-plot2<- ggplot(data, aes(group = Time_cat, y = water_cm2, fill = Time_cat)) + 
-  stat_boxplot(geom = "errorbar",
-               width = 0.75) + 
-  geom_boxplot() +
-         ggtitle("Figure 4. Petal water content per unit area (cm2) of petals at different times of day") +
-         xlab("Time collected") + ylab("Water (cm2)")+
-        theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank())
-
 plot2
+
+# Check assumptions
+shapiro.test(data$water_mg)  # Test for normality
+leveneTest(water_mg ~ Time_cat, data = data)  # Test for homogeneity of variances (from car package)
+
+kruskal_test_mg <- kruskal.test(water_mg ~ Time_cat, data = data)
+print(kruskal_test_mg)
+
+# Convert Kruskal-Wallis results to a data frame
+kruskal_results_mg <- data.frame(
+  Statistic = kruskal_test_mg$statistic,
+  DF = kruskal_test_mg$parameter,
+  P_Value = kruskal_test_mg$p.value
+)
+
+# Create a well-formatted table that can be easily copied to documents
+kruskal_table_mg <- flextable(kruskal_results_mg) %>%
+  set_caption("Table 1: Kruskal-Wallis Test Results- Total water content") %>%
+  theme_vanilla() %>%     # Clean formatting that works well in most documents
+  autofit() %>%           # Automatically adjust column widths
+  bold(part = "header") %>%
+  fontsize(size = 11) %>% # Standard size for better readability
+  border_outer() %>%      # Add clear borders
+  align(align = "center", part = "all") # Center alignment for clean appearance
+
+# Display the table in R for easy copy-paste
+kruskal_table_mg
+
+# Pairwise comparisons (Dunn’s test)
+
+dunn_test_mg <- dunnTest(water_mg ~ Time_cat, data = data, method = "bonferroni")
+print(dunn_test_mg)
+
+
+# Convert results to a data frame
+dunn_results_mg <- as.data.frame(dunn_test$res)
+
+# Rename columns for readability
+colnames(dunn_results_mg) <- c("Comparison", "Z Score", "Unadjusted P", "Adjusted P")
+
+# Export results as a table using knitr::kable()
+#kable(dunn_results, caption = "Table 1: Dunn’s Test Pairwise Comparisons")
+
+# Create a styled flextable
+dunn_table_mg <- flextable(dunn_results_mg) %>%
+  set_caption("Table 1: Dunn's Test Pairwise Comparisons") %>%
+  theme_vanilla() %>%  # Apply a clean theme
+  autofit() %>%        # Optimize column widths
+  bold(part = "header") %>%  # Bold the header
+  fontsize(size = 10, part = "all")  # Set consistent font size
+
+# Save as PNG using flextable's save_as_image function
+save_as_image(dunn_table_mg, path = "~/GitHub/CApoppy/figures/dunn_test_results_mg.png", zoom = 2)
+
+
+
+
+#p.adj → Adjusted p-value (Bonferroni or other method, used to control for Type I error).
 ```
 
 Upon opening (06:00) and when petals close (15:00) , petal water content per unit area is higher.
