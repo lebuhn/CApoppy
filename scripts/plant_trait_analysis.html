@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Plant Ecologist">
+<meta name="dcterms.date" content="2025-03-18">
+
+<title>Comparison of Plant Populations: Pt_Conception vs CojoHQ</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="plant_trait_analysis_files/libs/clipboard/clipboard.min.js"></script>
+<script src="plant_trait_analysis_files/libs/quarto-html/quarto.js"></script>
+<script src="plant_trait_analysis_files/libs/quarto-html/popper.min.js"></script>
+<script src="plant_trait_analysis_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="plant_trait_analysis_files/libs/quarto-html/anchor.min.js"></script>
+<link href="plant_trait_analysis_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="plant_trait_analysis_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="plant_trait_analysis_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="plant_trait_analysis_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="plant_trait_analysis_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="plant_trait_analysis_files/libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="plant_trait_analysis_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#data-import-and-preparation" id="toc-data-import-and-preparation" class="nav-link" data-scroll-target="#data-import-and-preparation">Data Import and Preparation</a></li>
+  <li><a href="#data-visualization" id="toc-data-visualization" class="nav-link" data-scroll-target="#data-visualization">Data Visualization</a></li>
+  <li><a href="#statistical-analysis" id="toc-statistical-analysis" class="nav-link" data-scroll-target="#statistical-analysis">Statistical Analysis</a>
+  <ul class="collapse">
+  <li><a href="#helper-functions-for-statistical-analysis" id="toc-helper-functions-for-statistical-analysis" class="nav-link" data-scroll-target="#helper-functions-for-statistical-analysis">Helper Functions for Statistical Analysis</a></li>
+  <li><a href="#perform-comparisons-for-all-variables" id="toc-perform-comparisons-for-all-variables" class="nav-link" data-scroll-target="#perform-comparisons-for-all-variables">Perform Comparisons for All Variables</a></li>
+  </ul></li>
+  <li><a href="#detailed-analysis-by-trait" id="toc-detailed-analysis-by-trait" class="nav-link" data-scroll-target="#detailed-analysis-by-trait">Detailed Analysis by Trait</a>
+  <ul class="collapse">
+  <li><a href="#number-of-leaves" id="toc-number-of-leaves" class="nav-link" data-scroll-target="#number-of-leaves">Number of Leaves</a></li>
+  <li><a href="#number-of-buds" id="toc-number-of-buds" class="nav-link" data-scroll-target="#number-of-buds">Number of Buds</a></li>
+  <li><a href="#leaf-length" id="toc-leaf-length" class="nav-link" data-scroll-target="#leaf-length">Leaf Length</a></li>
+  <li><a href="#flower-length" id="toc-flower-length" class="nav-link" data-scroll-target="#flower-length">Flower Length</a></li>
+  </ul></li>
+  <li><a href="#discussion-and-interpretation" id="toc-discussion-and-interpretation" class="nav-link" data-scroll-target="#discussion-and-interpretation">Discussion and Interpretation</a></li>
+  <li><a href="#statistical-methods-justification" id="toc-statistical-methods-justification" class="nav-link" data-scroll-target="#statistical-methods-justification">Statistical Methods Justification</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Comparison of Plant Populations: Pt_Conception vs CojoHQ</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Plant Ecologist </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 18, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>This analysis compares two plant populations (Pt_Conception and CojoHQ) across multiple plant traits including:</p>
+<ul>
+<li>Number of leaves</li>
+<li>Number of flowers</li>
+<li>Number of buds</li>
+<li>Number of fruits</li>
+<li>Leaf length</li>
+<li>Flower length</li>
+<li>Fruit length</li>
+</ul>
+<p>We will conduct appropriate statistical tests to compare these traits between the two populations.</p>
+</section>
+<section id="data-import-and-preparation" class="level2">
+<h2 class="anchored" data-anchor-id="data-import-and-preparation">Data Import and Preparation</h2>
+<p>First, let’s import the data and prepare it for analysis:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the dataset using the provided data</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>plant_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Date =</span> <span class="fu">rep</span>(<span class="st">"18-Mar-25"</span>, <span class="dv">30</span>),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Population =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"Pt_Conception"</span>, <span class="dv">15</span>), <span class="fu">rep</span>(<span class="st">"CojoHQ"</span>, <span class="dv">15</span>)),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Individual =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">15</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">15</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Leaves =</span> <span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">18</span>, <span class="dv">14</span>, <span class="dv">8</span>, <span class="dv">15</span>, <span class="dv">8</span>, <span class="dv">17</span>, <span class="dv">53</span>, <span class="dv">4</span>, <span class="dv">28</span>, <span class="dv">20</span>, <span class="dv">14</span>, <span class="dv">7</span>, <span class="dv">11</span>, <span class="dv">20</span>, </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>             <span class="dv">12</span>, <span class="dv">37</span>, <span class="dv">22</span>, <span class="dv">11</span>, <span class="dv">10</span>, <span class="dv">32</span>, <span class="dv">38</span>, <span class="dv">11</span>, <span class="dv">49</span>, <span class="dv">34</span>, <span class="dv">26</span>, <span class="dv">52</span>, <span class="dv">7</span>, <span class="dv">10</span>, <span class="dv">13</span>),</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Flowers =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>              <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">Buds =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, </span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>           <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">2</span>, <span class="dv">6</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">Fruit =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, </span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>            <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">leaf_length =</span> <span class="fu">c</span>(<span class="fl">60.1</span>, <span class="fl">116.4</span>, <span class="fl">168.9</span>, <span class="fl">93.2</span>, <span class="fl">54.1</span>, <span class="fl">46.6</span>, <span class="fl">76.8</span>, <span class="dv">170</span>, <span class="fl">86.2</span>, <span class="fl">192.6</span>, </span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>                  <span class="fl">136.3</span>, <span class="fl">99.3</span>, <span class="fl">50.8</span>, <span class="fl">43.2</span>, <span class="fl">55.4</span>, <span class="fl">41.3</span>, <span class="dv">129</span>, <span class="fl">99.9</span>, <span class="fl">75.8</span>, <span class="fl">44.5</span>, </span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>                  <span class="fl">78.4</span>, <span class="fl">203.6</span>, <span class="fl">100.3</span>, <span class="fl">180.6</span>, <span class="fl">102.8</span>, <span class="fl">88.2</span>, <span class="fl">174.8</span>, <span class="fl">32.3</span>, <span class="fl">85.5</span>, <span class="fl">58.1</span>),</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">flower_length =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>, <span class="dv">28</span>, <span class="fl">29.7</span>, <span class="fl">32.7</span>, <span class="dv">26</span>, <span class="fl">25.4</span>, <span class="fl">27.9</span>, <span class="fl">24.6</span>, <span class="fl">31.8</span>, </span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>                    <span class="fl">47.4</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="fl">32.8</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="fl">47.7</span>, </span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>                    <span class="cn">NA</span>, <span class="fl">45.7</span>, <span class="cn">NA</span>, <span class="dv">44</span>, <span class="fl">32.9</span>, <span class="fl">32.7</span>, <span class="fl">56.8</span>, <span class="fl">27.9</span>, <span class="cn">NA</span>, <span class="fl">23.7</span>),</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">fruit_length =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>, <span class="fl">36.5</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="fl">38.1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, </span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>                   <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, </span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>                   <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="fl">62.6</span>, <span class="cn">NA</span>, <span class="fl">33.2</span>, <span class="cn">NA</span>, <span class="cn">NA</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert Population to a factor for proper statistical analysis</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>plant_data<span class="sc">$</span>Population <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(plant_data<span class="sc">$</span>Population)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the first few rows of the dataset</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(plant_data) <span class="sc">%&gt;%</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-striped table-hover caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Date</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Population</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Individual</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Leaves</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Flowers</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Buds</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Fruit</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">leaf_length</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">flower_length</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">fruit_length</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">18-Mar-25</td>
+<td style="text-align: left;">Pt_Conception</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">60.1</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">18-Mar-25</td>
+<td style="text-align: left;">Pt_Conception</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">116.4</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">18-Mar-25</td>
+<td style="text-align: left;">Pt_Conception</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">168.9</td>
+<td style="text-align: right;">28.0</td>
+<td style="text-align: right;">36.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">18-Mar-25</td>
+<td style="text-align: left;">Pt_Conception</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">93.2</td>
+<td style="text-align: right;">29.7</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">18-Mar-25</td>
+<td style="text-align: left;">Pt_Conception</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">54.1</td>
+<td style="text-align: right;">32.7</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">18-Mar-25</td>
+<td style="text-align: left;">Pt_Conception</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">46.6</td>
+<td style="text-align: right;">26.0</td>
+<td style="text-align: right;">NA</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get a summary of the data to check for any issues</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(plant_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>     Date                   Population   Individual        Leaves     
+ Length:30          CojoHQ       :15   Min.   : 1.00   Min.   : 4.00  
+ Class :character   Pt_Conception:15   1st Qu.: 4.25   1st Qu.:10.25  
+ Mode  :character                      Median : 8.00   Median :14.50  
+                                       Mean   : 8.00   Mean   :20.30  
+                                       3rd Qu.:11.75   3rd Qu.:27.50  
+                                       Max.   :15.00   Max.   :53.00  
+                                                                      
+    Flowers         Buds           Fruit         leaf_length    
+ Min.   :0.0   Min.   :0.000   Min.   :0.0000   Min.   : 32.30  
+ 1st Qu.:0.0   1st Qu.:0.000   1st Qu.:0.0000   1st Qu.: 56.08  
+ Median :0.5   Median :1.000   Median :0.0000   Median : 87.20  
+ Mean   :0.6   Mean   :1.467   Mean   :0.2333   Mean   : 98.17  
+ 3rd Qu.:1.0   3rd Qu.:2.000   3rd Qu.:0.0000   3rd Qu.:125.85  
+ Max.   :2.0   Max.   :6.000   Max.   :2.0000   Max.   :203.60  
+                                                                
+ flower_length    fruit_length  
+ Min.   :23.70   Min.   :33.20  
+ 1st Qu.:27.90   1st Qu.:35.67  
+ Median :32.25   Median :37.30  
+ Mean   :34.32   Mean   :42.60  
+ 3rd Qu.:41.23   3rd Qu.:44.23  
+ Max.   :56.80   Max.   :62.60  
+ NA's   :12      NA's   :26     </code></pre>
+</div>
+</div>
+</section>
+<section id="data-visualization" class="level2">
+<h2 class="anchored" data-anchor-id="data-visualization">Data Visualization</h2>
+<p>Before conducting statistical tests, let’s visualize the data to get a better understanding of the differences between populations:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a function to generate boxplots for numeric variables</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>create_boxplot <span class="ot">&lt;-</span> <span class="cf">function</span>(data, var_name, y_label) {</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> Population, <span class="at">y =</span> .data[[var_name]], <span class="at">fill =</span> Population)) <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Comparison of"</span>, y_label, <span class="st">"between Populations"</span>),</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">y =</span> y_label,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">x =</span> <span class="st">"Population"</span>) <span class="sc">+</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set2"</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create boxplots for each continuous variable</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">create_boxplot</span>(plant_data, <span class="st">"Leaves"</span>, <span class="st">"Number of Leaves"</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">create_boxplot</span>(plant_data, <span class="st">"Flowers"</span>, <span class="st">"Number of Flowers"</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">create_boxplot</span>(plant_data, <span class="st">"Buds"</span>, <span class="st">"Number of Buds"</span>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>p4 <span class="ot">&lt;-</span> <span class="fu">create_boxplot</span>(plant_data, <span class="st">"Fruit"</span>, <span class="st">"Number of Fruits"</span>)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>p5 <span class="ot">&lt;-</span> <span class="fu">create_boxplot</span>(plant_data, <span class="st">"leaf_length"</span>, <span class="st">"Leaf Length"</span>)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co"># For flower_length and fruit_length, we need to handle NA values</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>p6 <span class="ot">&lt;-</span> <span class="fu">create_boxplot</span>(<span class="fu">filter</span>(plant_data, <span class="sc">!</span><span class="fu">is.na</span>(flower_length)), <span class="st">"flower_length"</span>, <span class="st">"Flower Length"</span>)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>p7 <span class="ot">&lt;-</span> <span class="fu">create_boxplot</span>(<span class="fu">filter</span>(plant_data, <span class="sc">!</span><span class="fu">is.na</span>(fruit_length)), <span class="st">"fruit_length"</span>, <span class="st">"Fruit Length"</span>)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Arrange plots in a grid</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>gridExtra<span class="sc">::</span><span class="fu">grid.arrange</span>(p1, p2, p3, p4, p5, p6, p7, <span class="at">ncol =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="plant_trait_analysis_files/figure-html/data-visualization-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="statistical-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="statistical-analysis">Statistical Analysis</h2>
+<p>We need to select appropriate statistical tests for comparing the populations. For each trait, we’ll follow these steps:</p>
+<ol type="1">
+<li>Check for normality using the Shapiro-Wilk test</li>
+<li>Check for equal variances using Levene’s test</li>
+<li>Based on the results, use either parametric (t-test) or non-parametric (Wilcoxon rank-sum test) methods</li>
+</ol>
+<section id="helper-functions-for-statistical-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="helper-functions-for-statistical-analysis">Helper Functions for Statistical Analysis</h3>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to perform complete statistical comparison for a given variable</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>compare_variable <span class="ot">&lt;-</span> <span class="cf">function</span>(data, var_name, var_label) {</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter out NA values</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  data_filtered <span class="ot">&lt;-</span> data[<span class="sc">!</span><span class="fu">is.na</span>(data[[var_name]]), ]</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get data for each population</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  pop1_data <span class="ot">&lt;-</span> data_filtered[data_filtered<span class="sc">$</span>Population <span class="sc">==</span> <span class="st">"Pt_Conception"</span>, var_name]</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  pop2_data <span class="ot">&lt;-</span> data_filtered[data_filtered<span class="sc">$</span>Population <span class="sc">==</span> <span class="st">"CojoHQ"</span>, var_name]</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create a standard output structure regardless of analysis path</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">Variable =</span> var_label,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">Mean_Pt_Conception =</span> <span class="fu">ifelse</span>(<span class="fu">length</span>(pop1_data) <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="fu">round</span>(<span class="fu">mean</span>(pop1_data, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="dv">2</span>), <span class="cn">NA</span>),</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">SD_Pt_Conception =</span> <span class="fu">ifelse</span>(<span class="fu">length</span>(pop1_data) <span class="sc">&gt;</span> <span class="dv">1</span>, <span class="fu">round</span>(<span class="fu">sd</span>(pop1_data, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="dv">2</span>), <span class="cn">NA</span>),</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">Mean_CojoHQ =</span> <span class="fu">ifelse</span>(<span class="fu">length</span>(pop2_data) <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="fu">round</span>(<span class="fu">mean</span>(pop2_data, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="dv">2</span>), <span class="cn">NA</span>),</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">SD_CojoHQ =</span> <span class="fu">ifelse</span>(<span class="fu">length</span>(pop2_data) <span class="sc">&gt;</span> <span class="dv">1</span>, <span class="fu">round</span>(<span class="fu">sd</span>(pop2_data, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="dv">2</span>), <span class="cn">NA</span>),</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">SampleSize_Pt_Conception =</span> <span class="fu">length</span>(pop1_data),</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">SampleSize_CojoHQ =</span> <span class="fu">length</span>(pop2_data),</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">Test =</span> <span class="st">"Not performed"</span>,</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">Normality =</span> <span class="st">"Unknown"</span>,</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">EqualVariances =</span> <span class="st">"Unknown"</span>,</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">p_value =</span> <span class="cn">NA</span>,</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">Significant =</span> <span class="st">"No"</span>,</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">Interpretation =</span> <span class="st">"Analysis not possible"</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Skip if not enough data</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">length</span>(pop1_data) <span class="sc">&lt;</span> <span class="dv">3</span> <span class="sc">||</span> <span class="fu">length</span>(pop2_data) <span class="sc">&lt;</span> <span class="dv">3</span>) {</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    result<span class="sc">$</span>Test <span class="ot">&lt;-</span> <span class="st">"Insufficient data"</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    result<span class="sc">$</span>Interpretation <span class="ot">&lt;-</span> <span class="st">"Cannot compare due to insufficient data"</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(result)</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Try to run statistical tests within a tryCatch block to prevent errors</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tryCatch</span>({</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check for normality</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    shapiro_p1 <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(pop1_data)<span class="sc">$</span>p.value</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    shapiro_p2 <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(pop2_data)<span class="sc">$</span>p.value</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    normal_dist <span class="ot">&lt;-</span> shapiro_p1 <span class="sc">&gt;</span> <span class="fl">0.05</span> <span class="sc">&amp;</span> shapiro_p2 <span class="sc">&gt;</span> <span class="fl">0.05</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>    result<span class="sc">$</span>Normality <span class="ot">&lt;-</span> <span class="cf">if</span>(normal_dist) <span class="st">"Normal"</span> <span class="cf">else</span> <span class="st">"Non-normal"</span></span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check for equal variances using Levene's test</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>    levene_result <span class="ot">&lt;-</span> car<span class="sc">::</span><span class="fu">leveneTest</span>(data_filtered[[var_name]] <span class="sc">~</span> data_filtered<span class="sc">$</span>Population)</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>    equal_var <span class="ot">&lt;-</span> levene_result<span class="sc">$</span><span class="st">`</span><span class="at">Pr(&gt;F)</span><span class="st">`</span>[<span class="dv">1</span>] <span class="sc">&gt;</span> <span class="fl">0.05</span></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>    result<span class="sc">$</span>EqualVariances <span class="ot">&lt;-</span> <span class="cf">if</span>(equal_var) <span class="st">"Equal"</span> <span class="cf">else</span> <span class="st">"Unequal"</span></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Choose appropriate test</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(normal_dist) {</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span>(equal_var) {</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Use t-test with equal variances</span></span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>        test_result <span class="ot">&lt;-</span> <span class="fu">t.test</span>(pop1_data, pop2_data, <span class="at">var.equal =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>        result<span class="sc">$</span>Test <span class="ot">&lt;-</span> <span class="st">"Two-sample t-test (equal variances)"</span></span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Use Welch's t-test (unequal variances)</span></span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>        test_result <span class="ot">&lt;-</span> <span class="fu">t.test</span>(pop1_data, pop2_data, <span class="at">var.equal =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>        result<span class="sc">$</span>Test <span class="ot">&lt;-</span> <span class="st">"Welch's t-test (unequal variances)"</span></span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Use Wilcoxon rank-sum test (non-parametric) with exact=FALSE to handle ties</span></span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>      test_result <span class="ot">&lt;-</span> <span class="fu">wilcox.test</span>(pop1_data, pop2_data, <span class="at">exact =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>      result<span class="sc">$</span>Test <span class="ot">&lt;-</span> <span class="st">"Wilcoxon rank-sum test (non-parametric)"</span></span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Record p-value</span></span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a>    result<span class="sc">$</span>p_value <span class="ot">&lt;-</span> <span class="fu">round</span>(test_result<span class="sc">$</span>p.value, <span class="dv">4</span>)</span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Determine if result is significant</span></span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a>    is_significant <span class="ot">&lt;-</span> test_result<span class="sc">$</span>p.value <span class="sc">&lt;</span> <span class="fl">0.05</span></span>
+<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a>    result<span class="sc">$</span>Significant <span class="ot">&lt;-</span> <span class="cf">if</span>(is_significant) <span class="st">"Yes"</span> <span class="cf">else</span> <span class="st">"No"</span></span>
+<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create interpretation text</span></span>
+<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(is_significant) {</span>
+<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span>(<span class="fu">mean</span>(pop1_data, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">&gt;</span> <span class="fu">mean</span>(pop2_data, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a>        result<span class="sc">$</span>Interpretation <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"Pt_Conception has significantly higher "</span>, var_label, <span class="st">" than CojoHQ"</span>)</span>
+<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a>        result<span class="sc">$</span>Interpretation <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"CojoHQ has significantly higher "</span>, var_label, <span class="st">" than Pt_Conception"</span>)</span>
+<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a>      result<span class="sc">$</span>Interpretation <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"No significant difference in "</span>, var_label, <span class="st">" between populations"</span>)</span>
+<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a>  }, </span>
+<span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a>  <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a>    <span class="co"># In case of error, return basic statistics but note the error</span></span>
+<span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a>    result<span class="sc">$</span>Test <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">"Error in analysis:"</span>, e<span class="sc">$</span>message)</span>
+<span id="cb5-85"><a href="#cb5-85" aria-hidden="true" tabindex="-1"></a>    result<span class="sc">$</span>Interpretation <span class="ot">&lt;-</span> <span class="st">"Statistical comparison could not be completed"</span></span>
+<span id="cb5-86"><a href="#cb5-86" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-88"><a href="#cb5-88" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb5-89"><a href="#cb5-89" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="perform-comparisons-for-all-variables" class="level3">
+<h3 class="anchored" data-anchor-id="perform-comparisons-for-all-variables">Perform Comparisons for All Variables</h3>
+<p>Now let’s apply our comparison function to all variables of interest:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># List of variables to compare and their labels</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>variables <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">name =</span> <span class="st">"Leaves"</span>, <span class="at">label =</span> <span class="st">"Number of Leaves"</span>),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">name =</span> <span class="st">"Flowers"</span>, <span class="at">label =</span> <span class="st">"Number of Flowers"</span>),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">name =</span> <span class="st">"Buds"</span>, <span class="at">label =</span> <span class="st">"Number of Buds"</span>),</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">name =</span> <span class="st">"Fruit"</span>, <span class="at">label =</span> <span class="st">"Number of Fruits"</span>),</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">name =</span> <span class="st">"leaf_length"</span>, <span class="at">label =</span> <span class="st">"Leaf Length"</span>),</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">name =</span> <span class="st">"flower_length"</span>, <span class="at">label =</span> <span class="st">"Flower Length"</span>),</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">name =</span> <span class="st">"fruit_length"</span>, <span class="at">label =</span> <span class="st">"Fruit Length"</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform comparisons for all variables</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Use tryCatch to diagnose any issues</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(variables)) {</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  v <span class="ot">&lt;-</span> variables[[i]]</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Processing variable:"</span>, v<span class="sc">$</span>name, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>({</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">compare_variable</span>(plant_data, v<span class="sc">$</span>name, v<span class="sc">$</span>label)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  }, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"Error for variable"</span>, v<span class="sc">$</span>name, <span class="st">":"</span>, e<span class="sc">$</span>message, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Return a placeholder data frame with the same structure</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>(</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">Variable =</span> v<span class="sc">$</span>label,</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">Mean_Pt_Conception =</span> <span class="cn">NA</span>,</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">SD_Pt_Conception =</span> <span class="cn">NA</span>,</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">Mean_CojoHQ =</span> <span class="cn">NA</span>,</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>      <span class="at">SD_CojoHQ =</span> <span class="cn">NA</span>,</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>      <span class="at">SampleSize_Pt_Conception =</span> <span class="cn">NA</span>,</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">SampleSize_CojoHQ =</span> <span class="cn">NA</span>,</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>      <span class="at">Test =</span> <span class="fu">paste</span>(<span class="st">"Error:"</span>, e<span class="sc">$</span>message),</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>      <span class="at">Normality =</span> <span class="cn">NA</span>,</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>      <span class="at">EqualVariances =</span> <span class="cn">NA</span>,</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">p_value =</span> <span class="cn">NA</span>,</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>      <span class="at">Significant =</span> <span class="cn">NA</span>,</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>      <span class="at">Interpretation =</span> <span class="st">"Error in analysis"</span></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>  results[[i]] <span class="ot">&lt;-</span> result</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Processing variable: Leaves 
+Processing variable: Flowers 
+Processing variable: Buds 
+Processing variable: Fruit 
+Processing variable: leaf_length 
+Processing variable: flower_length 
+Processing variable: fruit_length </code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine all results into a single data frame</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, results)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Display results in a nice table</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>results <span class="sc">%&gt;%</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Variable, Mean_Pt_Conception, SD_Pt_Conception, Mean_CojoHQ, SD_CojoHQ, </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>         Test, p_value, Significant, Interpretation) <span class="sc">%&gt;%</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Variable</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Mean_Pt_Conception</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SD_Pt_Conception</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Mean_CojoHQ</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SD_CojoHQ</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Test</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p_value</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Significant</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Number of Leaves</td>
+<td style="text-align: right;">16.33</td>
+<td style="text-align: right;">11.95</td>
+<td style="text-align: right;">24.27</td>
+<td style="text-align: right;">15.19</td>
+<td style="text-align: left;">Wilcoxon rank-sum test (non-parametric)</td>
+<td style="text-align: right;">0.1908</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">No significant difference in Number of Leaves between populations</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Number of Flowers</td>
+<td style="text-align: right;">0.73</td>
+<td style="text-align: right;">0.80</td>
+<td style="text-align: right;">0.47</td>
+<td style="text-align: right;">0.52</td>
+<td style="text-align: left;">Wilcoxon rank-sum test (non-parametric)</td>
+<td style="text-align: right;">0.4202</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">No significant difference in Number of Flowers between populations</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Number of Buds</td>
+<td style="text-align: right;">0.67</td>
+<td style="text-align: right;">0.82</td>
+<td style="text-align: right;">2.27</td>
+<td style="text-align: right;">2.05</td>
+<td style="text-align: left;">Wilcoxon rank-sum test (non-parametric)</td>
+<td style="text-align: right;">0.0138</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">CojoHQ has significantly higher Number of Buds than Pt_Conception</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Number of Fruits</td>
+<td style="text-align: right;">0.20</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">0.27</td>
+<td style="text-align: right;">0.59</td>
+<td style="text-align: left;">Wilcoxon rank-sum test (non-parametric)</td>
+<td style="text-align: right;">0.9525</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">No significant difference in Number of Fruits between populations</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Leaf Length</td>
+<td style="text-align: right;">96.66</td>
+<td style="text-align: right;">49.72</td>
+<td style="text-align: right;">99.67</td>
+<td style="text-align: right;">52.06</td>
+<td style="text-align: left;">Two-sample t-test (equal variances)</td>
+<td style="text-align: right;">0.8724</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">No significant difference in Leaf Length between populations</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Flower Length</td>
+<td style="text-align: right;">30.39</td>
+<td style="text-align: right;">6.95</td>
+<td style="text-align: right;">38.24</td>
+<td style="text-align: right;">10.78</td>
+<td style="text-align: left;">Wilcoxon rank-sum test (non-parametric)</td>
+<td style="text-align: right;">0.0771</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">No significant difference in Flower Length between populations</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fruit Length</td>
+<td style="text-align: right;">37.30</td>
+<td style="text-align: right;">1.13</td>
+<td style="text-align: right;">47.90</td>
+<td style="text-align: right;">20.79</td>
+<td style="text-align: left;">Insufficient data</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Cannot compare due to insufficient data</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</section>
+</section>
+<section id="detailed-analysis-by-trait" class="level2">
+<h2 class="anchored" data-anchor-id="detailed-analysis-by-trait">Detailed Analysis by Trait</h2>
+<p>Let’s look at each trait in more detail:</p>
+<section id="number-of-leaves" class="level3">
+<h3 class="anchored" data-anchor-id="number-of-leaves">Number of Leaves</h3>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract data for this variable</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>leaves_data <span class="ot">&lt;-</span> plant_data <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Population, Leaves)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize with histogram by population</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(leaves_data, <span class="fu">aes</span>(<span class="at">x =</span> Leaves, <span class="at">fill =</span> Population)) <span class="sc">+</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">position =</span> <span class="st">"dodge"</span>, <span class="at">bins =</span> <span class="dv">10</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Leaf Count by Population"</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Number of Leaves"</span>,</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Frequency"</span>) <span class="sc">+</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="plant_trait_analysis_files/figure-html/leaves-analysis-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform statistical test</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>leaves_result <span class="ot">&lt;-</span> <span class="fu">compare_variable</span>(plant_data, <span class="st">"Leaves"</span>, <span class="st">"Number of Leaves"</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Display detailed result</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>leaves_result <span class="sc">%&gt;%</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-striped table-hover caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Variable</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Mean_Pt_Conception</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SD_Pt_Conception</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Mean_CojoHQ</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SD_CojoHQ</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SampleSize_Pt_Conception</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SampleSize_CojoHQ</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Test</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Normality</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">EqualVariances</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p_value</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Significant</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Number of Leaves</td>
+<td style="text-align: right;">16.33</td>
+<td style="text-align: right;">11.95</td>
+<td style="text-align: right;">24.27</td>
+<td style="text-align: right;">15.19</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: left;">Wilcoxon rank-sum test (non-parametric)</td>
+<td style="text-align: left;">Non-normal</td>
+<td style="text-align: left;">Equal</td>
+<td style="text-align: right;">0.1908</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">No significant difference in Number of Leaves between populations</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</section>
+<section id="number-of-buds" class="level3">
+<h3 class="anchored" data-anchor-id="number-of-buds">Number of Buds</h3>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract data for this variable</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>buds_data <span class="ot">&lt;-</span> plant_data <span class="sc">%&gt;%</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Population, Buds)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize with histogram by population</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(buds_data, <span class="fu">aes</span>(<span class="at">x =</span> Buds, <span class="at">fill =</span> Population)) <span class="sc">+</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">position =</span> <span class="st">"dodge"</span>, <span class="at">bins =</span> <span class="dv">8</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Bud Count by Population"</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Number of Buds"</span>,</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Frequency"</span>) <span class="sc">+</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="plant_trait_analysis_files/figure-html/buds-analysis-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform statistical test</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>buds_result <span class="ot">&lt;-</span> <span class="fu">compare_variable</span>(plant_data, <span class="st">"Buds"</span>, <span class="st">"Number of Buds"</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Display detailed result</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>buds_result <span class="sc">%&gt;%</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-striped table-hover caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Variable</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Mean_Pt_Conception</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SD_Pt_Conception</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Mean_CojoHQ</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SD_CojoHQ</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SampleSize_Pt_Conception</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SampleSize_CojoHQ</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Test</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Normality</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">EqualVariances</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p_value</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Significant</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Number of Buds</td>
+<td style="text-align: right;">0.67</td>
+<td style="text-align: right;">0.82</td>
+<td style="text-align: right;">2.27</td>
+<td style="text-align: right;">2.05</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: left;">Wilcoxon rank-sum test (non-parametric)</td>
+<td style="text-align: left;">Non-normal</td>
+<td style="text-align: left;">Equal</td>
+<td style="text-align: right;">0.0138</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">CojoHQ has significantly higher Number of Buds than Pt_Conception</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</section>
+<section id="leaf-length" class="level3">
+<h3 class="anchored" data-anchor-id="leaf-length">Leaf Length</h3>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract data for this variable</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>leaf_length_data <span class="ot">&lt;-</span> plant_data <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Population, leaf_length)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Q-Q plots to check normality</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(leaf_length_data, <span class="fu">aes</span>(<span class="at">sample =</span> leaf_length)) <span class="sc">+</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_qq</span>() <span class="sc">+</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_qq_line</span>() <span class="sc">+</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> Population) <span class="sc">+</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Q-Q Plots for Leaf Length by Population"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="plant_trait_analysis_files/figure-html/leaf-length-analysis-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize with boxplot and jittered points</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(leaf_length_data, <span class="fu">aes</span>(<span class="at">x =</span> Population, <span class="at">y =</span> leaf_length, <span class="at">fill =</span> Population)) <span class="sc">+</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Comparison of Leaf Length between Populations"</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Leaf Length (mm)"</span>,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Population"</span>) <span class="sc">+</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="plant_trait_analysis_files/figure-html/leaf-length-analysis-2.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform statistical test</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>leaf_length_result <span class="ot">&lt;-</span> <span class="fu">compare_variable</span>(plant_data, <span class="st">"leaf_length"</span>, <span class="st">"Leaf Length"</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Display detailed result</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>leaf_length_result <span class="sc">%&gt;%</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-striped table-hover caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Variable</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Mean_Pt_Conception</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SD_Pt_Conception</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Mean_CojoHQ</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SD_CojoHQ</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SampleSize_Pt_Conception</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SampleSize_CojoHQ</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Test</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Normality</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">EqualVariances</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p_value</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Significant</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Leaf Length</td>
+<td style="text-align: right;">96.66</td>
+<td style="text-align: right;">49.72</td>
+<td style="text-align: right;">99.67</td>
+<td style="text-align: right;">52.06</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: left;">Two-sample t-test (equal variances)</td>
+<td style="text-align: left;">Normal</td>
+<td style="text-align: left;">Equal</td>
+<td style="text-align: right;">0.8724</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">No significant difference in Leaf Length between populations</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</section>
+<section id="flower-length" class="level3">
+<h3 class="anchored" data-anchor-id="flower-length">Flower Length</h3>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract data for this variable and remove NA values</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>flower_length_data <span class="ot">&lt;-</span> plant_data <span class="sc">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Population, flower_length) <span class="sc">%&gt;%</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(flower_length))</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize with boxplot and jittered points</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(flower_length_data, <span class="fu">aes</span>(<span class="at">x =</span> Population, <span class="at">y =</span> flower_length, <span class="at">fill =</span> Population)) <span class="sc">+</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Comparison of Flower Length between Populations"</span>,</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Flower Length (mm)"</span>,</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Population"</span>) <span class="sc">+</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="plant_trait_analysis_files/figure-html/flower-length-analysis-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform statistical test</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>flower_length_result <span class="ot">&lt;-</span> <span class="fu">compare_variable</span>(plant_data, <span class="st">"flower_length"</span>, <span class="st">"Flower Length"</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Display detailed result</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>flower_length_result <span class="sc">%&gt;%</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-striped table-hover caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Variable</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Mean_Pt_Conception</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SD_Pt_Conception</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Mean_CojoHQ</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SD_CojoHQ</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SampleSize_Pt_Conception</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SampleSize_CojoHQ</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Test</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Normality</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">EqualVariances</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p_value</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Significant</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Flower Length</td>
+<td style="text-align: right;">30.39</td>
+<td style="text-align: right;">6.95</td>
+<td style="text-align: right;">38.24</td>
+<td style="text-align: right;">10.78</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">Wilcoxon rank-sum test (non-parametric)</td>
+<td style="text-align: left;">Non-normal</td>
+<td style="text-align: left;">Equal</td>
+<td style="text-align: right;">0.0771</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">No significant difference in Flower Length between populations</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</section>
+</section>
+<section id="discussion-and-interpretation" class="level2">
+<h2 class="anchored" data-anchor-id="discussion-and-interpretation">Discussion and Interpretation</h2>
+<p>Let’s summarize our findings and interpretations for each trait:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a cleaner summary table</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>summary_table <span class="ot">&lt;-</span> results <span class="sc">%&gt;%</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Variable, Mean_Pt_Conception, SD_Pt_Conception, Mean_CojoHQ, SD_CojoHQ, </span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>         p_value, Significant, Interpretation)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the summary table</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>summary_table <span class="sc">%&gt;%</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Summary of Population Comparisons"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-striped table-hover caption-top table-sm small" data-quarto-postprocess="true">
+<caption>Summary of Population Comparisons</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Variable</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Mean_Pt_Conception</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SD_Pt_Conception</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Mean_CojoHQ</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">SD_CojoHQ</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p_value</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Significant</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Number of Leaves</td>
+<td style="text-align: right;">16.33</td>
+<td style="text-align: right;">11.95</td>
+<td style="text-align: right;">24.27</td>
+<td style="text-align: right;">15.19</td>
+<td style="text-align: right;">0.1908</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">No significant difference in Number of Leaves between populations</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Number of Flowers</td>
+<td style="text-align: right;">0.73</td>
+<td style="text-align: right;">0.80</td>
+<td style="text-align: right;">0.47</td>
+<td style="text-align: right;">0.52</td>
+<td style="text-align: right;">0.4202</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">No significant difference in Number of Flowers between populations</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Number of Buds</td>
+<td style="text-align: right;">0.67</td>
+<td style="text-align: right;">0.82</td>
+<td style="text-align: right;">2.27</td>
+<td style="text-align: right;">2.05</td>
+<td style="text-align: right;">0.0138</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">CojoHQ has significantly higher Number of Buds than Pt_Conception</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Number of Fruits</td>
+<td style="text-align: right;">0.20</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">0.27</td>
+<td style="text-align: right;">0.59</td>
+<td style="text-align: right;">0.9525</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">No significant difference in Number of Fruits between populations</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Leaf Length</td>
+<td style="text-align: right;">96.66</td>
+<td style="text-align: right;">49.72</td>
+<td style="text-align: right;">99.67</td>
+<td style="text-align: right;">52.06</td>
+<td style="text-align: right;">0.8724</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">No significant difference in Leaf Length between populations</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Flower Length</td>
+<td style="text-align: right;">30.39</td>
+<td style="text-align: right;">6.95</td>
+<td style="text-align: right;">38.24</td>
+<td style="text-align: right;">10.78</td>
+<td style="text-align: right;">0.0771</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">No significant difference in Flower Length between populations</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fruit Length</td>
+<td style="text-align: right;">37.30</td>
+<td style="text-align: right;">1.13</td>
+<td style="text-align: right;">47.90</td>
+<td style="text-align: right;">20.79</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Cannot compare due to insufficient data</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</section>
+<section id="statistical-methods-justification" class="level2">
+<h2 class="anchored" data-anchor-id="statistical-methods-justification">Statistical Methods Justification</h2>
+<p>In this analysis, I chose a systematic approach to comparing populations for each trait:</p>
+<ol type="1">
+<li><strong>Test Selection Rationale</strong>:
+<ul>
+<li>For each trait, I first tested for normality using the Shapiro-Wilk test</li>
+<li>Then tested for equal variances using Levene’s test</li>
+<li>Based on these results, I selected the appropriate statistical test:
+<ul>
+<li>Normal data with equal variances → Standard two-sample t-test</li>
+<li>Normal data with unequal variances → Welch’s t-test</li>
+<li>Non-normal data → Wilcoxon rank-sum test (non-parametric)</li>
+<li>By using the Wilcoxon test with <code>exact=FALSE</code>, we properly handle ties in the data</li>
+</ul></li>
+</ul></li>
+<li><strong>Handling Missing Data</strong>:
+<ul>
+<li>For traits with substantial missing data (flower_length, fruit_length), we filtered out NA values before analysis</li>
+<li>We reported sample sizes for each test to ensure transparency about available data</li>
+</ul></li>
+</ol>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>This analysis provides a comprehensive comparison of two plant populations (Pt_Conception and CojoHQ) across various morphological traits. The systematic approach to statistical testing allows for appropriate comparisons while accounting for the specific characteristics of each trait’s distribution.</p>
+<p>The most notable differences between the populations appear to be in flower number and flower length. These findings suggest potential ecological, genetic, or environmental factors influencing population differences that may warrant further investigation.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
