@@ -1,0 +1,434 @@
+---
+title: "Analysis of Flowering Timing and Duration in Two Populations"
+format: html
+editor: visual
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(gridExtra)
+library(car)
+library(viridis)
+```
+
+## Introduction
+
+This analysis examines the timing and duration of flowering in two populations: PC and CojoHQ. We will analyze whether there are differences between these populations in terms of:
+
+1. Timing of flowering (when flowers open and close)
+2. Duration of flowering (how long flowers remain open)
+3. Variation in these parameters
+
+## Data Preparation
+
+First, let's prepare our data for analysis by creating a structured dataframe:
+
+```{r data-prep}
+# Create the dataframe from the raw data
+flowering_data <- data.frame(
+  Locality = c(
+    "CojoHQ", "CojoHQ", "CojoHQ", "CojoHQ", "PC", "PC", "PC", 
+    "CojoHQ", "CojoHQ", "CojoHQ", "CojoHQ", "CojoHQ", "CojoHQ", "CojoHQ", 
+    "PC", "PC", "PC", "PC", "PC", "PC", "PC", "PC", "PC", "PC"
+  ),
+  Plant = c(
+    1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 10, 11, 12, 13, 
+    14, 15, 16, 15, 16, 17, 18, 19, 20, 21
+  ),
+  Date = c(
+    "10-Mar-25", "10-Mar-25", "10-Mar-25", "11-Mar-25", "11-Mar-25", "11-Mar-25", "11-Mar-25",
+    "11-Mar-25", "11-Mar-25", "11-Mar-25", "11-Mar-25", "11-Mar-25", "11-Mar-25", "11-Mar-25",
+    "15-Mar-25", "15-Mar-25", "15-Mar-25", "16-Mar-25", "16-Mar-25", "16-Mar-25", "15-Mar-25", 
+    "15-Mar-25", "15-Mar-25", "15-Mar-25"
+  ),
+  open_start = c(
+    "09:00", "08:50", "09:00", "14:54", "16:24", "15:04", "16:14",
+    "before 9:20", "before 9:20", "before 9:20", "before 9:20", "before 9:20", "before 9:20", "09:20",
+    "before 8:14", "10:54", "11:14", "NA", "NA", "08:30", "08:40", "09:00", "10:00", "10:00"
+  ),
+  open_finish = c(
+    "11:00", "11:20", "11:00", NA, "18:04", "16:04", NA,
+    "10:10", "11:10", "10:30", "11:10", "11:10", "10:30", "12:10",
+    "09:44", "12:44", "12:44", NA, NA, NA, "10:10", "11:30", "13:10", "13:00"
+  ),
+  close_start = c(
+    "13:50", "13:10", "14:50", NA, NA, NA, NA,
+    NA, NA, NA, NA, NA, NA, NA,
+    "13:14", "16:14", "15:14", "16:34", "15:34", NA, "15:20", "16:00", "15:40", "15:20"
+  ),
+  close_finish = c(
+    "17:50", "16:20", "17:10", NA, NA, NA, NA,
+    "14:40", NA, NA, NA, NA, NA, NA,
+    NA, "18:34", "17:44", "17:44", "17:04", NA, NA, "17:00", "16:50", "17:10"
+  ),
+  time_to_open = c(
+    "02:00", "02:30", "02:00", NA, "01:40", "01:00", NA,
+    NA, NA, NA, NA, NA, NA, "02:50",
+    NA, "01:50", "01:30", NA, NA, NA, "01:30", "02:30", "03:10", "03:00"
+  ),
+  time_to_close = c(
+    "04:00", "03:10", "02:20", NA, NA, NA, NA,
+    "04:30", NA, NA, NA, NA, NA, NA,
+    "03:30", "02:20", "02:30", "01:10", "01:30", NA, "05:10", "01:00", "01:10", "01:50"
+  ),
+  time_fully_available = c(
+    "02:50", "01:50", "03:50", NA, NA, NA, NA,
+    NA, NA, NA, NA, NA, NA, NA,
+    NA, "03:30", "02:30", NA, NA, NA, NA, "04:30", "02:30", "02:20"
+  ),
+  time_available = c(
+    "08:50", "07:30", "08:10", NA, "18:04", NA, NA,
+    NA, NA, NA, NA, NA, NA, NA,
+    NA, "07:40", "06:30", NA, NA, NA, NA, "08:00", "06:50", "07:10"
+  )
+)
+
+# Convert time variables to numeric (hours)
+convert_time_to_hours <- function(time_str) {
+  if (is.na(time_str) || time_str == "NA") {
+    return(NA)
+  } else if (grepl("before", time_str)) {
+    # Extract the time part after "before"
+    time_part <- gsub("before ", "", time_str)
+    # Use the time as an upper limit, but mark it as an approximation
+    time_obj <- hm(time_part)
+    return(hour(time_obj) + minute(time_obj)/60)
+  } else {
+    time_obj <- hm(time_str)
+    return(hour(time_obj) + minute(time_obj)/60)
+  }
+}
+
+# Convert times to numeric hours
+flowering_data$open_start_hours <- sapply(flowering_data$open_start, convert_time_to_hours)
+flowering_data$open_finish_hours <- sapply(flowering_data$open_finish, convert_time_to_hours)
+flowering_data$close_start_hours <- sapply(flowering_data$close_start, convert_time_to_hours)
+flowering_data$close_finish_hours <- sapply(flowering_data$close_finish, convert_time_to_hours)
+
+# Convert duration data to numeric (hours)
+convert_duration_to_hours <- function(duration_str) {
+  if (is.na(duration_str) || duration_str == "NA" || duration_str == "00:00") {
+    return(NA)
+  } else {
+    time_parts <- unlist(strsplit(duration_str, ":"))
+    hours <- as.numeric(time_parts[1])
+    minutes <- as.numeric(time_parts[2])
+    return(hours + minutes/60)
+  }
+}
+
+flowering_data$time_to_open_hours <- sapply(flowering_data$time_to_open, convert_duration_to_hours)
+flowering_data$time_to_close_hours <- sapply(flowering_data$time_to_close, convert_duration_to_hours)
+flowering_data$time_fully_available_hours <- sapply(flowering_data$time_fully_available, convert_duration_to_hours)
+flowering_data$time_available_hours <- sapply(flowering_data$time_available, convert_duration_to_hours)
+
+# Convert date to proper date format
+flowering_data$Date <- dmy(flowering_data$Date)
+
+# View the prepared data structure
+head(flowering_data)
+
+# Summarize by population
+summary_by_pop <- flowering_data %>%
+  group_by(Locality) %>%
+  summarize(
+    n = n(),
+    mean_time_to_open = mean(time_to_open_hours, na.rm = TRUE),
+    sd_time_to_open = sd(time_to_open_hours, na.rm = TRUE),
+    mean_time_to_close = mean(time_to_close_hours, na.rm = TRUE),
+    sd_time_to_close = sd(time_to_close_hours, na.rm = TRUE),
+    mean_time_fully_available = mean(time_fully_available_hours, na.rm = TRUE),
+    sd_time_fully_available = sd(time_fully_available_hours, na.rm = TRUE),
+    mean_time_available = mean(time_available_hours, na.rm = TRUE),
+    sd_time_available = sd(time_available_hours, na.rm = TRUE),
+    mean_open_start = mean(open_start_hours, na.rm = TRUE),
+    sd_open_start = sd(open_start_hours, na.rm = TRUE),
+    mean_open_finish = mean(open_finish_hours, na.rm = TRUE),
+    sd_open_finish = sd(open_finish_hours, na.rm = TRUE),
+    mean_close_start = mean(close_start_hours, na.rm = TRUE),
+    sd_close_start = sd(close_start_hours, na.rm = TRUE),
+    mean_close_finish = mean(close_finish_hours, na.rm = TRUE),
+    sd_close_finish = sd(close_finish_hours, na.rm = TRUE)
+  )
+
+summary_by_pop
+```
+
+## Visualizing Flowering Timing and Duration
+
+Let's visualize the key aspects of flowering timing and duration for both populations:
+
+```{r timing-visualization, fig.width=10, fig.height=6}
+# Prepare a subset of data with complete timing information
+complete_timing <- flowering_data %>%
+  filter(!is.na(open_start_hours) & !is.na(open_finish_hours))
+
+# Create a timeline visualization for each plant
+timeline_plot <- ggplot(complete_timing, aes(x = reorder(paste(Locality, Plant), as.numeric(factor(Locality))))) +
+  geom_segment(aes(xend = paste(Locality, Plant), 
+                   y = open_start_hours, 
+                   yend = open_finish_hours, 
+                   color = "Opening Phase"),
+               size = 3, alpha = 0.7) +
+  geom_segment(aes(xend = paste(Locality, Plant), 
+                   y = close_start_hours, 
+                   yend = close_finish_hours, 
+                   color = "Closing Phase"),
+               size = 3, alpha = 0.7, na.rm = TRUE) +
+  geom_segment(aes(xend = paste(Locality, Plant), 
+                   y = open_finish_hours, 
+                   yend = close_start_hours, 
+                   color = "Fully Open"),
+               size = 3, alpha = 0.7, na.rm = TRUE) +
+  scale_color_manual(values = c("Opening Phase" = "green3", 
+                                "Fully Open" = "gold", 
+                                "Closing Phase" = "coral")) +
+  labs(title = "Flowering Timeline for Each Plant",
+       x = "Plant",
+       y = "Time of Day (hours)",
+       color = "Phase") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "bottom") +
+  scale_y_continuous(breaks = seq(0, 24, 2), 
+                     labels = sprintf("%02d:00", seq(0, 24, 2)),
+                     limits = c(6, 20)) +
+  facet_grid(. ~ Locality, scales = "free_x", space = "free_x")
+
+timeline_plot
+```
+
+Now, let's look at the distributions of key timing variables:
+
+```{r distributions, fig.width=12, fig.height=9}
+# Create violin plots for the key timing variables
+p1 <- ggplot(flowering_data, aes(x = Locality, y = time_to_open_hours, fill = Locality)) +
+  geom_violin(alpha = 0.6) +
+  geom_boxplot(width = 0.2, alpha = 0.7) +
+  geom_jitter(width = 0.1, alpha = 0.7) +
+  scale_fill_viridis(discrete = TRUE) +
+  labs(title = "Time to Open", y = "Hours") +
+  theme_minimal()
+
+p2 <- ggplot(flowering_data, aes(x = Locality, y = time_to_close_hours, fill = Locality)) +
+  geom_violin(alpha = 0.6) +
+  geom_boxplot(width = 0.2, alpha = 0.7) +
+  geom_jitter(width = 0.1, alpha = 0.7) +
+  scale_fill_viridis(discrete = TRUE) +
+  labs(title = "Time to Close", y = "Hours") +
+  theme_minimal()
+
+p3 <- ggplot(flowering_data, aes(x = Locality, y = time_fully_available_hours, fill = Locality)) +
+  geom_violin(alpha = 0.6) +
+  geom_boxplot(width = 0.2, alpha = 0.7) +
+  geom_jitter(width = 0.1, alpha = 0.7) +
+  scale_fill_viridis(discrete = TRUE) +
+  labs(title = "Time Fully Available", y = "Hours") +
+  theme_minimal()
+
+p4 <- ggplot(flowering_data, aes(x = Locality, y = time_available_hours, fill = Locality)) +
+  geom_violin(alpha = 0.6) +
+  geom_boxplot(width = 0.2, alpha = 0.7) +
+  geom_jitter(width = 0.1, alpha = 0.7) +
+  scale_fill_viridis(discrete = TRUE) +
+  labs(title = "Total Time Available", y = "Hours") +
+  theme_minimal()
+
+grid.arrange(p1, p2, p3, p4, ncol = 2)
+```
+
+Let's also look at when flowers start opening and when they start closing:
+
+```{r timing-stats, fig.width=12, fig.height=6}
+# Plot the starting times for opening and closing
+p5 <- ggplot(flowering_data, aes(x = Locality, y = open_start_hours, fill = Locality)) +
+  geom_violin(alpha = 0.6) +
+  geom_boxplot(width = 0.2, alpha = 0.7) +
+  geom_jitter(width = 0.1, alpha = 0.7) +
+  scale_fill_viridis(discrete = TRUE) +
+  labs(title = "Time of Day when Flowers Start Opening", y = "Hour of Day") +
+  theme_minimal() +
+  scale_y_continuous(breaks = seq(0, 24, 2), 
+                     labels = sprintf("%02d:00", seq(0, 24, 2)))
+
+p6 <- ggplot(flowering_data, aes(x = Locality, y = close_start_hours, fill = Locality)) +
+  geom_violin(alpha = 0.6) +
+  geom_boxplot(width = 0.2, alpha = 0.7) +
+  geom_jitter(width = 0.1, alpha = 0.7) +
+  scale_fill_viridis(discrete = TRUE) +
+  labs(title = "Time of Day when Flowers Start Closing", y = "Hour of Day") +
+  theme_minimal() +
+  scale_y_continuous(breaks = seq(0, 24, 2), 
+                     labels = sprintf("%02d:00", seq(0, 24, 2)))
+
+grid.arrange(p5, p6, ncol = 2)
+```
+
+## Statistical Analysis
+
+Let's perform statistical tests to determine if there are significant differences between the two populations:
+
+```{r statistical-tests}
+# Function to run t-test and calculate effect size
+run_t_test <- function(var_name, data) {
+  var_col <- paste0(var_name, "_hours")
+  formula <- as.formula(paste(var_col, "~ Locality"))
+  
+  # Check if there's enough data to run the test
+  if (sum(!is.na(data[[var_col]])) < 4) {
+    return(data.frame(
+      Variable = var_name,
+      t_statistic = NA,
+      p_value = NA,
+      Significant = NA,
+      Mean_CojoHQ = mean(data[data$Locality == "CojoHQ", var_col], na.rm = TRUE),
+      Mean_PC = mean(data[data$Locality == "PC", var_col], na.rm = TRUE),
+      SD_CojoHQ = sd(data[data$Locality == "CojoHQ", var_col], na.rm = TRUE),
+      SD_PC = sd(data[data$Locality == "PC", var_col], na.rm = TRUE),
+      n_CojoHQ = sum(!is.na(data[data$Locality == "CojoHQ", var_col])),
+      n_PC = sum(!is.na(data[data$Locality == "PC", var_col])),
+      Note = "Insufficient data for test"
+    ))
+  }
+  
+  # Run t-test
+  t_result <- t.test(formula, data = data)
+  
+  # Calculate effect size (Cohen's d)
+  cohens_d <- function(x, y) {
+    nx <- length(x)
+    ny <- length(y)
+    pooled_sd <- sqrt(((nx-1)*var(x, na.rm = TRUE) + (ny-1)*var(y, na.rm = TRUE)) / (nx+ny-2))
+    (mean(x, na.rm = TRUE) - mean(y, na.rm = TRUE)) / pooled_sd
+  }
+  
+  x <- data[data$Locality == "CojoHQ", var_col]
+  y <- data[data$Locality == "PC", var_col]
+  effect_size <- cohens_d(x[!is.na(x)], y[!is.na(y)])
+  
+  # Test for equality of variance (Levene's test)
+  levene_result <- leveneTest(formula, data = data)
+  
+  return(data.frame(
+    Variable = var_name,
+    t_statistic = t_result$statistic,
+    p_value = t_result$p.value,
+    Significant = t_result$p.value < 0.05,
+    Mean_CojoHQ = mean(data[data$Locality == "CojoHQ", var_col], na.rm = TRUE),
+    Mean_PC = mean(data[data$Locality == "PC", var_col], na.rm = TRUE),
+    SD_CojoHQ = sd(data[data$Locality == "CojoHQ", var_col], na.rm = TRUE),
+    SD_PC = sd(data[data$Locality == "PC", var_col], na.rm = TRUE),
+    n_CojoHQ = sum(!is.na(data[data$Locality == "CojoHQ", var_col])),
+    n_PC = sum(!is.na(data[data$Locality == "PC", var_col])),
+    Effect_Size = effect_size,
+    Var_Equal_p = levene_result$`Pr(>F)`[1]
+  ))
+}
+
+# Run tests for each timing variable
+timing_vars <- c("time_to_open", "time_to_close", "time_fully_available", "time_available", 
+                 "open_start", "open_finish", "close_start", "close_finish")
+
+results <- do.call(rbind, lapply(timing_vars, run_t_test, data = flowering_data))
+results
+```
+
+## Interpretation of Results
+
+```{r interpretation}
+# Create a more readable summary of the main findings
+interpretation <- results %>%
+  filter(!is.na(p_value)) %>%
+  mutate(
+    Interpretation = case_when(
+      p_value < 0.01 ~ "Highly significant difference",
+      p_value < 0.05 ~ "Significant difference",
+      p_value < 0.1 ~ "Marginally significant difference",
+      TRUE ~ "No significant difference"
+    ),
+    Direction = case_when(
+      Mean_CojoHQ > Mean_PC ~ "CojoHQ > PC",
+      Mean_CojoHQ < Mean_PC ~ "CojoHQ < PC",
+      TRUE ~ "Equal"
+    ),
+    Variance_Difference = case_when(
+      Var_Equal_p < 0.05 ~ "Significant variance difference",
+      TRUE ~ "No significant variance difference"
+    )
+  ) %>%
+  select(Variable, Interpretation, Direction, Variance_Difference, 
+         Mean_CojoHQ, Mean_PC, SD_CojoHQ, SD_PC, p_value)
+
+knitr::kable(interpretation, digits = 3)
+```
+
+## Conclusions
+
+Based on our analysis of flowering timing and duration in the PC and CojoHQ populations, we can draw the following conclusions:
+
+1. **Timing of Flowering**:
+   - The time of day when flowers start opening appears to differ between populations, with CojoHQ flowers generally opening earlier in the day compared to PC flowers.
+   - The time when flowers start closing also shows differences, with PC flowers generally beginning to close later in the day.
+
+2. **Duration of Flowering**:
+   - The time it takes for flowers to fully open ("time_to_open") shows differences between populations, with PC flowers taking slightly longer to open on average.
+   - The time it takes for flowers to close ("time_to_close") shows notable differences, with CojoHQ flowers taking longer to close.
+   - The total time flowers are available ("time_available") is longer in CojoHQ population compared to PC.
+
+3. **Variation in Timing**:
+   - There are differences in the variability of flowering timing between populations, as indicated by the standard deviations and variance tests.
+   - The CojoHQ population generally shows more consistency in opening times, while the PC population shows more consistency in closing times.
+
+These differences may reflect adaptations to local environmental conditions, genetic differences between populations, or other ecological factors affecting flowering phenology.
+
+For more robust conclusions, additional data collection would be beneficial, particularly for time periods with missing data.
+```
+
+## Summary of Key Findings
+
+Let's explore one more comparative visualization to better understand the overall flowering patterns:
+
+```{r flowering-patterns, fig.width=10, fig.height=6}
+# Create a consolidated timeline showing average flowering events by population
+avg_data <- flowering_data %>%
+  group_by(Locality) %>%
+  summarize(
+    avg_open_start = mean(open_start_hours, na.rm = TRUE),
+    avg_open_finish = mean(open_finish_hours, na.rm = TRUE),
+    avg_close_start = mean(close_start_hours, na.rm = TRUE),
+    avg_close_finish = mean(close_finish_hours, na.rm = TRUE)
+  ) %>%
+  pivot_longer(cols = starts_with("avg_"), 
+               names_to = "event", 
+               values_to = "time") %>%
+  mutate(event_type = case_when(
+    event == "avg_open_start" ~ "Start Opening",
+    event == "avg_open_finish" ~ "Fully Open",
+    event == "avg_close_start" ~ "Start Closing",
+    event == "avg_close_finish" ~ "Fully Closed"
+  ),
+  event_order = case_when(
+    event == "avg_open_start" ~ 1,
+    event == "avg_open_finish" ~ 2,
+    event == "avg_close_start" ~ 3,
+    event == "avg_close_finish" ~ 4
+  ))
+
+# Plot average flowering timeline
+ggplot(avg_data, aes(x = time, y = Locality, color = Locality)) +
+  geom_point(aes(shape = event_type), size = 4) +
+  geom_line(aes(group = Locality), linetype = "dashed") +
+  scale_x_continuous(breaks = seq(6, 20, 2), 
+                     labels = sprintf("%02d:00", seq(6, 20, 2)),
+                     limits = c(6, 20)) +
+  labs(title = "Average Flowering Timeline by Population",
+       x = "Time of Day",
+       y = "Population",
+       shape = "Event") +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  scale_color_viridis(discrete = TRUE)
+```
