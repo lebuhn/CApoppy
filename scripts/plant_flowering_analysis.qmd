@@ -1,6 +1,6 @@
 ---
 title: "Analysis of Flowering Timing and Duration in Two Populations"
-format: html
+format: pdf
 editor: visual
 ---
 
@@ -24,7 +24,7 @@ This analysis examines the timing and duration of flowering in two populations: 
 
 ## Data Preparation
 
-First, let's prepare our data for analysis by creating a structured dataframe:
+Create a structured dataframe:
 
 ```{r data-prep}
 # Create the dataframe from the raw data
@@ -367,7 +367,6 @@ knitr::kable(interpretation, digits = 3)
 
 ## Conclusions
 
-Based on our analysis of flowering timing and duration in the PC and CojoHQ populations, we can draw the following conclusions:
 
 1. **Timing of Flowering**:
    - The time of day when flowers start opening appears to differ between populations, with CojoHQ flowers generally opening earlier in the day compared to PC flowers.
@@ -382,9 +381,7 @@ Based on our analysis of flowering timing and duration in the PC and CojoHQ popu
    - There are differences in the variability of flowering timing between populations, as indicated by the standard deviations and variance tests.
    - The CojoHQ population generally shows more consistency in opening times, while the PC population shows more consistency in closing times.
 
-These differences may reflect adaptations to local environmental conditions, genetic differences between populations, or other ecological factors affecting flowering phenology.
 
-For more robust conclusions, additional data collection would be beneficial, particularly for time periods with missing data.
 ```
 
 ## Summary of Key Findings
