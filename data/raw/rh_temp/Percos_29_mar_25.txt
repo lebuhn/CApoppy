@@ -1,0 +1,4 @@
+Logger 4 Percos,Time,Celsius(°C),Humidity(%rh),Dew Point(°C),Serial Number
+1,2025-03-22 12:35:07,22.5,43.5,9.5,000011734
+
+NOTE: Logger did not collect data 

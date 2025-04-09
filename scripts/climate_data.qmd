@@ -1,0 +1,28 @@
+---
+title: "Climate_data_clean"
+format: html
+editor: visual
+---
+
+This file imports and aggregates data from 4 sites: Percos, Pt. Conception, Perry Field and Cojo HQ. The data are collecrted on an Apogee PAR sensor and a relative humidity and temperature sensor deployed at each site. These data were gathered at the start of the flowering season. The Percos rh/temp sensor did not gather data correctly but when tested in the lab, did fine.
+
+Next step: need to figure out how to import header correctly.
+
+```{r setup}
+
+# Load necessary packages
+
+library(ggplot2)
+library(dplyr)
+
+# Load the data
+getwd()
+data <- read.csv("~/GitHub/CApoppy/data/raw/rh_temp/CojoHQ_29_mar_25.csv", header = FALSE)
+
+#data <- data[-1, ] # removes 1st line of data which has the units for the variables
+#data$Top_gsw <- as.numeric(data$Top_gsw) #converts this variable to numeric, header row caused it to be character
+#data$Bottom_gsw <- as.numeric(data$Bottom_gsw) #converts this variable to numeric header row caused it to be character
+
+# Peek at the data
+head(data)
+```

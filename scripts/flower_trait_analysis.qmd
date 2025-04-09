@@ -1,0 +1,86 @@
+---
+title: "Exploratory Analysis of Flower Traits"
+format: html
+editor: visual
+---
+
+```{r setup}
+# Load necessary packages
+library(readxl)
+library(ggplot2)
+library(dplyr)
+
+# Load the data
+getwd()
+data <- read_excel("../data/raw/Flower_traits.xlsx")
+data_2 <- read_excel("../data/raw/porometer/Petal_2025_low 4/2025-03-28/Petal_2025_low_glb and ks_2025_03_28_17_16_23_1.xlsx") #perry and Pt. Conception porometer data from 28Mar2025
+
+data <- data[-1, ] # removes 1st line of data which has the units for the variables
+data$Top_gsw <- as.numeric(data$Top_gsw) #converts this variable to numeric, header row caused it to be character
+data$Bottom_gsw <- as.numeric(data$Bottom_gsw) #converts this variable to numeric header row caused it to be character
+
+# Peek at the data
+head(data)
+
+
+```
+
+## Summary Statistics
+
+```{r}
+# Select relevant variables
+traits <- data %>%
+  select(Bottom_gsw, Top_gsw, wet_wgt, length)
+
+# Summary
+summary(traits)
+```
+
+## Pairwise Plots
+
+```{r}
+## Scatterplots with Linear Regression Lines
+
+# Wet Weight vs Top_gsw
+ggplot(data, aes(x = wet_wgt, y = Top_gsw)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE, color = "blue") +
+  labs(title = "Wet Weight vs Top_gsw (Linear Regression)",
+       x = "Wet Weight", y = "Top gsw")
+
+# Wet Weight vs Bottom_gsw
+ggplot(data, aes(x = wet_wgt, y = Bottom_gsw)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE, color = "blue") +
+  labs(title = "Wet Weight vs Bottom_gsw (Linear Regression)",
+       x = "Wet Weight", y = "Bottom gsw")
+
+# Length vs Wet Weight
+ggplot(data, aes(x = length, y = wet_wgt)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE, color = "blue") +
+  labs(title = "Length vs Wet Weight (Linear Regression)",
+       x = "Length", y = "Wet Weight")
+
+# Length vs Top_gsw
+ggplot(data, aes(x = length, y = Top_gsw)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE, color = "blue") +
+  labs(title = "Length vs Top_gsw (Linear Regression)",
+       x = "Length", y = "Top gsw")
+
+# Top_gsw vs Bottom_gsw
+ggplot(data, aes(x = Top_gsw, y = Bottom_gsw)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE, color = "blue") +
+  labs(title = "Top_gsw vs Bottom_gsw (Linear Regression)",
+       x = "Top_gsw", y = "Bottom_gsw")
+
+```
+
+## Correlation Matrix
+
+```{r}
+cor_matrix <- cor(traits, use = "complete.obs")
+cor_matrix
+```
