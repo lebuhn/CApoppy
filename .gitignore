@@ -53,4 +53,6 @@ rsconnect/
 
 Petal_scans/
 
+#raw data files
 
+data/raw
