@@ -17,6 +17,9 @@ This merges the Cojo and CojoHQ population data and adds 16 to the plant ids in 
 
 ```{r}
 # Load the data
+#| echo: false
+#| #| warning: false
+
 data <- read.csv("~/GitHub/CApoppy/data/processed/porometer_4pops.csv", skip = 1, header = TRUE)
 
 # Clean the data: remove NA values and ensure factor types
@@ -59,15 +62,25 @@ data_clean %>%
 
 # Overall histogram (all populations combined)
 hist_overall <- ggplot(data_clean, aes(x = gsw)) +
-  geom_histogram( color = "black", fill = "pink") +
+  geom_histogram( color = "black", fill = "red", bins=50) +
+  geom_vline(aes(xintercept = mean(gsw, na.rm = TRUE)),
+             color = "blue", linetype = "dashed", linewidth = 0.8) +
   labs(title = "Histogram of gsw (All Populations)", x = "gsw", y = "Count") +
   theme_minimal()
 
-# Histograms per population
+# Calculate means per TopBottom x Population group
+means_df <- data_clean %>%
+  group_by(TopBottom, Population) %>%
+  summarize(mean_gsw = mean(gsw, na.rm = TRUE))
+
+# Faceted histogram with means
 hist_by_population <- ggplot(data_clean, aes(x = gsw)) +
-  geom_histogram(color = "black", fill = "skyblue") +
-  labs(title = "Histogram of gsw by Population", x = "gsw", y = "Count") +
-  facet_wrap(~ Population) +
+  geom_histogram(color = "black", fill = "skyblue", bins = 20) +
+  geom_vline(data = means_df, aes(xintercept = mean_gsw),
+             color = "darkred", linetype = "solid", size = 0.8) +
+  labs(title = "Histogram of gsw by Population and Leaf Surface",
+       x = "gsw", y = "Count") +
+  facet_grid(TopBottom ~ Population) +
   theme_minimal()
 
 # Show the overall histogram
@@ -86,6 +99,7 @@ ggplot(data_clean, aes(x = Population, y = gsw, fill = TopBottom)) +
     title = "gsw by Population and Leaf Surface",
     x = "Population", y = "gsw", fill = "Leaf Surface"
   ) +
+  scale_fill_manual(values = c("Top" = "springgreen", "Bottom" = "darkorange" )) +
   theme_minimal()
 ```
 
