@@ -30,9 +30,9 @@ data_clean <- data %>%
       TRUE ~ as.character(Population)
     ),
     Plant = case_when(
-      Date == as.Date("2025-04-19") ~ Plant + 16,
-      TRUE ~ Plant
-    ),
+  Date %in% as.Date(c("2025-04-19", "2025-04-20")) ~ Plant + 16,
+  TRUE ~ Plant
+),
     Population = factor(Population),
     TopBottom = factor(`Top.or.Bottom`)
   )
