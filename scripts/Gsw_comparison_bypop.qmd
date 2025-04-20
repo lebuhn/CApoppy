@@ -62,7 +62,7 @@ data_clean %>%
 
 # Overall histogram (all populations combined)
 hist_overall <- ggplot(data_clean, aes(x = gsw)) +
-  geom_histogram( color = "black", fill = "red", bins=50) +
+  geom_histogram( color = "black", fill = "darkorange", bins=50) +
   geom_vline(aes(xintercept = mean(gsw, na.rm = TRUE)),
              color = "blue", linetype = "dashed", linewidth = 0.8) +
   labs(title = "Histogram of gsw (All Populations)", x = "gsw", y = "Count") +
@@ -75,9 +75,9 @@ means_df <- data_clean %>%
 
 # Faceted histogram with means
 hist_by_population <- ggplot(data_clean, aes(x = gsw)) +
-  geom_histogram(color = "black", fill = "skyblue", bins = 20) +
+  geom_histogram(color = "black", fill = "darkorange", bins = 30) +
   geom_vline(data = means_df, aes(xintercept = mean_gsw),
-             color = "darkred", linetype = "solid", size = 0.8) +
+             color = "blue", linetype = "solid", size = 0.6) +
   labs(title = "Histogram of gsw by Population and Leaf Surface",
        x = "gsw", y = "Count") +
   facet_grid(TopBottom ~ Population) +
