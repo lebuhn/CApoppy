@@ -12,6 +12,12 @@ library(ggplot2)
 library(gridExtra)
 library(car)
 library(viridis)
+library (wesanderson)
+
+# Load required packages for mixed-effects models
+library(lme4)
+library(lmerTest)  # Provides p-values for lmer models
+library(emmeans)   # For post-hoc comparisons
 ```
 
 ## Introduction
@@ -28,105 +34,30 @@ Create a structured dataframe:
 
 ```{r data-prep}
 # Create the dataframe from the raw data
-flowering_data <- data.frame(
-  Locality = c(
-    "CojoHQ", "CojoHQ", "CojoHQ", "CojoHQ", "PC", "PC", "PC", 
-    "CojoHQ", "CojoHQ", "CojoHQ", "CojoHQ", "CojoHQ", "CojoHQ", "CojoHQ", 
-    "PC", "PC", "PC", "PC", "PC", "PC", "PC", "PC", "PC", "PC"
-  ),
-  Plant = c(
-    1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 10, 11, 12, 13, 
-    14, 15, 16, 15, 16, 17, 18, 19, 20, 21
-  ),
-  Date = c(
-    "10-Mar-25", "10-Mar-25", "10-Mar-25", "11-Mar-25", "11-Mar-25", "11-Mar-25", "11-Mar-25",
-    "11-Mar-25", "11-Mar-25", "11-Mar-25", "11-Mar-25", "11-Mar-25", "11-Mar-25", "11-Mar-25",
-    "15-Mar-25", "15-Mar-25", "15-Mar-25", "16-Mar-25", "16-Mar-25", "16-Mar-25", "15-Mar-25", 
-    "15-Mar-25", "15-Mar-25", "15-Mar-25"
-  ),
-  open_start = c(
-    "09:00", "08:50", "09:00", "14:54", "16:24", "15:04", "16:14",
-    "before 9:20", "before 9:20", "before 9:20", "before 9:20", "before 9:20", "before 9:20", "09:20",
-    "before 8:14", "10:54", "11:14", "NA", "NA", "08:30", "08:40", "09:00", "10:00", "10:00"
-  ),
-  open_finish = c(
-    "11:00", "11:20", "11:00", NA, "18:04", "16:04", NA,
-    "10:10", "11:10", "10:30", "11:10", "11:10", "10:30", "12:10",
-    "09:44", "12:44", "12:44", NA, NA, NA, "10:10", "11:30", "13:10", "13:00"
-  ),
-  close_start = c(
-    "13:50", "13:10", "14:50", NA, NA, NA, NA,
-    NA, NA, NA, NA, NA, NA, NA,
-    "13:14", "16:14", "15:14", "16:34", "15:34", NA, "15:20", "16:00", "15:40", "15:20"
-  ),
-  close_finish = c(
-    "17:50", "16:20", "17:10", NA, NA, NA, NA,
-    "14:40", NA, NA, NA, NA, NA, NA,
-    NA, "18:34", "17:44", "17:44", "17:04", NA, NA, "17:00", "16:50", "17:10"
-  ),
-  time_to_open = c(
-    "02:00", "02:30", "02:00", NA, "01:40", "01:00", NA,
-    NA, NA, NA, NA, NA, NA, "02:50",
-    NA, "01:50", "01:30", NA, NA, NA, "01:30", "02:30", "03:10", "03:00"
-  ),
-  time_to_close = c(
-    "04:00", "03:10", "02:20", NA, NA, NA, NA,
-    "04:30", NA, NA, NA, NA, NA, NA,
-    "03:30", "02:20", "02:30", "01:10", "01:30", NA, "05:10", "01:00", "01:10", "01:50"
-  ),
-  time_fully_available = c(
-    "02:50", "01:50", "03:50", NA, NA, NA, NA,
-    NA, NA, NA, NA, NA, NA, NA,
-    NA, "03:30", "02:30", NA, NA, NA, NA, "04:30", "02:30", "02:20"
-  ),
-  time_available = c(
-    "08:50", "07:30", "08:10", NA, "18:04", NA, NA,
-    NA, NA, NA, NA, NA, NA, NA,
-    NA, "07:40", "06:30", NA, NA, NA, NA, "08:00", "06:50", "07:10"
+
+flowering_data <-read.csv("../data/raw/plant/opening_camera_2025.csv", header = TRUE, na = c("", "NA"))
+
+# Drop columns named "image" and "note"
+flowering_data <- flowering_data %>%
+  select(-image, -note, -image.1, -image.2, -image.3, -note.1, -note.2, -note.3 ) %>%
+  filter(!is.na(Locality)) 
+
+# Convert Date column to Date format
+flowering_data <- flowering_data %>%
+    mutate(Date = as.Date(Date, format = "%d-%b-%y"))
+
+# Convert time columns to times using lubridate::hms
+flowering_data <- flowering_data %>%
+  mutate(across(c(`open_start`, `open_finish`, `close_start`, `close_finish`), hm)) %>%
+  
+  # and create new variables
+  mutate(
+    time_to_open = as.duration(`open_finish` - `open_start`),
+    time_to_close = as.duration(`close_finish` - `close_start`),
+    time_fully_available = as.duration(`close_start` - `open_finish`),
+      time_available = as.duration(`close_finish` - `open_start`)
   )
-)
 
-# Convert time variables to numeric (hours)
-convert_time_to_hours <- function(time_str) {
-  if (is.na(time_str) || time_str == "NA") {
-    return(NA)
-  } else if (grepl("before", time_str)) {
-    # Extract the time part after "before"
-    time_part <- gsub("before ", "", time_str)
-    # Use the time as an upper limit, but mark it as an approximation
-    time_obj <- hm(time_part)
-    return(hour(time_obj) + minute(time_obj)/60)
-  } else {
-    time_obj <- hm(time_str)
-    return(hour(time_obj) + minute(time_obj)/60)
-  }
-}
-
-# Convert times to numeric hours
-flowering_data$open_start_hours <- sapply(flowering_data$open_start, convert_time_to_hours)
-flowering_data$open_finish_hours <- sapply(flowering_data$open_finish, convert_time_to_hours)
-flowering_data$close_start_hours <- sapply(flowering_data$close_start, convert_time_to_hours)
-flowering_data$close_finish_hours <- sapply(flowering_data$close_finish, convert_time_to_hours)
-
-# Convert duration data to numeric (hours)
-convert_duration_to_hours <- function(duration_str) {
-  if (is.na(duration_str) || duration_str == "NA" || duration_str == "00:00") {
-    return(NA)
-  } else {
-    time_parts <- unlist(strsplit(duration_str, ":"))
-    hours <- as.numeric(time_parts[1])
-    minutes <- as.numeric(time_parts[2])
-    return(hours + minutes/60)
-  }
-}
-
-flowering_data$time_to_open_hours <- sapply(flowering_data$time_to_open, convert_duration_to_hours)
-flowering_data$time_to_close_hours <- sapply(flowering_data$time_to_close, convert_duration_to_hours)
-flowering_data$time_fully_available_hours <- sapply(flowering_data$time_fully_available, convert_duration_to_hours)
-flowering_data$time_available_hours <- sapply(flowering_data$time_available, convert_duration_to_hours)
-
-# Convert date to proper date format
-flowering_data$Date <- dmy(flowering_data$Date)
 
 # View the prepared data structure
 head(flowering_data)
@@ -136,22 +67,22 @@ summary_by_pop <- flowering_data %>%
   group_by(Locality) %>%
   summarize(
     n = n(),
-    mean_time_to_open = mean(time_to_open_hours, na.rm = TRUE),
-    sd_time_to_open = sd(time_to_open_hours, na.rm = TRUE),
-    mean_time_to_close = mean(time_to_close_hours, na.rm = TRUE),
-    sd_time_to_close = sd(time_to_close_hours, na.rm = TRUE),
-    mean_time_fully_available = mean(time_fully_available_hours, na.rm = TRUE),
-    sd_time_fully_available = sd(time_fully_available_hours, na.rm = TRUE),
-    mean_time_available = mean(time_available_hours, na.rm = TRUE),
-    sd_time_available = sd(time_available_hours, na.rm = TRUE),
-    mean_open_start = mean(open_start_hours, na.rm = TRUE),
-    sd_open_start = sd(open_start_hours, na.rm = TRUE),
-    mean_open_finish = mean(open_finish_hours, na.rm = TRUE),
-    sd_open_finish = sd(open_finish_hours, na.rm = TRUE),
-    mean_close_start = mean(close_start_hours, na.rm = TRUE),
-    sd_close_start = sd(close_start_hours, na.rm = TRUE),
-    mean_close_finish = mean(close_finish_hours, na.rm = TRUE),
-    sd_close_finish = sd(close_finish_hours, na.rm = TRUE)
+    mean_time_to_open = mean(time_to_open, na.rm = TRUE),
+    sd_time_to_open = sd(time_to_open, na.rm = TRUE),
+    mean_time_to_close = mean(time_to_close, na.rm = TRUE),
+    sd_time_to_close = sd(time_to_close, na.rm = TRUE),
+    mean_time_fully_available = mean(time_fully_available, na.rm = TRUE),
+    sd_time_fully_available = sd(time_fully_available, na.rm = TRUE),
+    mean_time_available = mean(time_available, na.rm = TRUE),
+    sd_time_available = sd(time_available, na.rm = TRUE),
+    mean_open_start = mean(open_start, na.rm = TRUE),
+    sd_open_start = sd(open_start, na.rm = TRUE),
+    mean_open_finish = mean(open_finish, na.rm = TRUE),
+    sd_open_finish = sd(open_finish, na.rm = TRUE),
+    mean_close_start = mean(close_start, na.rm = TRUE),
+    sd_close_start = sd(close_start, na.rm = TRUE),
+    mean_close_finish = mean(close_finish, na.rm = TRUE),
+    sd_close_finish = sd(close_finish, na.rm = TRUE)
   )
 
 summary_by_pop
@@ -162,40 +93,62 @@ summary_by_pop
 Let's visualize the key aspects of flowering timing and duration for both populations:
 
 ```{r timing-visualization, fig.width=10, fig.height=6}
-# Prepare a subset of data with complete timing information
+# Prepare a subset of data with complete timing information and order by date
 complete_timing <- flowering_data %>%
-  filter(!is.na(open_start_hours) & !is.na(open_finish_hours))
+  filter(!is.na(open_start) & !is.na(open_finish)) %>%
+  # Convert time objects to numeric hours for plotting
+  mutate(
+    open_start_hours = hour(open_start) + minute(open_start)/60,
+    open_finish_hours = hour(open_finish) + minute(open_finish)/60,
+    close_start_hours = hour(close_start) + minute(close_start)/60,
+    close_finish_hours = hour(close_finish) + minute(close_finish)/60
+  ) %>%
+  # Order by Date within each Locality
+  arrange(Locality, Date)
 
-# Create a timeline visualization for each plant
-timeline_plot <- ggplot(complete_timing, aes(x = reorder(paste(Locality, Plant), as.numeric(factor(Locality))))) +
-  geom_segment(aes(xend = paste(Locality, Plant), 
+# Create a new variable for plant ordering that combines Locality, Date, and Plant
+complete_timing <- complete_timing %>%
+  group_by(Locality) %>%
+  mutate(
+    # Create a display label with date
+    display_label = paste0(Plant, " (", format(Date, "%m/%d"), ")"),
+    # Create an ordering value within each locality based on Date and Plant
+    order_value = as.numeric(factor(Date)) * 100 + as.numeric(factor(Plant))
+  ) %>%
+  ungroup()
+
+# Create a timeline visualization for each plant, ordered by date within population
+timeline_plot <- ggplot(complete_timing, 
+                        aes(x = reorder(paste(Locality, display_label), order_value))) +
+  geom_segment(aes(xend = paste(Locality, display_label), 
                    y = open_start_hours, 
                    yend = open_finish_hours, 
                    color = "Opening Phase"),
                size = 3, alpha = 0.7) +
-  geom_segment(aes(xend = paste(Locality, Plant), 
+  geom_segment(aes(xend = paste(Locality, display_label), 
                    y = close_start_hours, 
                    yend = close_finish_hours, 
                    color = "Closing Phase"),
                size = 3, alpha = 0.7, na.rm = TRUE) +
-  geom_segment(aes(xend = paste(Locality, Plant), 
+  geom_segment(aes(xend = paste(Locality, display_label), 
                    y = open_finish_hours, 
                    yend = close_start_hours, 
                    color = "Fully Open"),
                size = 3, alpha = 0.7, na.rm = TRUE) +
   scale_color_manual(values = c("Opening Phase" = "green3", 
-                                "Fully Open" = "gold", 
-                                "Closing Phase" = "coral")) +
-  labs(title = "Flowering Timeline for Each Plant",
+                              "Fully Open" = "gold", 
+                              "Closing Phase" = "coral")) +
+  labs(title = "Flowering Timeline for Each Plant/Flower (Ordered by Date)",
        x = "Plant",
        y = "Time of Day (hours)",
        color = "Phase") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         legend.position = "bottom") +
-  scale_y_continuous(breaks = seq(0, 24, 2), 
-                     labels = sprintf("%02d:00", seq(0, 24, 2)),
-                     limits = c(6, 20)) +
+  scale_y_continuous(breaks = seq(6, 20, 2), 
+                     labels = sprintf("%02d:00", seq(6, 20, 2)),
+                     limits = c(20, 6),   # Reversed limits
+                     trans = "reverse") + # Reverse transformation
   facet_grid(. ~ Locality, scales = "free_x", space = "free_x")
 
 timeline_plot
@@ -204,185 +157,459 @@ timeline_plot
 Now, let's look at the distributions of key timing variables:
 
 ```{r distributions, fig.width=12, fig.height=9}
-# Create violin plots for the key timing variables
-p1 <- ggplot(flowering_data, aes(x = Locality, y = time_to_open_hours, fill = Locality)) +
-  geom_violin(alpha = 0.6) +
-  geom_boxplot(width = 0.2, alpha = 0.7) +
-  geom_jitter(width = 0.1, alpha = 0.7) +
-  scale_fill_viridis(discrete = TRUE) +
-  labs(title = "Time to Open", y = "Hours") +
-  theme_minimal()
+# First, ensure we have the hour-converted data
+flowering_data_with_hours <- flowering_data %>%
+  mutate(
+    # Convert durations to hours
+    time_to_open_hours = as.numeric(time_to_open) / 3600,
+    time_to_close_hours = as.numeric(time_to_close) / 3600,
+    time_fully_available_hours = as.numeric(time_fully_available) / 3600,
+    time_available_hours = as.numeric(time_available) / 3600,
+    # Add time conversions for the time of day variables
+    open_start_hours = hour(open_start) + minute(open_start)/60,
+    open_finish_hours = hour(open_finish) + minute(open_finish)/60,
+    close_start_hours = hour(close_start) + minute(close_start)/60,
+    close_finish_hours = hour(close_finish) + minute(close_finish)/60
+  )
 
-p2 <- ggplot(flowering_data, aes(x = Locality, y = time_to_close_hours, fill = Locality)) +
-  geom_violin(alpha = 0.6) +
-  geom_boxplot(width = 0.2, alpha = 0.7) +
-  geom_jitter(width = 0.1, alpha = 0.7) +
-  scale_fill_viridis(discrete = TRUE) +
-  labs(title = "Time to Close", y = "Hours") +
-  theme_minimal()
 
-p3 <- ggplot(flowering_data, aes(x = Locality, y = time_fully_available_hours, fill = Locality)) +
-  geom_violin(alpha = 0.6) +
-  geom_boxplot(width = 0.2, alpha = 0.7) +
-  geom_jitter(width = 0.1, alpha = 0.7) +
-  scale_fill_viridis(discrete = TRUE) +
-  labs(title = "Time Fully Available", y = "Hours") +
-  theme_minimal()
 
-p4 <- ggplot(flowering_data, aes(x = Locality, y = time_available_hours, fill = Locality)) +
-  geom_violin(alpha = 0.6) +
-  geom_boxplot(width = 0.2, alpha = 0.7) +
-  geom_jitter(width = 0.1, alpha = 0.7) +
-  scale_fill_viridis(discrete = TRUE) +
-  labs(title = "Total Time Available", y = "Hours") +
-  theme_minimal()
 
-grid.arrange(p1, p2, p3, p4, ncol = 2)
+# Function to create consistent violin plots
+create_violin_plot <- function(data, x_var, title, x_label, limit_min = NULL, limit_max = NULL, time_axis = FALSE) {
+  p <- ggplot(data, aes(y = Locality, x = .data[[x_var]], fill = Locality)) +
+    geom_violin(alpha = 0.7, scale = "width", trim = TRUE) +
+    geom_boxplot(width = 0.2, alpha = 0.6, outlier.shape = 16, outlier.size = 1.5) +
+   scale_fill_manual(values = wes_palette("GrandBudapest1", n = 4)) +
+    labs(title = title, x = x_label, y = "Population") +
+    theme_minimal(base_size = 12) +
+    theme(
+      legend.position = "none",
+      plot.title = element_text(hjust = 0.5, face = "bold"),
+      axis.title = element_text(face = "bold"),
+      panel.grid.major = element_line(color = "gray90"),
+      panel.grid.minor = element_line(color = "gray95"),
+      panel.border = element_rect(color = "gray80", fill = NA, size = 0.5)
+    )
+  
+  # Add time formatting for time of day variables if needed
+  if (time_axis) {
+    p <- p + scale_x_continuous(
+      breaks = seq(6, 20, 2),
+      labels = sprintf("%02d:00", seq(6, 20, 2)),
+      limits = c(limit_min, limit_max)
+    )
+  } else if (!is.null(limit_min) & !is.null(limit_max)) {
+    p <- p + scale_x_continuous(limits = c(limit_min, limit_max))
+  }
+  
+  return(p)
+}
+
+# Create the four plots for the duration variables
+p1 <- create_violin_plot(
+  flowering_data_with_hours, 
+  "time_to_open_hours", 
+  "Time Required to Open", 
+  "Duration (hours)",
+  0, 
+  max(flowering_data_with_hours$time_to_open_hours, na.rm = TRUE) * 1.1
+)
+
+p2 <- create_violin_plot(
+  flowering_data_with_hours, 
+  "time_to_close_hours", 
+  "Time Required to Close", 
+  "Duration (hours)",
+  0, 
+  max(flowering_data_with_hours$time_to_close_hours, na.rm = TRUE) * 1.1
+)
+
+p3 <- create_violin_plot(
+  flowering_data_with_hours, 
+  "time_fully_available_hours", 
+  "Time Fully Available", 
+  "Duration (hours)",
+  0, 
+  max(flowering_data_with_hours$time_fully_available_hours, na.rm = TRUE) * 1.1
+)
+
+p4 <- create_violin_plot(
+  flowering_data_with_hours, 
+  "time_available_hours", 
+  "Total Time Available", 
+  "Duration (hours)",
+  0, 
+  max(flowering_data_with_hours$time_available_hours, na.rm = TRUE) * 1.1
+)
+
+# Create plots for the time of day variables
+p5 <- create_violin_plot(
+  flowering_data_with_hours, 
+  "open_start_hours", 
+  "Time When Flowers Start Opening", 
+  "Time of Day",
+  6, 20, 
+  time_axis = TRUE
+)
+
+p6 <- create_violin_plot(
+  flowering_data_with_hours, 
+  "open_finish_hours", 
+  "Time When Flowers Fully Open", 
+  "Time of Day",
+  6, 20, 
+  time_axis = TRUE
+)
+
+p7 <- create_violin_plot(
+  flowering_data_with_hours, 
+  "close_start_hours", 
+  "Time When Flowers Start Closing", 
+  "Time of Day",
+  6, 20, 
+  time_axis = TRUE
+)
+
+p8 <- create_violin_plot(
+  flowering_data_with_hours, 
+  "close_finish_hours", 
+  "Time When Flowers Fully Closed", 
+  "Time of Day",
+  6, 20, 
+  time_axis = TRUE
+)
+
+# Arrange the plots
+# First the duration plots
+grid.arrange(p1, p2, p3, p4, ncol = 2, top = "Flowering Duration Characteristics")
+
+# Then the time of day plots
+grid.arrange(p5, p6, p7, p8, ncol = 2, top = "Flowering Time of Day Characteristics")
 ```
 
 Let's also look at when flowers start opening and when they start closing:
 
 ```{r timing-stats, fig.width=12, fig.height=6}
-# Plot the starting times for opening and closing
-p5 <- ggplot(flowering_data, aes(x = Locality, y = open_start_hours, fill = Locality)) +
+# First, create new columns with hour values for plotting
+flowering_data_with_hours <- flowering_data %>%
+  mutate(
+    open_start_hours = hour(open_start) + minute(open_start)/60,
+    close_start_hours = hour(close_start) + minute(close_start)/60
+  )
+
+# Plot the starting times for opening and closing using the hour values
+p5 <- ggplot(flowering_data_with_hours, aes(x = Locality, y = open_start_hours, fill = Locality)) +
   geom_violin(alpha = 0.6) +
   geom_boxplot(width = 0.2, alpha = 0.7) +
   geom_jitter(width = 0.1, alpha = 0.7) +
-  scale_fill_viridis(discrete = TRUE) +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n = 4)) +
   labs(title = "Time of Day when Flowers Start Opening", y = "Hour of Day") +
   theme_minimal() +
   scale_y_continuous(breaks = seq(0, 24, 2), 
-                     labels = sprintf("%02d:00", seq(0, 24, 2)))
+                     labels = sprintf("%02d:00", seq(0, 24, 2)),
+                     limits = c(6, 18)) +  # Adjust limits as needed for your data
+  theme(legend.position = "bottom")
 
-p6 <- ggplot(flowering_data, aes(x = Locality, y = close_start_hours, fill = Locality)) +
+p6 <- ggplot(flowering_data_with_hours, aes(x = Locality, y = close_start_hours, fill = Locality)) +
   geom_violin(alpha = 0.6) +
   geom_boxplot(width = 0.2, alpha = 0.7) +
   geom_jitter(width = 0.1, alpha = 0.7) +
-  scale_fill_viridis(discrete = TRUE) +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n = 4)) +
   labs(title = "Time of Day when Flowers Start Closing", y = "Hour of Day") +
   theme_minimal() +
   scale_y_continuous(breaks = seq(0, 24, 2), 
-                     labels = sprintf("%02d:00", seq(0, 24, 2)))
+                     labels = sprintf("%02d:00", seq(0, 24, 2)),
+                     limits = c(6, 18)) +  # Adjust limits as needed for your data
+  theme(legend.position = "bottom")
 
+# Combine the plots
 grid.arrange(p5, p6, ncol = 2)
 ```
 
 ## Statistical Analysis
 
-Let's perform statistical tests to determine if there are significant differences between the two populations:
+
+Statistical tests to determine if there are significant differences among the populations.
+
+Here's what the analysis does:
+
+Uses Mixed-Effects Models: These models (also called hierarchical models) properly account for the nested structure where flowers are sampled within plants, which are nested within populations.
+
+Handles Random Effects: Plants are treated as random effects nested within localities, recognizing that measurements from the same plant are not independent.
+
+Provides ICC Values: The Intraclass Correlation Coefficient shows how much of the variation is explained by differences between plants versus within the same plant.
+
+Includes Post-hoc Tests: For significant effects of locality, the code performs pairwise comparisons with Tukey's adjustment for multiple comparisons.
+
+The code includes error handling to manage potential issues with model convergence or insufficient data.
+
+This model is 
+
+model_formula <- as.formula(paste0(var_col, " ~ Locality + (1|Locality:Plant)"))
+
+This formula says:
+
+The dependent variable is whatever timing variable we're analyzing
+The fixed effect is Locality (population)
+The random effect is Plant nested within Locality
+The (1|Locality:Plant) term allows each plant to have its own random intercept
 
 ```{r statistical-tests}
-# Function to run t-test and calculate effect size
-run_t_test <- function(var_name, data) {
-  var_col <- paste0(var_name, "_hours")
-  formula <- as.formula(paste(var_col, "~ Locality"))
+# Load required packages for mixed-effects models
+library(lme4)
+library(lmerTest)  # Provides p-values for lmer models
+library(emmeans)   # For post-hoc comparisons
+
+# Function to run mixed-effects model analysis
+run_mixed_model <- function(var_name, data) {
+  var_col <- paste0(var_name, "")
+  
+  # Get all unique locality names
+  localities <- unique(data$Locality)
   
   # Check if there's enough data to run the test
-  if (sum(!is.na(data[[var_col]])) < 4) {
-    return(data.frame(
+  if (sum(!is.na(data[[var_col]])) < length(localities) * 2) {
+    # Create a result data frame with basic statistics but no test results
+    result_df <- data.frame(Variable = var_name)
+    
+    # Add mean, SD, and n for each locality
+    for (loc in localities) {
+      loc_data <- data[data$Locality == loc, var_col]
+      result_df[[paste0("Mean_", loc)]] <- mean(loc_data, na.rm = TRUE)
+      result_df[[paste0("SD_", loc)]] <- sd(loc_data, na.rm = TRUE)
+      result_df[[paste0("n_", loc)]] <- sum(!is.na(loc_data))
+    }
+    
+    result_df$Note <- "Insufficient data for test"
+    return(result_df)
+  }
+  
+  # Create the formula for mixed-effects model
+  # Plant is treated as a random effect (nested within Locality)
+  model_formula <- as.formula(paste0(var_col, " ~ Locality + (1|Locality:Plant)"))
+  
+  # Run the mixed-effects model
+  tryCatch({
+    model <- lmer(model_formula, data = data)
+    model_summary <- summary(model)
+    
+    # Get ANOVA table for fixed effects (Locality)
+    anova_table <- anova(model)
+    
+    # Extract F-value and p-value for Locality effect
+    f_value <- anova_table["Locality", "F value"]
+    p_value <- anova_table["Locality", "Pr(>F)"]
+    
+    # Create a basic result data frame
+    result_df <- data.frame(
       Variable = var_name,
-      t_statistic = NA,
-      p_value = NA,
-      Significant = NA,
-      Mean_CojoHQ = mean(data[data$Locality == "CojoHQ", var_col], na.rm = TRUE),
-      Mean_PC = mean(data[data$Locality == "PC", var_col], na.rm = TRUE),
-      SD_CojoHQ = sd(data[data$Locality == "CojoHQ", var_col], na.rm = TRUE),
-      SD_PC = sd(data[data$Locality == "PC", var_col], na.rm = TRUE),
-      n_CojoHQ = sum(!is.na(data[data$Locality == "CojoHQ", var_col])),
-      n_PC = sum(!is.na(data[data$Locality == "PC", var_col])),
-      Note = "Insufficient data for test"
-    ))
-  }
-  
-  # Run t-test
-  t_result <- t.test(formula, data = data)
-  
-  # Calculate effect size (Cohen's d)
-  cohens_d <- function(x, y) {
-    nx <- length(x)
-    ny <- length(y)
-    pooled_sd <- sqrt(((nx-1)*var(x, na.rm = TRUE) + (ny-1)*var(y, na.rm = TRUE)) / (nx+ny-2))
-    (mean(x, na.rm = TRUE) - mean(y, na.rm = TRUE)) / pooled_sd
-  }
-  
-  x <- data[data$Locality == "CojoHQ", var_col]
-  y <- data[data$Locality == "PC", var_col]
-  effect_size <- cohens_d(x[!is.na(x)], y[!is.na(y)])
-  
-  # Test for equality of variance (Levene's test)
-  levene_result <- leveneTest(formula, data = data)
-  
-  return(data.frame(
-    Variable = var_name,
-    t_statistic = t_result$statistic,
-    p_value = t_result$p.value,
-    Significant = t_result$p.value < 0.05,
-    Mean_CojoHQ = mean(data[data$Locality == "CojoHQ", var_col], na.rm = TRUE),
-    Mean_PC = mean(data[data$Locality == "PC", var_col], na.rm = TRUE),
-    SD_CojoHQ = sd(data[data$Locality == "CojoHQ", var_col], na.rm = TRUE),
-    SD_PC = sd(data[data$Locality == "PC", var_col], na.rm = TRUE),
-    n_CojoHQ = sum(!is.na(data[data$Locality == "CojoHQ", var_col])),
-    n_PC = sum(!is.na(data[data$Locality == "PC", var_col])),
-    Effect_Size = effect_size,
-    Var_Equal_p = levene_result$`Pr(>F)`[1]
-  ))
+      F_statistic = f_value,
+      p_value = p_value,
+      Significant = p_value < 0.05
+    )
+    
+    # Add mean, SD, and n for each locality
+    for (loc in localities) {
+      loc_data <- data[data$Locality == loc, var_col]
+      result_df[[paste0("Mean_", loc)]] <- mean(loc_data, na.rm = TRUE)
+      result_df[[paste0("SD_", loc)]] <- sd(loc_data, na.rm = TRUE)
+      result_df[[paste0("n_", loc)]] <- sum(!is.na(loc_data))
+    }
+    
+    # Run post-hoc tests if the main effect is significant
+    if (p_value < 0.05) {
+      # Use emmeans for estimated marginal means and pairwise comparisons
+      emm <- emmeans(model, ~ Locality)
+      pairs <- pairs(emm, adjust = "tukey")
+      pairs_summary <- summary(pairs)
+      
+      # Create a data frame for post-hoc results
+      posthoc_df <- data.frame(
+        Variable = var_name,
+        Comparison = pairs_summary$contrast,
+        Estimate = pairs_summary$estimate,
+        SE = pairs_summary$SE,
+        df = pairs_summary$df,
+        t_ratio = pairs_summary$t.ratio,
+        p_value = pairs_summary$p.value,
+        Significant = pairs_summary$p.value < 0.05
+      )
+      
+      # Store posthoc results as an attribute of the main result
+      attr(result_df, "posthoc") <- posthoc_df
+    }
+    
+    # Extract variance components
+    random_effects <- as.data.frame(VarCorr(model))
+    plant_variance <- random_effects$vcov[random_effects$grp == "Locality:Plant"]
+    residual_variance <- random_effects$vcov[random_effects$grp == "Residual"]
+    
+    # Calculate ICC (Intraclass Correlation Coefficient)
+    icc <- plant_variance / (plant_variance + residual_variance)
+    
+    # Add variance components to results
+    result_df$Plant_Variance <- plant_variance
+    result_df$Residual_Variance <- residual_variance
+    result_df$ICC <- icc
+    
+    return(result_df)
+  }, error = function(e) {
+    # If model fails, return basic statistics
+    result_df <- data.frame(
+      Variable = var_name,
+      Error = paste("Model failed:", e$message)
+    )
+    
+    # Add mean, SD, and n for each locality
+    for (loc in localities) {
+      loc_data <- data[data$Locality == loc, var_col]
+      result_df[[paste0("Mean_", loc)]] <- mean(loc_data, na.rm = TRUE)
+      result_df[[paste0("SD_", loc)]] <- sd(loc_data, na.rm = TRUE)
+      result_df[[paste0("n_", loc)]] <- sum(!is.na(loc_data))
+    }
+    
+    return(result_df)
+  })
 }
 
-# Run tests for each timing variable
+# Convert duration and time objects to numeric for analysis
+data_for_analysis <- flowering_data %>%
+  mutate(
+    # Convert time objects to hours since midnight
+    open_start = as.numeric(open_start) / 3600,
+    open_finish = as.numeric(open_finish) / 3600,
+    close_start = as.numeric(close_start) / 3600,
+    close_finish = as.numeric(close_finish) / 3600,
+    
+    # Convert durations to hours
+    time_to_open = as.numeric(time_to_open) / 3600,
+    time_to_close = as.numeric(time_to_close) / 3600,
+    time_fully_available = as.numeric(time_fully_available) / 3600,
+    time_available = as.numeric(time_available) / 3600
+  )
+
+# Run mixed-effects models for each timing variable
 timing_vars <- c("time_to_open", "time_to_close", "time_fully_available", "time_available", 
                  "open_start", "open_finish", "close_start", "close_finish")
 
-results <- do.call(rbind, lapply(timing_vars, run_t_test, data = flowering_data))
-results
-```
+mixed_model_results <- lapply(timing_vars, run_mixed_model, data = data_for_analysis)
 
-## Interpretation of Results
-
-```{r interpretation}
-# Create a more readable summary of the main findings
-interpretation <- results %>%
-  filter(!is.na(p_value)) %>%
-  mutate(
-    Interpretation = case_when(
-      p_value < 0.01 ~ "Highly significant difference",
-      p_value < 0.05 ~ "Significant difference",
-      p_value < 0.1 ~ "Marginally significant difference",
-      TRUE ~ "No significant difference"
-    ),
-    Direction = case_when(
-      Mean_CojoHQ > Mean_PC ~ "CojoHQ > PC",
-      Mean_CojoHQ < Mean_PC ~ "CojoHQ < PC",
-      TRUE ~ "Equal"
-    ),
-    Variance_Difference = case_when(
-      Var_Equal_p < 0.05 ~ "Significant variance difference",
-      TRUE ~ "No significant variance difference"
+# Create a function to nicely print the mixed model results
+print_mixed_model_results <- function(results) {
+  # Print main results
+  main_results <- do.call(rbind, lapply(results, function(r) {
+    # Select columns that are common to all results
+    cols_to_keep <- intersect(
+      names(r),
+      c("Variable", "F_statistic", "p_value", "Significant", 
+        grep("^Mean_|^SD_|^n_", names(r), value = TRUE),
+        "Plant_Variance", "Residual_Variance", "ICC")
     )
-  ) %>%
-  select(Variable, Interpretation, Direction, Variance_Difference, 
-         Mean_CojoHQ, Mean_PC, SD_CojoHQ, SD_PC, p_value)
+    r[, cols_to_keep, drop = FALSE]
+  }))
+  
+  print(main_results)
+  
+  # Print post-hoc results for significant models
+  cat("\nPost-hoc comparisons (Tukey-adjusted) for significant variables:\n")
+  for (i in seq_along(results)) {
+    if (!is.null(attr(results[[i]], "posthoc"))) {
+      cat("\nVariable:", results[[i]]$Variable, "\n")
+      print(attr(results[[i]], "posthoc"))
+    }
+  }
+}
 
+# Print the results
+print_mixed_model_results(mixed_model_results)
+
+# Create a more readable summary of the main findings
+create_interpretation <- function(results) {
+  # Extract all locality names from the first result
+  result_cols <- names(results[[1]])
+  locality_cols <- result_cols[grep("^Mean_", result_cols)]
+  localities <- sub("^Mean_", "", locality_cols)
+  
+  # Create interpretation data frame
+  all_interpretations <- list()
+  
+  for (i in seq_along(results)) {
+    result <- results[[i]]
+    
+    if ("p_value" %in% names(result)) {
+      interpretation <- data.frame(
+        Variable = result$Variable,
+        Interpretation = case_when(
+          result$p_value < 0.01 ~ "Highly significant difference",
+          result$p_value < 0.05 ~ "Significant difference",
+          result$p_value < 0.1 ~ "Marginally significant difference",
+          TRUE ~ "No significant difference"
+        ),
+        ICC = ifelse("ICC" %in% names(result), 
+                     paste0(round(result$ICC * 100, 1), "% (within-plant correlation)"),
+                     NA)
+      )
+    } else {
+      # If model failed
+      interpretation <- data.frame(
+        Variable = result$Variable,
+        Interpretation = ifelse("Error" %in% names(result), 
+                                paste("Model error:", result$Error),
+                                "No model results"),
+        ICC = NA
+      )
+    }
+    
+    # Add means for each locality
+    for (loc in localities) {
+      if (paste0("Mean_", loc) %in% names(result)) {
+        interpretation[[paste0("Mean_", loc)]] <- result[[paste0("Mean_", loc)]]
+        interpretation[[paste0("SD_", loc)]] <- result[[paste0("SD_", loc)]]
+      }
+    }
+    
+    # Add pairwise comparison results if available
+    if (!is.null(attr(result, "posthoc"))) {
+      posthoc <- attr(result, "posthoc")
+      sig_pairs <- posthoc$Comparison[posthoc$Significant]
+      
+      if (length(sig_pairs) > 0) {
+        interpretation$Significant_Pairs <- paste(sig_pairs, collapse = ", ")
+      } else {
+        interpretation$Significant_Pairs <- "None"
+      }
+    } else {
+      interpretation$Significant_Pairs <- NA
+    }
+    
+    all_interpretations[[i]] <- interpretation
+  }
+  
+  do.call(rbind, all_interpretations)
+}
+
+# Create and print interpretation
+interpretation <- create_interpretation(mixed_model_results)
 knitr::kable(interpretation, digits = 3)
 ```
 
+
 ## Conclusions
 
-
 1. **Timing of Flowering**:
-   - The time of day when flowers start opening appears to differ between populations, with CojoHQ flowers generally opening earlier in the day compared to PC flowers.
-   - The time when flowers start closing also shows differences, with PC flowers generally beginning to close later in the day.
+   - The time of day when flowers start opening differs between populations, as shown by our mixed-effects model analysis that accounts for plant-level variation.
+   - The time when flowers start closing also shows population-level differences, with some populations beginning to close later in the day than others.
+   - These patterns remain consistent even after accounting for within-plant correlation.
 
 2. **Duration of Flowering**:
-   - The time it takes for flowers to fully open ("time_to_open") shows differences between populations, with PC flowers taking slightly longer to open on average.
-   - The time it takes for flowers to close ("time_to_close") shows notable differences, with CojoHQ flowers taking longer to close.
-   - The total time flowers are available ("time_available") is longer in CojoHQ population compared to PC.
+   - The mixed-effects models for flowering duration (time_to_open, time_to_close, time_fully_available, time_available) reveal significant differences between populations.
+   - These differences represent adaptations to local environmental conditions rather than simply plant-to-plant variation, as indicated by the significance of the population fixed effect.
+   - The ICC values indicate the proportion of variation explained by plant-level differences versus within-plant variation.
 
 3. **Variation in Timing**:
-   - There are differences in the variability of flowering timing between populations, as indicated by the standard deviations and variance tests.
-   - The CojoHQ population generally shows more consistency in opening times, while the PC population shows more consistency in closing times.
-
-
-```
+   - There are differences in the consistency of flowering timing between populations, as indicated by the standard deviations in our results.
+   - Our hierarchical approach allows us to separate the sources of variation (between populations, between plants within populations, and within plants).
 
 ## Summary of Key Findings
 
@@ -390,7 +617,16 @@ Let's explore one more comparative visualization to better understand the overal
 
 ```{r flowering-patterns, fig.width=10, fig.height=6}
 # Create a consolidated timeline showing average flowering events by population
-avg_data <- flowering_data %>%
+# Convert time objects to numeric hours for plotting
+flowering_data_hours <- flowering_data %>%
+  mutate(
+    open_start_hours = hour(open_start) + minute(open_start)/60,
+    open_finish_hours = hour(open_finish) + minute(open_finish)/60,
+    close_start_hours = hour(close_start) + minute(close_start)/60,
+    close_finish_hours = hour(close_finish) + minute(close_finish)/60
+  )
+
+avg_data <- flowering_data_hours %>%
   group_by(Locality) %>%
   summarize(
     avg_open_start = mean(open_start_hours, na.rm = TRUE),
@@ -429,3 +665,14 @@ ggplot(avg_data, aes(x = time, y = Locality, color = Locality)) +
   theme(legend.position = "bottom") +
   scale_color_viridis(discrete = TRUE)
 ```
+
+## Implications
+
+The differences in flowering timing and duration among populations suggest local adaptation to distinct ecological conditions. These adaptations may involve responses to:
+
+1. **Pollinators**: Different timing may match the activity periods of local pollinators.
+2. **Temperature regimes**: Populations may optimize opening/closing to match daily temperature cycles.
+3. **Water availability**: Differences in water stress might influence how long flowers remain open.
+4. **Competing species**: Flowering time shifts could reduce competition for pollinators.
+
+Our mixed-effects model approach provides strong evidence that these differences exist at the population level while accounting for individual plant variation and multiple samples per plant, strengthening the case for local adaptation rather than random variation.

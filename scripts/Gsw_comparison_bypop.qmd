@@ -9,11 +9,12 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggplot2)
 library(ggpubr)
+library(car)
 ```
 
 ## Load Data
 
-This merges the Cojo and CojoHQ population data and adds 16 to the plant ids in the Cojo group so that the plant ids are different. The Cojo data were taken on April 19, 2025 and the CojoHQ data were taken on April 17, 2025. This code also filters out gsw values that are greater than 0.05 or less than -0.05.
+This merges the Cojo and CojoHQ population data and adds 16 to the plant ids in the Cojo group so that the plant ids are different. The Cojo data were taken on April 19, 2025 and the CojoHQ data were taken on April 17, 2025. This code also filters out gsw values that are greater than 0.05 or less than 0.
 
 ```{r}
 # Load the data
@@ -33,7 +34,7 @@ data_clean <- data %>%
       TRUE ~ as.character(Population)
     ),
     Plant = case_when(
-  Date %in% as.Date(c("2025-04-19", "2025-04-20")) ~ Plant + 16,
+  Date %in% as.Date(c("2025-04-19", "2025-04-20", "2025-04-21")) ~ Plant + 16,
   TRUE ~ Plant
 ),
     Population = factor(Population),
@@ -77,7 +78,7 @@ means_df <- data_clean %>%
 hist_by_population <- ggplot(data_clean, aes(x = gsw)) +
   geom_histogram(color = "black", fill = "darkorange", bins = 30) +
   geom_vline(data = means_df, aes(xintercept = mean_gsw),
-             color = "blue", linetype = "solid", size = 0.6) +
+             color = "blue", linetype = "solid", linewidth = 0.6) +
   labs(title = "Histogram of gsw by Population and Leaf Surface",
        x = "gsw", y = "Count") +
   facet_grid(TopBottom ~ Population) +
@@ -106,7 +107,8 @@ ggplot(data_clean, aes(x = Population, y = gsw, fill = TopBottom)) +
 ## Two-Way ANOVA
 
 ```{r}
-anova2 <- aov(gsw ~ Population * TopBottom, data = data_clean)
+library(stats)
+anova2 <- lm(gsw ~ Population * TopBottom, data = data_clean, contrasts = "type3")
 summary(anova2)
 ```
 
@@ -163,7 +165,11 @@ library(tidyr)
 library(purrr)
 library(broom)
 
-
+# First, let's check which plant measurements are duplicated
+duplicates_check <- data_clean %>%
+  group_by(Population, Plant, TopBottom) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  filter(n > 1)
 
 t_test_results <- data_clean %>%
   filter(TopBottom %in% c("Top", "Bottom")) %>%
@@ -179,6 +185,7 @@ t_test_results <- data_clean %>%
   mutate(tidy_result = map(t_test, tidy)) %>%
   unnest(tidy_result) %>%
   mutate(
+    p.value = format(round(p.value, 3), nsmall = 3),
     sig = case_when(
       p.value < 0.001 ~ "***",
       p.value < 0.01 ~ "**",
