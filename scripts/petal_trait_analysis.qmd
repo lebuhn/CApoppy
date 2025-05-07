@@ -46,10 +46,7 @@ cat("Unique populations in porometer:", paste(unique(porometer$Population), coll
 
 ## Data Preparation
 
-We need to standardize the datasets before merging:
-1. Fix date formats
-2. Standardize population names
-3. Rename columns for consistency
+We need to standardize the datasets before merging: 1. Fix date formats 2. Standardize population names 3. Rename columns for consistency
 
 ```{r prepare-data}
 # Clean and standardize petal weight data
@@ -209,8 +206,7 @@ head(matched_data)
 
 ## Population-Level Analysis
 
-Now we'll analyze population-level variation in the specified variables:
-flowers, buds, fruits, leaf_length, wet_wgt, dry_wgt, water_mg, and gsw.
+Now we'll analyze population-level variation in the specified variables: flowers, buds, fruits, leaf_length, wet_wgt, dry_wgt, water_mg, and gsw.
 
 ```{r population-analysis}
 # Function to perform ANOVA and create a summary of data by population
@@ -330,8 +326,8 @@ plot_relationship <- function(data, x_var, y_var) {
 
 # Create plots for interesting variable relationships
 plot_relationship(matched_data, "wet_wgt", "gsw")
-plot_relationship(matched_data, "leaf_length", "gsw")
-plot_relationship(matched_data, "Flowers", "gsw")
+plot_relationship(matched_data, "dry_wgt", "gsw")
+plot_relationship(matched_data, "wet_wgt", "dry_wgt")
 plot_relationship(matched_data, "water_mg", "gsw")
 ```
 
@@ -359,34 +355,13 @@ for (var in variables) {
 # Display summary table
 kable(sig_table, digits = 4)
 
-# Print a summary of the unmatched data
-cat("\n### Summary of Unmatched Data\n")
-cat("Total unmatched entries:", nrow(unmatched_data), "\n")
-cat("Breakdown of missing values:\n")
-missing_summary <- data.frame(
-  Variable = c("wet_wgt (petal data)", "Leaves (plant traits)", "gsw (porometer)"),
-  Missing_Count = c(
-    sum(is.na(unmatched_data$wet_wgt)),
-    sum(is.na(unmatched_data$Leaves)),
-    sum(is.na(unmatched_data$gsw))
-  )
-)
-kable(missing_summary)
 
-# Population representation in unmatched data
-unmatched_by_pop <- unmatched_data %>%
-  group_by(Population) %>%
-  summarize(Count = n(), .groups = "drop") %>%
-  arrange(desc(Count))
-
-cat("\nUnmatched data by population:\n")
-kable(unmatched_by_pop)
 ```
 
 ## Conclusion
 
-This analysis examined population-level variation in several plant traits across multiple populations. We found significant differences among populations in several key variables, particularly [variables with p < 0.05]. These findings suggest that local adaptation may play a role in shaping plant physiological responses.
+This analysis examined population-level variation in several plant traits across multiple populations. We found significant differences among populations in several key variables, particularly \[variables with p \< 0.05\]. These findings suggest that local adaptation may play a role in shaping plant physiological responses.
 
-The correlation between gsw (stomatal conductance) and other morphological traits indicates that [describe main pattern]. Population-specific trends show that [describe any population-specific relationships observed].
+The correlation between gsw (stomatal conductance) and other morphological traits indicates that \[describe main pattern\]. Population-specific trends show that \[describe any population-specific relationships observed\].
 
 Future research could focus on understanding the genetic and environmental factors driving these population-level differences.
