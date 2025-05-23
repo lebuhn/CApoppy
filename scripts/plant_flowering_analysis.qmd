@@ -24,9 +24,9 @@ library(emmeans)   # For post-hoc comparisons
 
 This analysis examines the timing and duration of flowering in two populations: PC and CojoHQ. We will analyze whether there are differences between these populations in terms of:
 
-1. Timing of flowering (when flowers open and close)
-2. Duration of flowering (how long flowers remain open)
-3. Variation in these parameters
+1.  Timing of flowering (when flowers open and close)
+2.  Duration of flowering (how long flowers remain open)
+3.  Variation in these parameters
 
 ## Data Preparation
 
@@ -329,7 +329,6 @@ grid.arrange(p5, p6, ncol = 2)
 
 ## Statistical Analysis
 
-
 Statistical tests to determine if there are significant differences among the populations.
 
 Here's what the analysis does:
@@ -344,16 +343,13 @@ Includes Post-hoc Tests: For significant effects of locality, the code performs 
 
 The code includes error handling to manage potential issues with model convergence or insufficient data.
 
-This model is 
+This model is
 
-model_formula <- as.formula(paste0(var_col, " ~ Locality + (1|Locality:Plant)"))
+model_formula \<- as.formula(paste0(var_col, " \~ Locality + (1\|Locality:Plant)"))
 
 This formula says:
 
-The dependent variable is whatever timing variable we're analyzing
-The fixed effect is Locality (population)
-The random effect is Plant nested within Locality
-The (1|Locality:Plant) term allows each plant to have its own random intercept
+The dependent variable is whatever timing variable we're analyzing The fixed effect is Locality (population) The random effect is Plant nested within Locality The (1\|Locality:Plant) term allows each plant to have its own random intercept
 
 ```{r statistical-tests}
 # Load required packages for mixed-effects models
@@ -594,22 +590,19 @@ interpretation <- create_interpretation(mixed_model_results)
 knitr::kable(interpretation, digits = 3)
 ```
 
-
 ## Conclusions
 
-1. **Timing of Flowering**:
-   - The time of day when flowers start opening differs between populations, as shown by our mixed-effects model analysis that accounts for plant-level variation.
-   - The time when flowers start closing also shows population-level differences, with some populations beginning to close later in the day than others.
-   - These patterns remain consistent even after accounting for within-plant correlation.
-
-2. **Duration of Flowering**:
-   - The mixed-effects models for flowering duration (time_to_open, time_to_close, time_fully_available, time_available) reveal significant differences between populations.
-   - These differences represent adaptations to local environmental conditions rather than simply plant-to-plant variation, as indicated by the significance of the population fixed effect.
-   - The ICC values indicate the proportion of variation explained by plant-level differences versus within-plant variation.
-
-3. **Variation in Timing**:
-   - There are differences in the consistency of flowering timing between populations, as indicated by the standard deviations in our results.
-   - Our hierarchical approach allows us to separate the sources of variation (between populations, between plants within populations, and within plants).
+1.  **Timing of Flowering**:
+    -   The time of day when flowers start opening differs between populations, as shown by our mixed-effects model analysis that accounts for plant-level variation.
+    -   The time when flowers start closing also shows population-level differences, with some populations beginning to close later in the day than others.
+    -   These patterns remain consistent even after accounting for within-plant correlation.
+2.  **Duration of Flowering**:
+    -   The mixed-effects models for flowering duration (time_to_open, time_to_close, time_fully_available, time_available) reveal significant differences between populations.
+    -   These differences represent adaptations to local environmental conditions rather than simply plant-to-plant variation, as indicated by the significance of the population fixed effect.
+    -   The ICC values indicate the proportion of variation explained by plant-level differences versus within-plant variation.
+3.  **Variation in Timing**:
+    -   There are differences in the consistency of flowering timing between populations, as indicated by the standard deviations in our results.
+    -   Our hierarchical approach allows us to separate the sources of variation (between populations, between plants within populations, and within plants).
 
 ## Summary of Key Findings
 
@@ -670,9 +663,9 @@ ggplot(avg_data, aes(x = time, y = Locality, color = Locality)) +
 
 The differences in flowering timing and duration among populations suggest local adaptation to distinct ecological conditions. These adaptations may involve responses to:
 
-1. **Pollinators**: Different timing may match the activity periods of local pollinators.
-2. **Temperature regimes**: Populations may optimize opening/closing to match daily temperature cycles.
-3. **Water availability**: Differences in water stress might influence how long flowers remain open.
-4. **Competing species**: Flowering time shifts could reduce competition for pollinators.
+1.  **Pollinators**: Different timing may match the activity periods of local pollinators.
+2.  **Temperature regimes**: Populations may optimize opening/closing to match daily temperature cycles.
+3.  **Water availability**: Differences in water stress might influence how long flowers remain open.
+4.  **Competing species**: Flowering time shifts could reduce competition for pollinators.
 
 Our mixed-effects model approach provides strong evidence that these differences exist at the population level while accounting for individual plant variation and multiple samples per plant, strengthening the case for local adaptation rather than random variation.
