@@ -46,6 +46,21 @@ docs/
 # translation temp files
 po/*~
 
+# Quarto output files
+*_files/
+
+# Rendered markdown outputs
+*.pdf
+*.html
+
+# Logs and diagnostics
+*.log
+
+# Mac-specific files
+Icon?
+
+
+
 # RStudio Connect folder
 rsconnect/
 
@@ -55,4 +70,4 @@ Petal_scans/
 
 #raw data files
 
-data/raw
+#data/raw
