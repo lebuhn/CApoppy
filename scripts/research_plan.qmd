@@ -1,0 +1,795 @@
+        
+---
+title: "Population-Level Variation in Floral Water Relations in Eschscholzia californica: Analysis Plan"
+author: "Analysis Pipeline"
+date: "2024"
+format: 
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    code-summary: "Show code"
+---
+
+# Project Overview
+
+This document outlines a 3-week analysis plan to investigate population-level variation in floral water use efficiency and its relationship to flowering phenology in *Eschscholzia californica*.
+
+# Week 1: Data Integration and Environmental Characterization
+
+## Day 1-2: Data Harmonization and Integration
+
+### Hypotheses
+1. **H1**: Populations will show consistent naming and can be successfully integrated across datasets
+2. **H2**: Environmental data will show a gradient from coastal to inland sites
+
+### Required Datasets
+- `Combined_3pops_march.csv` (gsw comparison data)
+- `plant_traits.csv` (morphological data)
+- `porometer_4pops.csv` (conductance measurements)
+- `petal_weight.csv` (water content data)
+- `fl_shrinkage2.csv` (shrinkage dynamics)
+- Environmental data (to be obtained from PRISM/WorldClim)
+
+### Background Reading
+1. Heschel, M. S., & Riginos, C. (2005). Mechanisms of selection for drought stress tolerance and avoidance in *Impatiens capensis*. American Journal of Botany, 92(1), 37-44.
+2. Lambrecht, S. C. (2013). Floral water costs and size variation in the highly selfing *Leptosiphon bicolor*. International Journal of Plant Sciences, 174(1), 74-84.
+3. Galen, C. (2000). High and dry: drought stress, sex-allocation trade-offs, and selection on flower size in the alpine wildflower *Polemonium viscosum*. The American Naturalist, 156(1), 72-83.
+
+### Code Implementation
+
+```{r data-integration}
+# Load required libraries
+library(tidyverse)
+library(readr)
+library(lubridate)
+library(car)
+library(lme4)
+library(emmeans)
+
+# Function to standardize population names
+standardize_populations <- function(df) {
+  df %>%
+    mutate(Population = case_when(
+      Population %in% c("Pt. Conception", "Pt_Conception") ~ "Pt_Conception",
+      Population %in% c("Cojo", "CojoHQ") ~ "Cojo",
+      TRUE ~ Population
+    ))
+}
+
+# Function to create unique plant identifiers
+create_plant_ID <- function(df) {
+  df %>%
+    mutate(PlantID = paste(Population, Plant, sep = "_"))
+}
+
+# Load and standardize all datasets
+load_all_data <- function() {
+  # Load gsw comparison data
+  gsw_data <- read_csv("data/processed/Combined_3pops_march.csv", skip = 1) %>%
+    standardize_populations() %>%
+    create_plant_ID()
+  
+  # Load plant traits
+  traits_data <- read_csv("data/raw/plant/plant_traits.csv") %>%
+    standardize_populations() %>%
+    rename(Plant = Individual) %>%
+    create_plant_ID()
+  
+  # Load porometer data
+  porometer_data <- read_csv("data/processed/porometer_4pops.csv", skip = 1) %>%
+    standardize_populations() %>%
+    create_plant_ID() %>%
+    filter(!Date %in% c("2025-04-19", "2025-04-20", "2025-04-21"))
+  
+  # Load petal weight data
+  petal_data <- read_csv("data/raw/plant/petal_weight.csv") %>%
+    filter(!is.na(Population)) %>%
+    standardize_populations() %>%
+    create_plant_ID()
+  
+  # Load shrinkage data
+  shrinkage_data <- read_csv("data/raw/fl_shrinkage2.csv") %>%
+    filter(!is.na(flower), !is.na(area), !is.na(weight)) %>%
+    mutate(PlantID = paste("Cojo", plant, sep = "_"))  # All from Cojo site
+  
+  return(list(
+    gsw = gsw_data,
+    traits = traits_data,
+    porometer = porometer_data,
+    petal = petal_data,
+    shrinkage = shrinkage_data
+  ))
+}
+
+# Create integrated dataset
+integrate_data <- function(data_list) {
+  # Plant-level summaries
+  plant_summary <- data_list$porometer %>%
+    group_by(Population, PlantID, Plant) %>%
+    summarize(
+      mean_gsw = mean(gsw, na.rm = TRUE),
+      sd_gsw = sd(gsw, na.rm = TRUE),
+      n_gsw = n(),
+      .groups = 'drop'
+    ) %>%
+    left_join(
+      data_list$petal %>%
+        group_by(Population, PlantID, Plant) %>%
+        summarize(
+          mean_wet_wgt = mean(wet_wgt, na.rm = TRUE),
+          mean_dry_wgt = mean(dry_wgt, na.rm = TRUE),
+          mean_water_mg = mean(water_mg, na.rm = TRUE),
+          mean_area = mean(area, na.rm = TRUE),
+          .groups = 'drop'
+        ),
+      by = c("Population", "PlantID", "Plant")
+    ) %>%
+    left_join(
+      data_list$traits %>%
+        select(PlantID, Leaves, Flowers, Buds, Fruit, leaf_length, flower_length),
+      by = "PlantID"
+    )
+  
+  return(plant_summary)
+}
+```
+
+### Potential Reviewer Questions
+
+1.  "How did you handle missing data across datasets?"
+
+2.  "What is your justification for pooling Cojo and CojoHQ populations?"
+
+3.  "How do you account for temporal variation in measurements?"
+
+## Day 3-4: Environmental Data Acquisition
+
+### Code Implementation
+
+```    
+```{r env-data-acquisition, message=FALSE, warning=FALSE}
+# Create environmental data matrix
+# Note: Replace with actual coordinates and climate data
+create_env_data <- function() {
+  env_data <- data.frame(
+    Population = c("Percos", "Perry", "Pt_Conception", "Cojo"),
+    Latitude = c(34.45, 34.52, 34.44, 34.46),  # Example coordinates
+    Longitude = c(-120.10, -120.15, -120.47, -120.44),
+    MAP = c(450, 425, 380, 400),  # Mean annual precipitation (mm)
+    MAT = c(15.2, 15.5, 14.8, 14.9),  # Mean annual temperature (°C)
+    Spring_precip = c(120, 110, 95, 100),  # March-May precipitation
+    Coastal_distance = c(15, 18, 1, 2),  # km from coast
+    Elevation = c(120, 150, 20, 30)  # meters
+  )
+  
+  return(env_data)
+}
+
+# Visualize environmental gradients
+plot_env_gradients <- function(env_data) {
+  # PCA of environmental variables
+  env_pca <- prcomp(env_data[, 4:8], scale = TRUE)
+  
+  # Create biplot
+  library(ggfortify)
+  p <- autoplot(env_pca, data = env_data, 
+                colour = 'Population', 
+                loadings = TRUE, 
+                loadings.label = TRUE,
+                size = 3) +
+    theme_minimal() +
+    labs(title = "Environmental PCA of Population Sites")
+  
+  return(p)
+}
+```
+
+## Day 5: Initial Data Exploration
+
+### Code Implementation
+
+``` 
+```{r data-summary, message=FALSE, warning=FALSE}
+# Summary statistics by population
+create_population_summary <- function(integrated_data, env_data) {
+  pop_summary <- integrated_data %>%
+    group_by(Population) %>%
+    summarize(
+      n_plants = n_distinct(PlantID),
+      mean_gsw = mean(mean_gsw, na.rm = TRUE),
+      se_gsw = sd(mean_gsw, na.rm = TRUE) / sqrt(n()),
+      mean_water_content = mean(mean_water_mg, na.rm = TRUE),
+      se_water_content = sd(mean_water_mg, na.rm = TRUE) / sqrt(n()),
+      mean_DMC = mean(mean_dry_wgt / mean_wet_wgt, na.rm = TRUE),
+      .groups = 'drop'
+    ) %>%
+    left_join(env_data, by = "Population")
+  
+  return(pop_summary)
+}
+
+# Test for population differences
+test_population_differences <- function(integrated_data) {
+  # ANOVA for gsw
+  gsw_aov <- aov(mean_gsw ~ Population, data = integrated_data)
+  
+  # ANOVA for water content
+  water_aov <- aov(mean_water_mg ~ Population, data = integrated_data)
+  
+  return(list(
+    gsw = summary(gsw_aov),
+    water = summary(water_aov)
+  ))
+}
+```
+
+# Week 2: Water Use Efficiency and Trait Syndrome Analysis
+
+## Day 6-8: Water Use Efficiency Index Development
+
+### Hypotheses
+
+1.  **H3**: Populations from drier environments will show higher water use efficiency
+
+2.  **H4**: Water use efficiency will be negatively correlated with flower size
+
+### Background Reading
+
+1.  Roddy, A. B., et al. (2019). Hydraulic traits are more diverse in flowers than in leaves. New Phytologist, 223(1), 193-203.
+
+2.  Teixido, A. L., & Valladares, F. (2014). Disproportionate carbon and water maintenance costs of large corollas in hot Mediterranean ecosystems. Perspectives in Plant Ecology, Evolution and Systematics, 16(2), 83-92.
+
+3.  Zhang, F. P., et al. (2018). Similar geometric rules govern the distribution of veins and stomata in petals, sepals and leaves. New Phytologist, 219(4), 1224-1234.
+
+### Code Implementation
+
+```  
+```{r calculate_wue}
+# Calculate Water Use Efficiency Index
+calculate_WUE_index <- function(integrated_data, shrinkage_data) {
+  # Calculate shrinkage rates for available plants
+  shrinkage_rates <- shrinkage_data %>%
+    arrange(plant, time) %>%
+    group_by(plant) %>%
+    mutate(
+      weight_change = (weight - first(weight)) / first(weight),
+      area_change = (area - first(area)) / first(area)
+    ) %>%
+    filter(time == 3) %>%  # Use final time point
+    summarize(
+      final_weight_loss = abs(weight_change),
+      final_area_loss = abs(area_change),
+      .groups = 'drop'
+    ) %>%
+    mutate(PlantID = paste("Cojo", plant, sep = "_"))
+  
+  # Create WUE components
+  wue_components <- integrated_data %>%
+    left_join(shrinkage_rates, by = "PlantID") %>%
+    mutate(
+      # Standardize each component
+      gsw_score = -scale(mean_gsw)[,1],  # Lower conductance = higher score
+      DMC_score = scale(mean_dry_wgt / mean_wet_wgt)[,1],  # Higher DMC = higher score
+      size_efficiency = scale(mean_water_mg / mean_area)[,1],  # Water per area
+      shrinkage_resistance = -scale(final_weight_loss)[,1]  # Less shrinkage = higher score
+    ) %>%
+    rowwise() %>%
+    mutate(
+      WUE_index = mean(c(gsw_score, DMC_score, size_efficiency, shrinkage_resistance), 
+                       na.rm = TRUE)
+    ) %>%
+    ungroup()
+  
+  return(wue_components)
+}
+
+# Test correlation with environment
+test_WUE_environment <- function(wue_data, env_data) {
+  # Aggregate to population level
+  pop_wue <- wue_data %>%
+    group_by(Population) %>%
+    summarize(
+      mean_WUE = mean(WUE_index, na.rm = TRUE),
+      se_WUE = sd(WUE_index, na.rm = TRUE) / sqrt(n()),
+      .groups = 'drop'
+    ) %>%
+    left_join(env_data, by = "Population")
+  
+  # Test correlations
+  cor_MAP <- cor.test(pop_wue$mean_WUE, pop_wue$MAP)
+  cor_coast <- cor.test(pop_wue$mean_WUE, pop_wue$Coastal_distance)
+  
+  # Create visualization
+  p <- ggplot(pop_wue, aes(x = MAP, y = mean_WUE)) +
+    geom_point(size = 4) +
+    geom_errorbar(aes(ymin = mean_WUE - se_WUE, ymax = mean_WUE + se_WUE), 
+                  width = 10) +
+    geom_smooth(method = "lm", se = TRUE) +
+    theme_minimal() +
+    labs(x = "Mean Annual Precipitation (mm)",
+         y = "Water Use Efficiency Index",
+         title = "WUE vs. Precipitation Gradient")
+  
+  return(list(
+    data = pop_wue,
+    cor_MAP = cor_MAP,
+    cor_coast = cor_coast,
+    plot = p
+  ))
+}
+```
+
+### Potential Reviewer Questions
+
+1.  "How sensitive is your WUE index to the weighting of different components?"
+
+2.  "Have you validated your index against direct measurements of water use efficiency?"
+
+3.  "How do you account for allometric relationships between flower size and water content?"
+
+## Day 9-10: Phenological Integration
+
+### Hypotheses
+
+1.  **H5**: Populations with higher WUE will have shorter daily flower opening periods
+
+2.  **H6**: Time to flower closure will be negatively correlated with water content
+
+### Required Additional Data
+
+-   Flower opening/closing times from field observations
+
+### Code Implementation
+
+
+```{r phenology-integration, message=FALSE, warning=FALSE}
+
+# Load and process phenology data
+process_phenology_data <- function() {
+  # This would load actual flowering time data
+  # For now, using example data structure
+  phenology_data <- data.frame(
+    Population = rep(c("Pt_Conception", "Cojo"), each = 15),
+    Plant = rep(1:15, 2),
+    open_time = c(rnorm(15, 9.5, 0.5), rnorm(15, 10, 0.5)),  # Hours
+    close_time = c(rnorm(15, 15.5, 0.5), rnorm(15, 15, 0.5)),
+    duration = close_time - open_time
+  ) %>%
+    mutate(PlantID = paste(Population, Plant, sep = "_"))
+  
+  return(phenology_data)
+}
+
+# Test phenology-WUE relationships
+test_phenology_WUE <- function(wue_data, phenology_data) {
+  # Merge datasets
+  combined <- wue_data %>%
+    inner_join(phenology_data, by = "PlantID")
+  
+  # Linear models
+  duration_model <- lm(duration ~ WUE_index + Population, data = combined)
+  close_model <- lm(close_time ~ mean_water_mg + Population, data = combined)
+  
+  # Visualization
+  p1 <- ggplot(combined, aes(x = WUE_index, y = duration, color = Population.x)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = TRUE) +
+    theme_minimal() +
+    labs(x = "Water Use Efficiency Index",
+         y = "Daily Opening Duration (hours)")
+  
+  return(list(
+    duration_model = summary(duration_model),
+    close_model = summary(close_model),
+    plot = p1
+  ))
+}
+```
+
+## Day 11-12: Trait Syndrome Analysis
+
+### Background Reading
+
+1.  Reich, P. B., et al. (2003). The evolution of plant functional variation: traits, spectra, and strategies. International Journal of Plant Sciences, 164(S3), S143-S164.
+
+2.  Díaz, S., et al. (2016). The global spectrum of plant form and function. Nature, 529(7585), 167-171.
+
+3.  Carmona, C. P., et al. (2021). Erosion of global functional diversity across the tree of life. Science Advances, 7(13), eabf2675.
+
+### Code Implementation
+
+```         
+library(FactoMineR)
+library(factoextra)
+
+# Principal Components Analysis of trait syndrome
+trait_syndrome_analysis <- function(integrated_data) {
+  # Prepare trait matrix
+  trait_matrix <- integrated_data %>%
+    select(PlantID, Population, mean_gsw, mean_water_mg, 
+           mean_area, Leaves, leaf_length) %>%
+    mutate(
+      DMC = integrated_data$mean_dry_wgt / integrated_data$mean_wet_wgt,
+      specific_water = mean_water_mg / mean_area
+    ) %>%
+    na.omit()
+  
+  # Scale traits for PCA
+  traits_scaled <- trait_matrix %>%
+    select(-PlantID, -Population) %>%
+    scale()
+  
+  # Run PCA
+  pca_result <- PCA(traits_scaled, graph = FALSE)
+  
+  # Extract scores
+  pca_scores <- as.data.frame(pca_result$ind$coord) %>%
+    mutate(
+      PlantID = trait_matrix$PlantID,
+      Population = trait_matrix$Population
+    )
+  
+  # Create biplot
+  p <- fviz_pca_biplot(pca_result, 
+                       col.ind = trait_matrix$Population,
+                       palette = "Dark2",
+                       addEllipses = TRUE,
+                       ellipse.level = 0.95,
+                       title = "Trait Syndrome PCA") +
+    theme_minimal()
+  
+  # Test for population differences in PC space
+  pc1_model <- aov(Dim.1 ~ Population, data = pca_scores)
+  pc2_model <- aov(Dim.2 ~ Population, data = pca_scores)
+  
+  return(list(
+    pca = pca_result,
+    scores = pca_scores,
+    plot = p,
+    pc1_test = summary(pc1_model),
+    pc2_test = summary(pc2_model)
+  ))
+}
+```
+
+### Potential Reviewer Questions
+
+1.  "Why did you choose these specific traits for your syndrome analysis?"
+
+2.  "Have you tested for phylogenetic signal in trait variation?"
+
+3.  "How do you distinguish between plasticity and genetic differentiation?"
+
+# Week 3: Statistical Validation and Manuscript Preparation
+
+Day 13-15: Mixed Model Analysis
+
+### Hypotheses
+
+1.  **H7**: Environmental variables will explain significant variation in gsw after accounting for population structure
+
+2.  **H8**: Plant-level variation will be lower in more stressful environments
+
+### Background Reading
+
+1.  Bolker, B. M., et al. (2009). Generalized linear mixed models: a practical guide for ecology and evolution. Trends in Ecology & Evolution, 24(3), 127-135.
+
+2.  Nakagawa, S., & Schielzeth, H. (2013). A general and simple method for obtaining R² from generalized linear mixed-effects models. Methods in Ecology and Evolution, 4(2), 133-142.
+
+3.  Harrison, X. A., et al. (2018). A brief introduction to mixed effects modelling and multi-model inference in ecology. PeerJ, 6, e4794.
+
+### Code Implementation
+
+```{r mixed-models, message=FALSE, warning=FALSE}        
+library(lmerTest)
+library(MuMIn)
+
+# Mixed effects model for gsw
+analyze_gsw_mixed <- function(full_data, env_data) {
+  # Prepare data
+  model_data <- full_data %>%
+    left_join(env_data, by = "Population") %>%
+    na.omit()
+  
+  # Scale predictors
+  model_data <- model_data %>%
+    mutate(
+      MAP_scaled = scale(MAP)[,1],
+      coast_scaled = scale(Coastal_distance)[,1],
+      elevation_scaled = scale(Elevation)[,1],
+      area_scaled = scale(mean_area)[,1]
+    )
+  
+  # Full model
+  full_model <- lmer(log(mean_gsw) ~ MAP_scaled + coast_scaled + 
+                     elevation_scaled + area_scaled + 
+                     (1|Population), 
+                     data = model_data)
+  
+  # Model selection
+  options(na.action = "na.fail")
+  model_set <- dredge(full_model)
+  best_model <- get.models(model_set, 1)[[1]]
+  
+  # Calculate R²
+  r2_values <- r.squaredGLMM(best_model)
+  
+  # Population-specific variance
+  pop_variance <- model_data %>%
+    group_by(Population) %>%
+    summarize(
+      gsw_variance = var(mean_gsw, na.rm = TRUE),
+      gsw_CV = sd(mean_gsw, na.rm = TRUE) / mean(mean_gsw, na.rm = TRUE),
+      .groups = 'drop'
+    ) %>%
+    left_join(env_data, by = "Population")
+  
+  # Test variance-environment relationship
+  var_model <- lm(log(gsw_variance) ~ MAP + Coastal_distance, data = pop_variance)
+  
+  return(list(
+    full_model = summary(full_model),
+    best_model = summary(best_model),
+    model_selection = model_set,
+    R2 = r2_values,
+    variance_analysis = summary(var_model)
+  ))
+}
+
+# Random effects structure validation
+validate_random_effects <- function(full_data) {
+  # Compare models with different random structures
+  m1 <- lm(log(mean_gsw) ~ Population, data = full_data)
+  m2 <- lmer(log(mean_gsw) ~ 1 + (1|Population), data = full_data)
+  
+  # Likelihood ratio test
+  comparison <- anova(m1, m2)
+  
+  return(comparison)
+}
+```
+
+## Day 16-17: Bootstrap Validation
+
+### Code Implementation
+
+```{r bootstrap-validation, message=FALSE, warning=FALSE}       
+# Bootstrap confidence intervals for population differences
+bootstrap_WUE_differences <- function(wue_data, n_boot = 1000) {
+  populations <- unique(wue_data$Population)
+  n_pops <- length(populations)
+  
+  # Storage for bootstrap results
+  boot_results <- matrix(NA, nrow = n_boot, 
+                        ncol = choose(n_pops, 2))
+  comparison_names <- character(choose(n_pops, 2))
+  
+  # Bootstrap loop
+  set.seed(123)
+  for(i in 1:n_boot) {
+    # Resample within populations
+    boot_data <- wue_data %>%
+      group_by(Population) %>%
+      sample_n(n(), replace = TRUE) %>%
+      ungroup()
+    
+    # Calculate population means
+    boot_means <- boot_data %>%
+      group_by(Population) %>%
+      summarize(mean_WUE = mean(WUE_index, na.rm = TRUE), 
+                .groups = 'drop')
+    
+    # Pairwise differences
+    col_idx <- 1
+    for(j in 1:(n_pops-1)) {
+      for(k in (j+1):n_pops) {
+        pop1_mean <- boot_means$mean_WUE[boot_means$Population == populations[j]]
+        pop2_mean <- boot_means$mean_WUE[boot_means$Population == populations[k]]
+        boot_results[i, col_idx] <- pop1_mean - pop2_mean
+        
+        if(i == 1) {
+          comparison_names[col_idx] <- paste(populations[j], 
+                                           populations[k], 
+                                           sep = " - ")
+        }
+        col_idx <- col_idx + 1
+      }
+    }
+  }
+  
+  # Calculate confidence intervals
+  CI_results <- apply(boot_results, 2, quantile, 
+                     probs = c(0.025, 0.975), na.rm = TRUE)
+  colnames(CI_results) <- comparison_names
+  
+  # Visualize
+  CI_df <- as.data.frame(t(CI_results)) %>%
+    mutate(
+      comparison = comparison_names,
+      mean_diff = colMeans(boot_results, na.rm = TRUE),
+      significant = (CI_results[1,] > 0 | CI_results[2,] < 0)
+    )
+  
+  p <- ggplot(CI_df, aes(x = comparison, y = mean_diff)) +
+    geom_point(size = 3) +
+    geom_errorbar(aes(ymin = `2.5%`, ymax = `97.5%`), width = 0.2) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+    coord_flip() +
+    theme_minimal() +
+    labs(x = "Population Comparison",
+         y = "Difference in WUE Index",
+         title = "Bootstrap 95% CIs for Population Differences")
+  
+  return(list(
+    CI = CI_results,
+    plot = p,
+    summary = CI_df
+  ))
+}
+
+# Cross-validation of WUE index
+cross_validate_WUE <- function(integrated_data, n_folds = 5) {
+  # Create folds
+  set.seed(456)
+  fold_ids <- sample(rep(1:n_folds, length.out = nrow(integrated_data)))
+  
+  # Store predictions
+  cv_results <- data.frame()
+  
+  for(fold in 1:n_folds) {
+    # Split data
+    train_data <- integrated_data[fold_ids != fold, ]
+    test_data <- integrated_data[fold_ids == fold, ]
+    
+    # Recalculate WUE on training data
+    train_wue <- calculate_WUE_index(train_data, shrinkage_data)
+    
+    # Predict test data WUE based on components
+    # This validates the internal consistency of the index
+    
+    cv_results <- rbind(cv_results, data.frame(
+      fold = fold,
+      observed = test_data$mean_gsw,
+      population = test_data$Population
+    ))
+  }
+  
+  return(cv_results)
+}
+```
+
+### Potential Reviewer Questions
+
+1.  "Have you tested for spatial autocorrelation in your populations?"
+
+2.  "How robust are your results to different bootstrap sampling schemes?"
+
+3.  "What is the power of your study to detect biologically meaningful differences?"
+
+## Day 18-20: Figure Generation and Manuscript Writing
+
+### Code Implementation
+
+```   {r figure-generation, message=FALSE, warning=FALSE}      
+# Create publication-quality figure suite
+create_publication_figures <- function(all_results) {
+  library(patchwork)
+  library(ggpubr)
+  
+  # Figure 1: Environmental characterization and WUE
+  fig1a <- all_results$env_pca_plot
+  fig1b <- all_results$wue_env$plot
+  fig1c <- all_results$bootstrap$plot
+  
+  fig1 <- (fig1a + fig1b) / fig1c + 
+    plot_annotation(tag_levels = 'A') +
+    plot_layout(heights = c(1, 1))
+  
+  # Figure 2: Trait syndrome
+  fig2 <- all_results$trait_pca$plot +
+    labs(tag = "A")
+  
+  # Figure 3: Mixed model results
+  # Create coefficient plot
+  model_coefs <- as.data.frame(summary(all_results$mixed_model$best_model)$coefficients)
+  model_coefs$term <- rownames(model_coefs)
+  
+  fig3 <- ggplot(model_coefs[-1,], aes(x = term, y = Estimate)) +
+    geom_point(size = 3) +
+    geom_errorbar(aes(ymin = Estimate - 1.96 * `Std. Error`,
+                      ymax = Estimate + 1.96 * `Std. Error`),
+                  width = 0.2) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+    coord_flip() +
+    theme_minimal() +
+    labs(x = "Predictor", y = "Standardized Effect Size",
+         title = "Mixed Model Coefficients")
+  
+  # Save figures
+  ggsave("figures/Fig1_environment_WUE.pdf", fig1, 
+         width = 10, height = 12, units = "in")
+  ggsave("figures/Fig2_trait_syndrome.pdf", fig2, 
+         width = 8, height = 8, units = "in")
+  ggsave("figures/Fig3_mixed_model.pdf", fig3, 
+         width = 6, height = 6, units = "in")
+  
+  return(list(fig1 = fig1, fig2 = fig2, fig3 = fig3))
+}
+
+# Generate summary statistics table
+create_summary_table <- function(all_data) {
+  summary_stats <- all_data %>%
+    group_by(Population) %>%
+    summarize(
+      n = n(),
+      gsw_mean = mean(mean_gsw, na.rm = TRUE),
+      gsw_se = sd(mean_gsw, na.rm = TRUE) / sqrt(n()),
+      water_mean = mean(mean_water_mg, na.rm = TRUE),
+      water_se = sd(mean_water_mg, na.rm = TRUE) / sqrt(n()),
+      DMC_mean = mean(mean_dry_wgt / mean_wet_wgt, na.rm = TRUE),
+      DMC_se = sd(mean_dry_wgt / mean_wet_wgt, na.rm = TRUE) / sqrt(n()),
+      .groups = 'drop'
+    )
+  
+  # Format for publication
+  summary_formatted <- summary_stats %>%
+    mutate(
+      gsw = paste0(round(gsw_mean, 3), " ± ", round(gsw_se, 3)),
+      water = paste0(round(water_mean, 2), " ± ", round(water_se, 2)),
+      DMC = paste0(round(DMC_mean, 3), " ± ", round(DMC_se, 3))
+    ) %>%
+    select(Population, n, gsw, water, DMC)
+  
+  return(summary_formatted)
+}
+```
+
+## Day 21: Final Review and Submission Preparation
+
+### Checklist for Functional Ecology Submission
+
+1.  **Data Availability Statement**: Prepare Dryad submissio
+
+2.  **Statistical Reporting**: Ensure all test statistics, df, and p-values are reported
+
+3.  **Effect Sizes**: Include standardized effect sizes for all major findings
+
+4.  **Reproducibility**: Create R package with all analysis code
+
+5.  **Supplementary Material**:
+
+    -   Full model selection tables
+
+    -   Diagnostic plots for mixed models
+
+    -   Raw data summaries
+
+### Potential Additional Reviewer Questions
+
+1.  "How do your findings relate to the broader literature on local adaptation?"
+
+2.  "What are the implications for predicting responses to climate change?"
+
+3.  "Have you considered the role of phenotypic plasticity vs. genetic differentiation?"
+
+# Timeline Summary
+
+## Week 1 (Days 1-5)
+
+-   Data integration and harmonization
+
+-   Environmental data acquisition
+
+-   Initial exploratory analyses
+
+-   **Deliverable**: Integrated dataset and environmental characterization
+
+## Week 2 (Days 6-12)
+
+-   WUE index development
+
+-   Phenological integration
+
+-   Trait syndrome analysis
+

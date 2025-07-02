@@ -1,0 +1,137 @@
+---
+title: "Flower Shrinkage Analysis"
+format: pdf
+editor: visual
+---
+
+```{r setup, include=FALSE}
+library(ggplot2)
+library(dplyr)
+library(readr)
+```
+
+## Data Loading and Preparation
+
+```{r load-data}
+# Load the data
+data <- read_csv("../data/raw/fl_shrinkage2.csv")
+
+# Clean the data - remove rows with missing flower or area data
+data_clean <- data %>%
+  filter(!is.na(flower), !is.na(area), !is.na(weight)) %>%
+  # Create a unique identifier for each individual flower (plant)
+  mutate(flower_id = paste("Plant", plant, sep = " "))
+
+# Display data structure
+glimpse(data_clean)
+```
+
+## Summary Statistics
+
+```{r summary}
+# Show summary of the cleaned data
+cat("Number of individual flowers:", length(unique(data_clean$plant)), "\n")
+cat("Number of observations:", nrow(data_clean), "\n")
+cat("Weight range:", round(range(data_clean$weight, na.rm = TRUE), 4), "grams\n")
+cat("Area range:", round(range(data_clean$area, na.rm = TRUE), 2), "cm²\n")
+
+# Data overview
+cat("Individual flowers in dataset:", paste(sort(unique(data_clean$plant)), collapse = ", "))
+```
+
+## Weight vs Area Plot
+
+```{r weight-area-plot, fig.width=10, fig.height=7}
+# Create the plot with weight on x-axis and area on y-axis
+# Each plant (individual flower) gets its own line
+p <- ggplot(data_clean, aes(x = weight, y = area, color = factor(plant))) +
+  geom_line(size = 1.2, alpha = 0.8) +
+  geom_point(size = 2, alpha = 0.7) +
+  scale_x_reverse() +
+  scale_color_viridis_d(name = "Plant\nNumber") +
+  labs(
+    title = "Flower Shrinkage: Weight vs Area Over Time",
+    subtitle = "Each line represents one individual flower from a different plant",
+    x = "Weight (grams)",
+    y = "Area (cm²)",
+    caption = "Data shows the relationship between flower weight and area as flowers shrink over time"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),
+    plot.subtitle = element_text(size = 12, color = "gray60"),
+    axis.title = element_text(size = 12),
+    legend.title = element_text(size = 10),
+    legend.text = element_text(size = 8),
+    panel.grid.minor = element_blank()
+  )
+
+print(p)
+```
+
+## Before and After Comparison Plot (Time 1 vs Time 3)
+
+```{r before-after-plot, fig.width=10, fig.height=7}
+# Filter data for only time points 1 and 3
+before_after_data <- data_clean %>%
+  filter(time %in% c(1, 3)) %>%
+  mutate(time_label = ifelse(time == 1, "Initial", "Time 3"))
+
+# Create plot showing only first and third measurements
+p3 <- ggplot(before_after_data, aes(x = weight, y = area, color = factor(plant))) +
+  geom_line(aes(group = plant), size = 1.5, alpha = 0.8) +
+  geom_point(aes(shape = time_label), size = 3, alpha = 0.9) +
+  scale_x_reverse() +
+  scale_color_viridis_d(name = "Plant\nNumber") +
+  scale_shape_manual(values = c("Initial" = 16, "Time 3" = 17), name = "Time Point") +
+  labs(
+    title = "Flower Shrinkage: Initial vs Time 3 Measurements",
+    subtitle = "Lines connect initial measurements (circles) to Time 3 measurements (triangles)",
+    x = "Weight (grams)",
+    y = "Area (cm²)",
+    caption = "Each line shows the change from initial measurement to Time 3 for one flower"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),
+    plot.subtitle = element_text(size = 12, color = "gray60"),
+    axis.title = element_text(size = 12),
+    legend.title = element_text(size = 10),
+    legend.text = element_text(size = 8),
+    panel.grid.minor = element_blank()
+  )
+
+print(p3)
+```
+```
+
+## Data Table with Proportional Changes
+
+```{r data-table}
+# Calculate proportional changes in weight and area for each plant
+data_with_changes <- data_clean %>%
+  arrange(plant, time) %>%
+  group_by(plant) %>%
+  mutate(
+    # Calculate proportional change from first measurement (baseline)
+    weight_prop_change = (weight - first(weight)) / first(weight),
+    area_prop_change = (area - first(area)) / first(area)
+  ) %>%
+  ungroup() %>%
+  select(plant, time, weight, area, weight_prop_change, area_prop_change)
+
+# Display the complete data table
+data_with_changes %>%
+  mutate(
+    weight = round(weight, 4),
+    area = round(area, 2),
+    weight_prop_change = round(weight_prop_change, 3),
+    area_prop_change = round(area_prop_change, 3)
+  ) %>%
+  knitr::kable(
+    caption = "Complete flower shrinkage data with proportional changes",
+    col.names = c("Plant", "Time", "Weight (g)", "Area (cm²)", 
+                  "Weight Change (%)", "Area Change (%)"),
+    align = c("c", "c", "r", "r", "r", "r")
+  )
+```
