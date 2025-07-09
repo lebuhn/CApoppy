@@ -1,0 +1,144 @@
+---
+title: "Exploratory Analysis of Petal Weight Traits"
+format: html
+editor: visual
+---
+
+```{r setup}
+# Load necessary packages
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(emmeans)
+library(lmerTest)
+library(vegan)  # For Mantel test
+
+# Load the correct data
+data <- read_csv("../data/raw/plant/petal_weight.csv")
+
+# Convert columns
+data$block <- as.factor(data$block)
+data$population <- as.factor(data$population)
+data$wet_wgt <- as.numeric(data$wet_wgt)
+data$dry_wgt <- as.numeric(data$dry_wgt)
+data$water_mg <- as.numeric(data$water_mg)
+
+# Convert water_% to numeric safely using backticks
+data$water_percent <- as.numeric(gsub("%", "", data$`water_%`))
+
+# Peek at the data
+head(data)
+```
+
+## Summary Statistics
+
+```{r}
+traits <- data %>%
+  select(wet_wgt, dry_wgt, water_mg, water_percent)
+
+summary(traits)
+
+# Grouped summaries
+trait_means <- data %>%
+  group_by(block, population) %>%
+  summarise(across(c(wet_wgt, dry_wgt, water_mg, water_percent), ~mean(.x, na.rm = TRUE), .names = "mean_{.col}"))
+trait_means
+```
+
+## Linear Models with Block as Fixed Effect
+
+```{r}
+model_wet <- lm(wet_wgt ~ population * block, data = data)
+model_dry <- lm(dry_wgt ~ population * block, data = data)
+model_water <- lm(water_mg ~ population * block, data = data)
+
+anova(model_wet)
+anova(model_dry)
+anova(model_water)
+```
+
+## Interaction Plots
+
+```{r}
+# Wet weight interaction
+ggplot(data, aes(x = block, y = wet_wgt, color = population, group = population)) +
+  stat_summary(fun = mean, geom = "point", position = position_dodge(width = 0.2)) +
+  stat_summary(fun = mean, geom = "line") +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  labs(title = "Wet Weight across Blocks and Populations",
+       x = "Block (Time)", y = "Wet Weight")
+```
+
+```{r}
+# Water content interaction
+ggplot(data, aes(x = block, y = water_mg, color = population, group = population)) +
+  stat_summary(fun = mean, geom = "point") +
+  stat_summary(fun = mean, geom = "line") +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  labs(title = "Water Mass across Blocks and Populations",
+       x = "Block (Time)", y = "Water (mg)")
+```
+
+## Correlation Matrix
+
+```{r}
+cor_matrix <- cor(traits, use = "complete.obs")
+cor_matrix
+```
+
+## Mantel Tests: Correlation Structure by Population and Block
+
+```{r}
+# Trait columns to include in correlation matrices
+trait_cols <- c("wet_wgt", "dry_wgt", "water_mg", "water_percent")
+
+# Function to safely compute a correlation matrix and test if it's valid
+valid_cor_matrix <- function(df, traits) {
+  mat <- cor(df[, traits], use = "complete.obs")
+  complete_obs <- sum(complete.cases(df[, traits]))
+  if (nrow(mat) > 1 && complete_obs >= 4 && all(!is.na(mat))) return(mat) else return(NULL)
+}
+
+# All pairwise population comparisons
+pop_levels <- unique(data$population)
+if (length(pop_levels) >= 2) {
+  for (i in 1:(length(pop_levels) - 1)) {
+    for (j in (i + 1):length(pop_levels)) {
+      pop_i <- pop_levels[i]
+      pop_j <- pop_levels[j]
+      mat_i <- valid_cor_matrix(subset(data, population == pop_i), trait_cols)
+      mat_j <- valid_cor_matrix(subset(data, population == pop_j), trait_cols)
+      if (!is.null(mat_i) && !is.null(mat_j)) {
+        mantel_res <- mantel(as.dist(mat_i), as.dist(mat_j), permutations = 999)
+        cat("\nMantel test between populations:", pop_i, "and", pop_j, "\n")
+        print(mantel_res)
+      } else {
+        cat("\nSkipping Mantel test between populations:", pop_i, "and", pop_j, "due to insufficient data\n")
+      }
+    }
+  }
+}
+
+# All pairwise block comparisons
+block_levels <- unique(data$block)
+if (length(block_levels) >= 2) {
+  for (i in 1:(length(block_levels) - 1)) {
+    for (j in (i + 1):length(block_levels)) {
+      blk_i <- block_levels[i]
+      blk_j <- block_levels[j]
+      mat_i <- valid_cor_matrix(subset(data, block == blk_i), trait_cols)
+      mat_j <- valid_cor_matrix(subset(data, block == blk_j), trait_cols)
+      if (!is.null(mat_i) && !is.null(mat_j)) {
+        mantel_res <- mantel(as.dist(mat_i), as.dist(mat_j), permutations = 999)
+        cat("\nMantel test between blocks:", blk_i, "and", blk_j, "\n")
+        print(mantel_res)
+      } else {
+        cat("\nSkipping Mantel test between blocks:", blk_i, "and", blk_j, "due to insufficient data\n")
+      }
+    }
+  }
+}
+
+```
+
+

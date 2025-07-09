@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.6.42">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Plant Data Analysis</title>
+<title>plant Data Analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -63,10 +63,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="petal_trait_analysis_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="petal_trait_analysis_files/libs/quarto-html/anchor.min.js"></script>
 <link href="petal_trait_analysis_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="petal_trait_analysis_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="petal_trait_analysis_files/libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="petal_trait_analysis_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="petal_trait_analysis_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="petal_trait_analysis_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="petal_trait_analysis_files/libs/bootstrap/bootstrap-c0367b04c37547644fece4185067e4a7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -79,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Plant Data Analysis</h1>
+<h1 class="title">plant Data Analysis</h1>
 </div>
 
 
@@ -102,72 +102,74 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Import datasets</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>petal_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../data/raw/plant/petal_weight.csv"</span>, <span class="at">na =</span> <span class="fu">c</span>(<span class="st">""</span>, <span class="st">"NA"</span>, <span class="st">"NULL"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Population)) <span class="co"># Remove rows with missing population data</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(population)) <span class="co"># Remove rows with missing population data</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>plant_traits <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../data/raw/plant/plant_traits.csv"</span>, <span class="at">na =</span> <span class="fu">c</span>(<span class="st">""</span>, <span class="st">"NA"</span>, <span class="st">"NULL"</span>))</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># For porometer data, skip the first row which contains headers</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>porometer <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../data/processed/porometer_4pops.csv"</span>, <span class="at">skip =</span> <span class="dv">1</span>, <span class="at">na =</span> <span class="fu">c</span>(<span class="st">""</span>, <span class="st">"NA"</span>, <span class="st">"NULL"</span>)) <span class="sc">%&gt;%</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Drop data from April 19 and April 20</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Date <span class="sc">!=</span> <span class="st">"2025-04-19"</span> <span class="sc">&amp;</span> Date <span class="sc">!=</span> <span class="st">"2025-04-20"</span><span class="sc">&amp;</span> Date <span class="sc">!=</span> <span class="st">"2025-04-21"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(date <span class="sc">!=</span> <span class="st">"2025-04-19"</span> <span class="sc">&amp;</span> date <span class="sc">!=</span> <span class="st">"2025-04-20"</span><span class="sc">&amp;</span> date <span class="sc">!=</span> <span class="st">"2025-04-21"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let’s inspect the data structure of each dataset:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspect first few rows</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(petal_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Rows: 60
-Columns: 9
-$ Date          &lt;date&gt; 2025-03-26, 2025-03-26, 2025-03-26, 2025-03-26, 2025-03…
-$ Population    &lt;chr&gt; "Percos", "Percos", "Percos", "Percos", "Percos", "Perco…
-$ Plant         &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 2,…
-$ wet_wgt       &lt;dbl&gt; 0.15917, 0.11010, 0.20482, 0.17572, 0.18694, 0.16784, 0.…
-$ length        &lt;dbl&gt; 4.0, 3.6, 5.0, 4.1, 4.6, 3.2, 4.5, 4.0, 4.0, 4.0, 4.5, 5…
-$ area          &lt;dbl&gt; 9.957, 13.921, 13.527, NA, NA, NA, NA, NA, NA, NA, NA, N…
-$ dry_wgt       &lt;dbl&gt; 0.01760, 0.01117, 0.02123, 0.01782, 0.01998, 0.01825, 0.…
-$ water_mg      &lt;dbl&gt; 0.14157, 0.09893, 0.18359, 0.15790, 0.16696, 0.14959, 0.…
-$ water_percent &lt;chr&gt; "89%", "90%", "90%", "90%", "89%", "89%", "88%", "89%", …</code></pre>
+<pre><code>Rows: 228
+Columns: 12
+$ date         &lt;chr&gt; "2025-03-26", "2025-03-26", "2025-03-26", "2025-03-26", "…
+$ block        &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
+$ population   &lt;chr&gt; "Percos", "Percos", "Percos", "Percos", "Percos", "Percos…
+$ plant        &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 2, …
+$ wet_wgt      &lt;dbl&gt; 0.15917, 0.11010, 0.20482, 0.17572, 0.18694, 0.16784, 0.1…
+$ petal_flower &lt;chr&gt; "petal", "petal", "petal", "petal", "petal", "petal", "pe…
+$ length       &lt;chr&gt; "4", "3.6", "5", "4.1", "4.6", "3.2", "4.5", "4", "4", "4…
+$ area         &lt;dbl&gt; 9.957, 13.921, 13.527, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ dry_wgt      &lt;dbl&gt; 0.01760, 0.01117, 0.02123, 0.01782, 0.01998, 0.01825, 0.0…
+$ water_mg     &lt;dbl&gt; 0.14157, 0.09893, 0.18359, 0.15790, 0.16696, 0.14959, 0.1…
+$ `water_%`    &lt;chr&gt; "89%", "90%", "90%", "90%", "89%", "89%", "88%", "89%", "…
+$ ...12        &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(plant_traits)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 60
-Columns: 12
-$ Date          &lt;chr&gt; "18-Mar-25", "18-Mar-25", "18-Mar-25", "18-Mar-25", "18-…
-$ Population    &lt;chr&gt; "Pt_Conception", "Pt_Conception", "Pt_Conception", "Pt_C…
-$ Individual    &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 2,…
-$ Leaves        &lt;dbl&gt; 8, 18, 14, 8, 15, 8, 17, 53, 4, 28, 20, 14, 7, 11, 20, 1…
-$ Flowers       &lt;dbl&gt; 0, 0, 2, 1, 1, 1, 1, 2, 1, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0,…
-$ Buds          &lt;dbl&gt; 2, 0, 1, 1, 0, 0, 0, 1, 2, 1, 2, 0, 0, 0, 0, 1, 3, 2, 0,…
-$ Fruit         &lt;dbl&gt; 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+Columns: 11
+$ date          &lt;chr&gt; "18-Mar-25", "18-Mar-25", "18-Mar-25", "18-Mar-25", "18-…
+$ population    &lt;chr&gt; "Pt_Conception", "Pt_Conception", "Pt_Conception", "Pt_C…
+$ individual    &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 2,…
+$ leaves        &lt;dbl&gt; 8, 18, 14, 8, 15, 8, 17, 53, 4, 28, 20, 14, 7, 11, 20, 1…
+$ flowers       &lt;dbl&gt; 0, 0, 2, 1, 1, 1, 1, 2, 1, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0,…
+$ buds          &lt;dbl&gt; 2, 0, 1, 1, 0, 0, 0, 1, 2, 1, 2, 0, 0, 0, 0, 1, 3, 2, 0,…
+$ fruit         &lt;dbl&gt; 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 $ leaf_length   &lt;dbl&gt; 60.1, 116.4, 168.9, 93.2, 54.1, 46.6, 76.8, 170.0, 86.2,…
 $ flower_length &lt;dbl&gt; NA, 35.1, 28.0, 29.7, 32.7, 26.0, 25.4, 27.9, 24.6, 31.8…
 $ fruit_length  &lt;dbl&gt; 5.1, NA, 36.5, NA, NA, NA, NA, 38.1, NA, NA, 47.4, NA, N…
-$ torus_height  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-$ Total_flowers &lt;dbl&gt; 0, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</code></pre>
+$ torus_height  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(<span class="fu">select</span>(porometer, <span class="st">"Obs#"</span>, Time, Date, Population, Plant, gsw)) <span class="co"># Show relevant columns</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(<span class="fu">select</span>(porometer, <span class="st">"Obs#"</span>, time, date, population, plant, gsw)) <span class="co"># Show relevant columns</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Rows: 126
+<pre><code>Rows: 621
 Columns: 6
 $ `Obs#`     &lt;dbl&gt; 1, 2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16…
-$ Time       &lt;time&gt; 12:10:22, 12:10:38, 12:21:15, 12:21:34, 12:31:42, 12:31:57…
-$ Date       &lt;date&gt; 2025-03-28, 2025-03-28, 2025-03-28, 2025-03-28, 2025-03-28…
-$ Population &lt;chr&gt; "Pt. Conception", "Pt. Conception", "Pt. Conception", "Pt. …
-$ Plant      &lt;dbl&gt; 1, 1, 15, 15, 2, 2, 3, 3, 13, 13, 14, 14, 4, 4, 7, 7, 6, 6,…
+$ time       &lt;time&gt; 12:10:22, 12:10:38, 12:21:15, 12:21:34, 12:31:42, 12:31:57…
+$ date       &lt;chr&gt; "3/28/25", "3/28/25", "3/28/25", "3/28/25", "3/28/25", "3/2…
+$ population &lt;chr&gt; "Pt. Conception", "Pt. Conception", "Pt. Conception", "Pt. …
+$ plant      &lt;dbl&gt; 1, 1, 15, 15, 2, 2, 3, 3, 13, 13, 14, 14, 4, 4, 7, 7, 6, 6,…
 $ gsw        &lt;dbl&gt; 1.950072e-03, 2.471293e-03, 4.742870e-06, 6.559651e-03, 6.4…</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for unique populations in each dataset</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Unique populations in petal_data:"</span>, <span class="fu">paste</span>(<span class="fu">unique</span>(petal_data<span class="sc">$</span>Population), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Unique populations in petal_data:"</span>, <span class="fu">paste</span>(<span class="fu">unique</span>(petal_data<span class="sc">$</span>population), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Unique populations in petal_data: Percos, Perry, Pt. Conception, CojoHQ </code></pre>
+<pre><code>Unique populations in petal_data: Percos, Perry, Pt. Conception, Cojo </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Unique populations in plant_traits:"</span>, <span class="fu">paste</span>(<span class="fu">unique</span>(plant_traits<span class="sc">$</span>Population), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Unique populations in plant_traits:"</span>, <span class="fu">paste</span>(<span class="fu">unique</span>(plant_traits<span class="sc">$</span>population), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Unique populations in plant_traits: Pt_Conception, CojoHQ, Perry, Percos </code></pre>
+<pre><code>Unique populations in plant_traits: Pt_Conception, Cojo, Perry, Percos </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Unique populations in porometer:"</span>, <span class="fu">paste</span>(<span class="fu">unique</span>(porometer<span class="sc">$</span>Population), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Unique populations in porometer:"</span>, <span class="fu">paste</span>(<span class="fu">unique</span>(porometer<span class="sc">$</span>population), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Unique populations in porometer: Pt. Conception, Perry, Percos, CojoHQ </code></pre>
+<pre><code>Unique populations in porometer: Pt. Conception, Perry, Percos, CojoHQ, Cojo </code></pre>
 </div>
 </div>
 </section>
@@ -177,91 +179,91 @@ $ gsw        &lt;dbl&gt; 1.950072e-03, 2.471293e-03, 4.742870e-06, 6.559651e-03,
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean and standardize petal weight data</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>petal_clean <span class="ot">&lt;-</span> petal_data <span class="sc">%&gt;%</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert Plant to numeric if not already numeric</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Plant =</span> <span class="fu">as.numeric</span>(Plant),</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert plant to numeric if not already numeric</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">plant =</span> <span class="fu">as.numeric</span>(plant),</span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>         <span class="co"># Ensure date is in proper format</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">Date =</span> <span class="fu">as_date</span>(Date)) <span class="sc">%&gt;%</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">date =</span> <span class="fu">as_date</span>(date)) <span class="sc">%&gt;%</span></span>
 <span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Standardize population names</span></span>
 <span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># First fix the specific Pt. Conception issue</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">Population =</span> <span class="fu">ifelse</span>(Population <span class="sc">==</span> <span class="st">"Pt. Conception"</span>, <span class="st">"Pt_Conception"</span>, Population),</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">population =</span> <span class="fu">ifelse</span>(population <span class="sc">==</span> <span class="st">"Pt. Conception"</span>, <span class="st">"Pt_Conception"</span>, population),</span>
 <span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Then handle other standardizations</span></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">Population =</span> <span class="fu">str_replace</span>(Population, <span class="st">"</span><span class="sc">\\</span><span class="st">."</span>, <span class="st">"_"</span>),</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">population =</span> <span class="fu">str_replace</span>(population, <span class="st">"</span><span class="sc">\\</span><span class="st">."</span>, <span class="st">"_"</span>),</span>
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Finally handle specific populations</span></span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">Population =</span> <span class="fu">case_when</span>(</span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>      Population <span class="sc">==</span> <span class="st">"Cojo"</span> <span class="sc">|</span> Population <span class="sc">==</span> <span class="st">"CojoHQ"</span> <span class="sc">~</span> <span class="st">"Cojo"</span>,</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> Population</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">population =</span> <span class="fu">case_when</span>(</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>      population <span class="sc">==</span> <span class="st">"Cojo"</span> <span class="sc">|</span> population <span class="sc">==</span> <span class="st">"CojoHQ"</span> <span class="sc">~</span> <span class="st">"Cojo"</span>,</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> population</span>
 <span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    ))</span>
 <span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean and standardize plant traits data</span></span>
 <span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>plant_traits_clean <span class="ot">&lt;-</span> plant_traits <span class="sc">%&gt;%</span></span>
 <span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert date format - handle DD-MMM-YY format</span></span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Date =</span> <span class="fu">dmy</span>(Date),</span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>         <span class="co"># Rename Individual to Plant for consistency</span></span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>         <span class="at">Plant =</span> Individual) <span class="sc">%&gt;%</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">dmy</span>(date),</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>         <span class="co"># Rename individual to plant for consistency</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>         <span class="at">plant =</span> individual) <span class="sc">%&gt;%</span></span>
 <span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Standardize population names</span></span>
 <span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># First fix the specific Pt. Conception issue</span></span>
-<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">Population =</span> <span class="fu">ifelse</span>(Population <span class="sc">==</span> <span class="st">"Pt. Conception"</span>, <span class="st">"Pt_Conception"</span>, Population),</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">population =</span> <span class="fu">ifelse</span>(population <span class="sc">==</span> <span class="st">"Pt. Conception"</span>, <span class="st">"Pt_Conception"</span>, population),</span>
 <span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Then handle other standardizations</span></span>
-<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">Population =</span> <span class="fu">str_replace</span>(Population, <span class="st">"</span><span class="sc">\\</span><span class="st">."</span>, <span class="st">"_"</span>),</span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">population =</span> <span class="fu">str_replace</span>(population, <span class="st">"</span><span class="sc">\\</span><span class="st">."</span>, <span class="st">"_"</span>),</span>
 <span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Finally handle specific populations</span></span>
-<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">Population =</span> <span class="fu">case_when</span>(</span>
-<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>      Population <span class="sc">==</span> <span class="st">"Cojo"</span> <span class="sc">|</span> Population <span class="sc">==</span> <span class="st">"CojoHQ"</span> <span class="sc">~</span> <span class="st">"Cojo"</span>,</span>
-<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> Population</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">population =</span> <span class="fu">case_when</span>(</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>      population <span class="sc">==</span> <span class="st">"Cojo"</span> <span class="sc">|</span> population <span class="sc">==</span> <span class="st">"CojoHQ"</span> <span class="sc">~</span> <span class="st">"Cojo"</span>,</span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> population</span>
 <span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
 <span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Select relevant columns</span></span>
-<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>Individual) <span class="co"># Remove original Individual column</span></span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>individual) <span class="co"># Remove original individual column</span></span>
 <span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean and standardize porometer data</span></span>
 <span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>porometer_clean <span class="ot">&lt;-</span> porometer <span class="sc">%&gt;%</span></span>
 <span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Select only relevant columns</span></span>
-<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Date, </span>
-<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>         Time,</span>
-<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>         Population, </span>
-<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>         Plant, </span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(date, </span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>         time,</span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>         population, </span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>         plant, </span>
 <span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>         gsw) <span class="sc">%&gt;%</span></span>
 <span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert date to proper format</span></span>
-<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Date =</span> <span class="fu">as_date</span>(Date),</span>
-<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a>         <span class="co"># Convert Plant to numeric</span></span>
-<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a>         <span class="at">Plant =</span> <span class="fu">as.numeric</span>(Plant)) <span class="sc">%&gt;%</span></span>
+<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">as_date</span>(date),</span>
+<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a>         <span class="co"># Convert plant to numeric</span></span>
+<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a>         <span class="at">plant =</span> <span class="fu">as.numeric</span>(plant)) <span class="sc">%&gt;%</span></span>
 <span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Standardize population names</span></span>
 <span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a>    <span class="co"># First fix the specific Pt. Conception issue</span></span>
-<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">Population =</span> <span class="fu">ifelse</span>(Population <span class="sc">==</span> <span class="st">"Pt. Conception"</span>, <span class="st">"Pt_Conception"</span>, Population),</span>
+<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">population =</span> <span class="fu">ifelse</span>(population <span class="sc">==</span> <span class="st">"Pt. Conception"</span>, <span class="st">"Pt_Conception"</span>, population),</span>
 <span id="cb14-56"><a href="#cb14-56" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Then handle other standardizations</span></span>
-<span id="cb14-57"><a href="#cb14-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">Population =</span> <span class="fu">str_replace</span>(Population, <span class="st">"</span><span class="sc">\\</span><span class="st">."</span>, <span class="st">"_"</span>),</span>
+<span id="cb14-57"><a href="#cb14-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">population =</span> <span class="fu">str_replace</span>(population, <span class="st">"</span><span class="sc">\\</span><span class="st">."</span>, <span class="st">"_"</span>),</span>
 <span id="cb14-58"><a href="#cb14-58" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Finally handle specific populations</span></span>
-<span id="cb14-59"><a href="#cb14-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">Population =</span> <span class="fu">case_when</span>(</span>
-<span id="cb14-60"><a href="#cb14-60" aria-hidden="true" tabindex="-1"></a>      Population <span class="sc">==</span> <span class="st">"Cojo"</span> <span class="sc">|</span> Population <span class="sc">==</span> <span class="st">"CojoHQ"</span> <span class="sc">~</span> <span class="st">"Cojo"</span>,</span>
-<span id="cb14-61"><a href="#cb14-61" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> Population</span>
+<span id="cb14-59"><a href="#cb14-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">population =</span> <span class="fu">case_when</span>(</span>
+<span id="cb14-60"><a href="#cb14-60" aria-hidden="true" tabindex="-1"></a>      population <span class="sc">==</span> <span class="st">"Cojo"</span> <span class="sc">|</span> population <span class="sc">==</span> <span class="st">"CojoHQ"</span> <span class="sc">~</span> <span class="st">"Cojo"</span>,</span>
+<span id="cb14-61"><a href="#cb14-61" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> population</span>
 <span id="cb14-62"><a href="#cb14-62" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb14-63"><a href="#cb14-63" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb14-64"><a href="#cb14-64" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-65"><a href="#cb14-65" aria-hidden="true" tabindex="-1"></a><span class="co"># Check our cleaned data</span></span>
-<span id="cb14-66"><a href="#cb14-66" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Date format in petal_clean:"</span>, <span class="fu">class</span>(petal_clean<span class="sc">$</span>Date[<span class="dv">1</span>]), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-66"><a href="#cb14-66" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"date format in petal_clean:"</span>, <span class="fu">class</span>(petal_clean<span class="sc">$</span>date[<span class="dv">1</span>]), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Date format in petal_clean: Date </code></pre>
+<pre><code>date format in petal_clean: Date </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Date format in plant_traits_clean:"</span>, <span class="fu">class</span>(plant_traits_clean<span class="sc">$</span>Date[<span class="dv">1</span>]), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"date format in plant_traits_clean:"</span>, <span class="fu">class</span>(plant_traits_clean<span class="sc">$</span>date[<span class="dv">1</span>]), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Date format in plant_traits_clean: Date </code></pre>
+<pre><code>date format in plant_traits_clean: Date </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Date format in porometer_clean:"</span>, <span class="fu">class</span>(porometer_clean<span class="sc">$</span>Date[<span class="dv">1</span>]), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"date format in porometer_clean:"</span>, <span class="fu">class</span>(porometer_clean<span class="sc">$</span>date[<span class="dv">1</span>]), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Date format in porometer_clean: Date </code></pre>
+<pre><code>date format in porometer_clean: Date </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check population names after standardization</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Cleaned populations in petal_clean:"</span>, <span class="fu">paste</span>(<span class="fu">unique</span>(petal_clean<span class="sc">$</span>Population), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Cleaned populations in petal_clean:"</span>, <span class="fu">paste</span>(<span class="fu">unique</span>(petal_clean<span class="sc">$</span>population), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Cleaned populations in petal_clean: Percos, Perry, Pt_Conception, Cojo </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Cleaned populations in plant_traits_clean:"</span>, <span class="fu">paste</span>(<span class="fu">unique</span>(plant_traits_clean<span class="sc">$</span>Population), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Cleaned populations in plant_traits_clean:"</span>, <span class="fu">paste</span>(<span class="fu">unique</span>(plant_traits_clean<span class="sc">$</span>population), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Cleaned populations in plant_traits_clean: Pt_Conception, Cojo, Perry, Percos </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Cleaned populations in porometer_clean:"</span>, <span class="fu">paste</span>(<span class="fu">unique</span>(porometer_clean<span class="sc">$</span>Population), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Cleaned populations in porometer_clean:"</span>, <span class="fu">paste</span>(<span class="fu">unique</span>(porometer_clean<span class="sc">$</span>population), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Cleaned populations in porometer_clean: Pt_Conception, Perry, Percos, Cojo </code></pre>
 </div>
@@ -274,22 +276,22 @@ $ gsw        &lt;dbl&gt; 1.950072e-03, 2.471293e-03, 4.742870e-06, 6.559651e-03,
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check dates in each dataset</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>date_summary <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  petal_clean <span class="sc">%&gt;%</span> </span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">distinct</span>(Population, Date) <span class="sc">%&gt;%</span> </span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">distinct</span>(population, date) <span class="sc">%&gt;%</span> </span>
 <span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Dataset =</span> <span class="st">"Petal Weight"</span>),</span>
 <span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  plant_traits_clean <span class="sc">%&gt;%</span> </span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">distinct</span>(Population, Date) <span class="sc">%&gt;%</span> </span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Dataset =</span> <span class="st">"Plant Traits"</span>),</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">distinct</span>(population, date) <span class="sc">%&gt;%</span> </span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Dataset =</span> <span class="st">"plant Traits"</span>),</span>
 <span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  porometer_clean <span class="sc">%&gt;%</span> </span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">distinct</span>(Population, Date) <span class="sc">%&gt;%</span> </span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">distinct</span>(population, date) <span class="sc">%&gt;%</span> </span>
 <span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Dataset =</span> <span class="st">"Porometer"</span>)</span>
 <span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a><span class="co"># View dates by population and dataset</span></span>
-<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(date_summary, <span class="fu">aes</span>(<span class="at">x =</span> Date, <span class="at">y =</span> Dataset, <span class="at">color =</span> Population)) <span class="sc">+</span></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(date_summary, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> Dataset, <span class="at">color =</span> population)) <span class="sc">+</span></span>
 <span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
 <span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Available Dates by Dataset and Population"</span>,</span>
-<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Date"</span>,</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Available dates by Dataset and population"</span>,</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"date"</span>,</span>
 <span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Dataset"</span>) <span class="sc">+</span></span>
 <span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -301,30 +303,30 @@ $ gsw        &lt;dbl&gt; 1.950072e-03, 2.471293e-03, 4.742870e-06, 6.559651e-03,
 </div>
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Count measurements per plant per date in porometer data</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>porometer_measurements <span class="ot">&lt;-</span> porometer_clean <span class="sc">%&gt;%</span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Population, Plant, Date) <span class="sc">%&gt;%</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(population, plant, date) <span class="sc">%&gt;%</span></span>
 <span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Measurements =</span> <span class="fu">n</span>(), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Measurements))</span>
 <span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Show plants with multiple measurements</span></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Plants with multiple porometer measurements on the same date:</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"plants with multiple porometer measurements on the same date:</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Plants with multiple porometer measurements on the same date:</code></pre>
+<pre><code>plants with multiple porometer measurements on the same date:</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(porometer_measurements <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Measurements <span class="sc">&gt;</span> <span class="dv">1</span>), <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 10 × 4
-   Population Plant Date       Measurements
-   &lt;chr&gt;      &lt;dbl&gt; &lt;date&gt;            &lt;int&gt;
- 1 Perry         NA 2025-03-28            3
- 2 Cojo           1 2025-04-17            2
- 3 Cojo           2 2025-04-17            2
- 4 Cojo           3 2025-04-17            2
- 5 Cojo           4 2025-04-17            2
- 6 Cojo           5 2025-04-17            2
- 7 Cojo           6 2025-04-17            2
- 8 Cojo           7 2025-04-17            2
- 9 Cojo           8 2025-04-17            2
-10 Cojo           9 2025-04-17            2</code></pre>
+   population plant date   Measurements
+   &lt;chr&gt;      &lt;dbl&gt; &lt;date&gt;        &lt;int&gt;
+ 1 Percos        NA NA                7
+ 2 Cojo           1 NA                4
+ 3 Cojo           2 NA                4
+ 4 Cojo           3 NA                4
+ 5 Cojo           4 NA                4
+ 6 Cojo           5 NA                4
+ 7 Cojo           6 NA                4
+ 8 Cojo           7 NA                4
+ 9 Cojo           8 NA                4
+10 Cojo           9 NA                4</code></pre>
 </div>
 </div>
 <p>Since we’re dealing with multiple measurements per plant per date in the porometer dataset (particularly for Cojo/CojoHQ populations), we’ll make sure to use the data from the same date when merging.</p>
@@ -333,40 +335,40 @@ $ gsw        &lt;dbl&gt; 1.950072e-03, 2.471293e-03, 4.742870e-06, 6.559651e-03,
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>merged_data <span class="ot">&lt;-</span> <span class="fu">full_join</span>(</span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  petal_clean, </span>
 <span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  plant_traits_clean,</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"Population"</span>, <span class="st">"Plant"</span>)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"population"</span>, <span class="st">"plant"</span>)</span>
 <span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Then merge with porometer_clean</span></span>
 <span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="co"># For porometer data, we might have multiple measurements per plant per day</span></span>
 <span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="co"># We'll sum the gsw values for each plant-day combination</span></span>
 <span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>porometer_summary <span class="ot">&lt;-</span> porometer_clean <span class="sc">%&gt;%</span></span>
-<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Population, Plant, Date) <span class="sc">%&gt;%</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(population, plant, date) <span class="sc">%&gt;%</span></span>
 <span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">gsw =</span> <span class="fu">sum</span>(gsw, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
 <span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Now merge this summary with our merged data</span></span>
 <span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>matched_data <span class="ot">&lt;-</span> <span class="fu">full_join</span>(</span>
 <span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>  merged_data,</span>
 <span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>  porometer_summary,</span>
-<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"Population"</span>, <span class="st">"Plant"</span>)</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"population"</span>, <span class="st">"plant"</span>)</span>
 <span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Create separate dataframes for matched and unmatched data</span></span>
 <span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Matched data has values from all three datasets</span></span>
 <span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>matched_data <span class="ot">&lt;-</span> matched_data <span class="sc">%&gt;%</span></span>
-<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(wet_wgt) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(Flowers) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(gsw))</span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(wet_wgt) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(flowers) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(gsw))</span>
 <span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Unmatched data is everything else</span></span>
 <span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a>unmatched_data <span class="ot">&lt;-</span> matched_data <span class="sc">%&gt;%</span></span>
-<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(wet_wgt) <span class="sc">|</span> <span class="fu">is.na</span>(Flowers) <span class="sc">|</span> <span class="fu">is.na</span>(gsw))</span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(wet_wgt) <span class="sc">|</span> <span class="fu">is.na</span>(flowers) <span class="sc">|</span> <span class="fu">is.na</span>(gsw))</span>
 <span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of our data</span></span>
 <span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Total rows in final merged dataset:"</span>, <span class="fu">nrow</span>(matched_data), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Total rows in final merged dataset: 57 </code></pre>
+<pre><code>Total rows in final merged dataset: 228 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Rows in matched dataset:"</span>, <span class="fu">nrow</span>(matched_data), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Rows in matched dataset: 57 </code></pre>
+<pre><code>Rows in matched dataset: 228 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Rows in unmatched dataset:"</span>, <span class="fu">nrow</span>(unmatched_data), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -375,24 +377,24 @@ $ gsw        &lt;dbl&gt; 1.950072e-03, 2.471293e-03, 4.742870e-06, 6.559651e-03,
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Show first few rows of matched data</span></span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(matched_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 21
-  Date.x     Population Plant wet_wgt length  area dry_wgt water_mg
-  &lt;date&gt;     &lt;chr&gt;      &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
-1 2025-03-26 Percos         1   0.159    4    9.96  0.0176   0.142 
-2 2025-03-26 Percos         2   0.110    3.6 13.9   0.0112   0.0989
-3 2025-03-26 Percos         3   0.205    5   13.5   0.0212   0.184 
-4 2025-03-26 Percos         4   0.176    4.1 NA     0.0178   0.158 
-5 2025-03-26 Percos         5   0.187    4.6 NA     0.0200   0.167 
-6 2025-03-26 Percos         6   0.168    3.2 NA     0.0182   0.150 
-# ℹ 13 more variables: water_percent &lt;chr&gt;, Date.y &lt;date&gt;, Leaves &lt;dbl&gt;,
-#   Flowers &lt;dbl&gt;, Buds &lt;dbl&gt;, Fruit &lt;dbl&gt;, leaf_length &lt;dbl&gt;,
-#   flower_length &lt;dbl&gt;, fruit_length &lt;dbl&gt;, torus_height &lt;dbl&gt;,
-#   Total_flowers &lt;dbl&gt;, Date &lt;date&gt;, gsw &lt;dbl&gt;</code></pre>
+<pre><code># A tibble: 6 × 23
+  date.x     block population plant wet_wgt petal_flower length  area dry_wgt
+  &lt;date&gt;     &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+1 2025-03-26     1 Percos         1   0.159 petal        4       9.96  0.0176
+2 2025-03-26     1 Percos         2   0.110 petal        3.6    13.9   0.0112
+3 2025-03-26     1 Percos         3   0.205 petal        5      13.5   0.0212
+4 2025-03-26     1 Percos         4   0.176 petal        4.1    NA     0.0178
+5 2025-03-26     1 Percos         5   0.187 petal        4.6    NA     0.0200
+6 2025-03-26     1 Percos         6   0.168 petal        3.2    NA     0.0182
+# ℹ 14 more variables: water_mg &lt;dbl&gt;, `water_%` &lt;chr&gt;, ...12 &lt;chr&gt;,
+#   date.y &lt;date&gt;, leaves &lt;dbl&gt;, flowers &lt;dbl&gt;, buds &lt;dbl&gt;, fruit &lt;dbl&gt;,
+#   leaf_length &lt;dbl&gt;, flower_length &lt;dbl&gt;, fruit_length &lt;dbl&gt;,
+#   torus_height &lt;dbl&gt;, date &lt;date&gt;, gsw &lt;dbl&gt;</code></pre>
 </div>
 </div>
 </section>
 <section id="population-level-analysis" class="level2">
-<h2 class="anchored" data-anchor-id="population-level-analysis">Population-Level Analysis</h2>
+<h2 class="anchored" data-anchor-id="population-level-analysis">population-Level Analysis</h2>
 <p>Now we’ll analyze population-level variation in the specified variables: flowers, buds, fruits, leaf_length, wet_wgt, dry_wgt, water_mg, and gsw.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to perform ANOVA and create a summary of data by population</span></span>
@@ -402,7 +404,7 @@ $ gsw        &lt;dbl&gt; 1.950072e-03, 2.471293e-03, 4.742870e-06, 6.559651e-03,
 <span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create summary statistics by population</span></span>
 <span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  summary_stats <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
 <span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(<span class="sc">!!</span>var_sym)) <span class="sc">%&gt;%</span></span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(Population) <span class="sc">%&gt;%</span></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(population) <span class="sc">%&gt;%</span></span>
 <span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(</span>
 <span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">Mean =</span> <span class="fu">mean</span>(<span class="sc">!!</span>var_sym, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
 <span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">SD =</span> <span class="fu">sd</span>(<span class="sc">!!</span>var_sym, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
@@ -413,7 +415,7 @@ $ gsw        &lt;dbl&gt; 1.950072e-03, 2.471293e-03, 4.742870e-06, 6.559651e-03,
 <span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Perform ANOVA</span></span>
-<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>  formula <span class="ot">&lt;-</span> <span class="fu">as.formula</span>(<span class="fu">paste</span>(variable, <span class="st">"~ Population"</span>))</span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>  formula <span class="ot">&lt;-</span> <span class="fu">as.formula</span>(<span class="fu">paste</span>(variable, <span class="st">"~ population"</span>))</span>
 <span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a>  model <span class="ot">&lt;-</span> <span class="fu">aov</span>(formula, <span class="at">data =</span> data)</span>
 <span id="cb39-21"><a href="#cb39-21" aria-hidden="true" tabindex="-1"></a>  model_summary <span class="ot">&lt;-</span> <span class="fu">summary</span>(model)</span>
 <span id="cb39-22"><a href="#cb39-22" aria-hidden="true" tabindex="-1"></a>  </span>
@@ -429,7 +431,7 @@ $ gsw        &lt;dbl&gt; 1.950072e-03, 2.471293e-03, 4.742870e-06, 6.559651e-03,
 <span id="cb39-32"><a href="#cb39-32" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb39-33"><a href="#cb39-33" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb39-34"><a href="#cb39-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Variables to analyze</span></span>
-<span id="cb39-35"><a href="#cb39-35" aria-hidden="true" tabindex="-1"></a>variables <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Flowers"</span>, <span class="st">"Buds"</span>, <span class="st">"Fruit"</span>, <span class="st">"leaf_length"</span>, <span class="st">"wet_wgt"</span>, <span class="st">"dry_wgt"</span>, <span class="st">"water_mg"</span>, <span class="st">"gsw"</span>)</span>
+<span id="cb39-35"><a href="#cb39-35" aria-hidden="true" tabindex="-1"></a>variables <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"flowers"</span>, <span class="st">"buds"</span>, <span class="st">"fruit"</span>, <span class="st">"leaf_length"</span>, <span class="st">"wet_wgt"</span>, <span class="st">"dry_wgt"</span>, <span class="st">"water_mg"</span>, <span class="st">"gsw"</span>)</span>
 <span id="cb39-36"><a href="#cb39-36" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb39-37"><a href="#cb39-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Loop through variables and perform analysis</span></span>
 <span id="cb39-38"><a href="#cb39-38" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
@@ -438,7 +440,7 @@ $ gsw        &lt;dbl&gt; 1.950072e-03, 2.471293e-03, 4.742870e-06, 6.559651e-03,
 <span id="cb39-41"><a href="#cb39-41" aria-hidden="true" tabindex="-1"></a>    results[[var]] <span class="ot">&lt;-</span> <span class="fu">analyze_by_population</span>(matched_data, var)</span>
 <span id="cb39-42"><a href="#cb39-42" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb39-43"><a href="#cb39-43" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Print summary table</span></span>
-<span id="cb39-44"><a href="#cb39-44" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">## Analysis of"</span>, var, <span class="st">"by Population</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
+<span id="cb39-44"><a href="#cb39-44" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">## Analysis of"</span>, var, <span class="st">"by population</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
 <span id="cb39-45"><a href="#cb39-45" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="fu">kable</span>(results[[var]]<span class="sc">$</span>summary_stats, <span class="at">digits =</span> <span class="dv">3</span>))</span>
 <span id="cb39-46"><a href="#cb39-46" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb39-47"><a href="#cb39-47" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Print ANOVA results</span></span>
@@ -448,41 +450,41 @@ $ gsw        &lt;dbl&gt; 1.950072e-03, 2.471293e-03, 4.742870e-06, 6.559651e-03,
 <span id="cb39-51"><a href="#cb39-51" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create visualization</span></span>
 <span id="cb39-52"><a href="#cb39-52" aria-hidden="true" tabindex="-1"></a>    p <span class="ot">&lt;-</span> matched_data <span class="sc">%&gt;%</span></span>
 <span id="cb39-53"><a href="#cb39-53" aria-hidden="true" tabindex="-1"></a>      <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(<span class="sc">!!</span><span class="fu">sym</span>(var))) <span class="sc">%&gt;%</span></span>
-<span id="cb39-54"><a href="#cb39-54" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Population, <span class="at">y =</span> <span class="sc">!!</span><span class="fu">sym</span>(var), <span class="at">fill =</span> Population)) <span class="sc">+</span></span>
+<span id="cb39-54"><a href="#cb39-54" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> population, <span class="at">y =</span> <span class="sc">!!</span><span class="fu">sym</span>(var), <span class="at">fill =</span> population)) <span class="sc">+</span></span>
 <span id="cb39-55"><a href="#cb39-55" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
 <span id="cb39-56"><a href="#cb39-56" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb39-57"><a href="#cb39-57" aria-hidden="true" tabindex="-1"></a>      <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Distribution of"</span>, var, <span class="st">"by Population"</span>),</span>
+<span id="cb39-57"><a href="#cb39-57" aria-hidden="true" tabindex="-1"></a>      <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Distribution of"</span>, var, <span class="st">"by population"</span>),</span>
 <span id="cb39-58"><a href="#cb39-58" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> var,</span>
-<span id="cb39-59"><a href="#cb39-59" aria-hidden="true" tabindex="-1"></a>           <span class="at">x =</span> <span class="st">"Population"</span>) <span class="sc">+</span></span>
+<span id="cb39-59"><a href="#cb39-59" aria-hidden="true" tabindex="-1"></a>           <span class="at">x =</span> <span class="st">"population"</span>) <span class="sc">+</span></span>
 <span id="cb39-60"><a href="#cb39-60" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>,</span>
 <span id="cb39-61"><a href="#cb39-61" aria-hidden="true" tabindex="-1"></a>            <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
 <span id="cb39-62"><a href="#cb39-62" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb39-63"><a href="#cb39-63" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(p)</span>
 <span id="cb39-64"><a href="#cb39-64" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb39-65"><a href="#cb39-65" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">## Analysis of"</span>, var, <span class="st">"by Population</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb39-65"><a href="#cb39-65" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">## Analysis of"</span>, var, <span class="st">"by population</span><span class="sc">\n</span><span class="st">"</span>)</span>
 <span id="cb39-66"><a href="#cb39-66" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"Variable"</span>, var, <span class="st">"not found in dataset</span><span class="sc">\n</span><span class="st">"</span>)</span>
 <span id="cb39-67"><a href="#cb39-67" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb39-68"><a href="#cb39-68" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-## Analysis of Flowers by Population
+## Analysis of flowers by population
 
 
 
-|Population    |  Mean|    SD| Min| Max|  N|
+|population    |  Mean|    SD| Min| Max|  N|
 |:-------------|-----:|-----:|---:|---:|--:|
-|Cojo          | 0.467| 0.516|   0|   1| 15|
-|Percos        | 0.867| 0.834|   0|   2| 15|
-|Perry         | 2.846| 2.193|   1|   8| 13|
-|Pt_Conception | 0.786| 0.802|   0|   2| 14|
+|Cojo          | 0.467| 0.503|   0|   1| 60|
+|Percos        | 0.862| 0.826|   0|   2| 58|
+|Perry         | 2.560| 1.971|   1|   8| 50|
+|Pt_Conception | 0.733| 0.778|   0|   2| 60|
 
 ANOVA Results:
 
 
-|term       | df|  sumsq| meansq| statistic| p.value|
-|:----------|--:|------:|------:|---------:|-------:|
-|Population |  3| 47.361| 15.787|    10.523|       0|
-|Residuals  | 53| 79.516|  1.500|        NA|      NA|</code></pre>
+|term       |  df|   sumsq| meansq| statistic| p.value|
+|:----------|---:|-------:|------:|---------:|-------:|
+|population |   3| 141.994| 47.331|    37.881|       0|
+|Residuals  | 224| 279.883|  1.249|        NA|      NA|</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
@@ -493,24 +495,24 @@ ANOVA Results:
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-## Analysis of Buds by Population
+## Analysis of buds by population
 
 
 
-|Population    |  Mean|    SD| Min| Max|  N|
+|population    |  Mean|    SD| Min| Max|  N|
 |:-------------|-----:|-----:|---:|---:|--:|
-|Cojo          | 2.267| 2.052|   0|   6| 15|
-|Percos        | 3.000| 3.546|   0|  13| 15|
-|Perry         | 4.538| 4.943|   0|  15| 13|
-|Pt_Conception | 0.714| 0.825|   0|   2| 14|
+|Cojo          | 2.267| 1.999|   0|   6| 60|
+|Percos        | 2.931| 3.494|   0|  13| 58|
+|Perry         | 3.680| 4.556|   0|  15| 50|
+|Pt_Conception | 0.667| 0.795|   0|   2| 60|
 
 ANOVA Results:
 
 
-|term       | df|   sumsq| meansq| statistic| p.value|
-|:----------|--:|-------:|------:|---------:|-------:|
-|Population |  3| 102.698| 34.233|     3.379|   0.025|
-|Residuals  | 53| 537.021| 10.132|        NA|      NA|</code></pre>
+|term       |  df|    sumsq| meansq| statistic| p.value|
+|:----------|---:|--------:|------:|---------:|-------:|
+|population |   3|  278.312| 92.771|    10.465|       0|
+|Residuals  | 224| 1985.671|  8.865|        NA|      NA|</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
@@ -521,24 +523,24 @@ ANOVA Results:
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-## Analysis of Fruit by Population
+## Analysis of fruit by population
 
 
 
-|Population    |  Mean|    SD| Min| Max|  N|
+|population    |  Mean|    SD| Min| Max|  N|
 |:-------------|-----:|-----:|---:|---:|--:|
-|Cojo          | 0.267| 0.594|   0|   2| 15|
-|Percos        | 0.267| 0.594|   0|   2| 15|
-|Perry         | 3.308| 3.011|   0|  10| 13|
-|Pt_Conception | 0.214| 0.426|   0|   1| 14|
+|Cojo          | 0.267| 0.578|   0|   2| 60|
+|Percos        | 0.276| 0.586|   0|   2| 58|
+|Perry         | 2.760| 2.789|   0|  10| 50|
+|Pt_Conception | 0.200| 0.403|   0|   1| 60|
 
 ANOVA Results:
 
 
-|term       | df|   sumsq| meansq| statistic| p.value|
-|:----------|--:|-------:|------:|---------:|-------:|
-|Population |  3|  93.849| 31.283|    13.703|       0|
-|Residuals  | 53| 120.993|  2.283|        NA|      NA|</code></pre>
+|term       |  df|  sumsq| meansq| statistic| p.value|
+|:----------|---:|------:|------:|---------:|-------:|
+|population |   3| 246.68| 82.227|     42.83|       0|
+|Residuals  | 224| 430.04|  1.920|        NA|      NA|</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
@@ -549,24 +551,24 @@ ANOVA Results:
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-## Analysis of leaf_length by Population
+## Analysis of leaf_length by population
 
 
 
-|Population    |   Mean|     SD|  Min|   Max|  N|
+|population    |   Mean|     SD|  Min|   Max|  N|
 |:-------------|------:|------:|----:|-----:|--:|
-|Cojo          | 99.673| 52.056| 32.3| 203.6| 15|
-|Percos        | 24.520| 25.720| 14.8| 116.5| 15|
-|Perry         | 11.123|  4.993|  4.0|  20.2| 13|
-|Pt_Conception | 96.471| 51.587| 43.2| 192.6| 14|
+|Cojo          | 99.673| 50.716| 32.3| 203.6| 60|
+|Percos        | 24.452| 25.490| 14.8| 116.5| 58|
+|Perry         | 10.190|  4.673|  4.0|  20.2| 50|
+|Pt_Conception | 96.660| 48.435| 43.2| 192.6| 60|
 
 ANOVA Results:
 
 
-|term       | df|    sumsq|    meansq| statistic| p.value|
-|:----------|--:|--------:|---------:|---------:|-------:|
-|Population |  3| 92103.54| 30701.181|    19.821|       0|
-|Residuals  | 53| 82094.15|  1548.946|        NA|      NA|</code></pre>
+|term       |  df|    sumsq|     meansq| statistic| p.value|
+|:----------|---:|--------:|----------:|---------:|-------:|
+|population |   3| 372417.6| 124139.205|    84.708|       0|
+|Residuals  | 224| 328271.6|   1465.498|        NA|      NA|</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
@@ -577,24 +579,24 @@ ANOVA Results:
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-## Analysis of wet_wgt by Population
+## Analysis of wet_wgt by population
 
 
 
-|Population    |  Mean|    SD|   Min|   Max|  N|
+|population    |  Mean|    SD|   Min|   Max|  N|
 |:-------------|-----:|-----:|-----:|-----:|--:|
-|Cojo          | 0.060| 0.026| 0.022| 0.106| 15|
-|Percos        | 0.164| 0.040| 0.109| 0.246| 15|
-|Perry         | 0.079| 0.032| 0.032| 0.145| 13|
-|Pt_Conception | 0.075| 0.029| 0.037| 0.131| 14|
+|Cojo          | 0.050| 0.038| 0.008| 0.137| 60|
+|Percos        | 0.092| 0.069| 0.009| 0.246| 58|
+|Perry         | 0.035| 0.033| 0.004| 0.145| 50|
+|Pt_Conception | 0.068| 0.055| 0.012| 0.256| 60|
 
 ANOVA Results:
 
 
-|term       | df| sumsq| meansq| statistic| p.value|
-|:----------|--:|-----:|------:|---------:|-------:|
-|Population |  3| 0.099|  0.033|     32.22|       0|
-|Residuals  | 53| 0.054|  0.001|        NA|      NA|</code></pre>
+|term       |  df| sumsq| meansq| statistic| p.value|
+|:----------|---:|-----:|------:|---------:|-------:|
+|population |   3| 0.101|  0.034|    12.817|       0|
+|Residuals  | 224| 0.589|  0.003|        NA|      NA|</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
@@ -605,24 +607,24 @@ ANOVA Results:
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-## Analysis of dry_wgt by Population
+## Analysis of dry_wgt by population
 
 
 
-|Population    |  Mean|    SD|   Min|   Max|  N|
+|population    |  Mean|    SD|   Min|   Max|  N|
 |:-------------|-----:|-----:|-----:|-----:|--:|
-|Cojo          | 0.007| 0.003| 0.000| 0.012| 15|
-|Percos        | 0.018| 0.004| 0.011| 0.026| 15|
-|Perry         | 0.009| 0.003| 0.003| 0.013| 13|
-|Pt_Conception | 0.009| 0.003| 0.005| 0.015| 14|
+|Cojo          | 0.005| 0.003| 0.000| 0.012| 30|
+|Percos        | 0.014| 0.006| 0.003| 0.026| 29|
+|Perry         | 0.006| 0.003| 0.001| 0.013| 32|
+|Pt_Conception | 0.008| 0.004| 0.002| 0.018| 30|
 
 ANOVA Results:
 
 
-|term       | df| sumsq| meansq| statistic| p.value|
-|:----------|--:|-----:|------:|---------:|-------:|
-|Population |  3| 0.001|      0|    29.905|       0|
-|Residuals  | 53| 0.001|      0|        NA|      NA|</code></pre>
+|term       |  df| sumsq| meansq| statistic| p.value|
+|:----------|---:|-----:|------:|---------:|-------:|
+|population |   3| 0.001|      0|    23.035|       0|
+|Residuals  | 117| 0.002|      0|        NA|      NA|</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
@@ -633,24 +635,24 @@ ANOVA Results:
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-## Analysis of water_mg by Population
+## Analysis of water_mg by population
 
 
 
-|Population    |  Mean|    SD|   Min|   Max|  N|
+|population    |  Mean|    SD|   Min|   Max|  N|
 |:-------------|-----:|-----:|-----:|-----:|--:|
-|Cojo          | 0.054| 0.023| 0.020| 0.095| 15|
-|Percos        | 0.147| 0.036| 0.098| 0.219| 15|
-|Perry         | 0.070| 0.030| 0.029| 0.131| 13|
-|Pt_Conception | 0.066| 0.026| 0.032| 0.116| 14|
+|Cojo          | 0.038| 0.023| 0.009| 0.095| 30|
+|Percos        | 0.089| 0.066| 0.016| 0.219| 29|
+|Perry         | 0.043| 0.032| 0.007| 0.131| 32|
+|Pt_Conception | 0.049| 0.028| 0.010| 0.116| 30|
 
 ANOVA Results:
 
 
-|term       | df| sumsq| meansq| statistic| p.value|
-|:----------|--:|-----:|------:|---------:|-------:|
-|Population |  3| 0.080|  0.027|    31.759|       0|
-|Residuals  | 53| 0.044|  0.001|        NA|      NA|</code></pre>
+|term       |  df| sumsq| meansq| statistic| p.value|
+|:----------|---:|-----:|------:|---------:|-------:|
+|population |   3| 0.049|  0.016|    10.086|       0|
+|Residuals  | 117| 0.189|  0.002|        NA|      NA|</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
@@ -661,24 +663,24 @@ ANOVA Results:
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-## Analysis of gsw by Population
+## Analysis of gsw by population
 
 
 
-|Population    |  Mean|    SD|    Min|   Max|  N|
+|population    |  Mean|    SD|    Min|   Max|  N|
 |:-------------|-----:|-----:|------:|-----:|--:|
-|Cojo          | 0.052| 0.091|  0.003| 0.266| 15|
-|Percos        | 0.014| 0.026| -0.027| 0.057| 15|
-|Perry         | 0.052| 0.065| -0.001| 0.210| 13|
-|Pt_Conception | 0.017| 0.016| -0.002| 0.048| 14|
+|Cojo          | 0.026| 0.123| -0.157| 0.279| 60|
+|Percos        | 0.033| 0.040| -0.013| 0.124| 58|
+|Perry         | 0.004| 0.121| -0.223| 0.222| 50|
+|Pt_Conception | 0.031| 0.016|  0.011| 0.064| 60|
 
 ANOVA Results:
 
 
-|term       | df| sumsq| meansq| statistic| p.value|
-|:----------|--:|-----:|------:|---------:|-------:|
-|Population |  3| 0.019|  0.006|      1.89|   0.142|
-|Residuals  | 53| 0.179|  0.003|        NA|      NA|</code></pre>
+|term       |  df| sumsq| meansq| statistic| p.value|
+|:----------|---:|-----:|------:|---------:|-------:|
+|population |   3| 0.029|  0.010|     1.272|   0.285|
+|Residuals  | 224| 1.720|  0.008|        NA|      NA|</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
@@ -695,7 +697,7 @@ ANOVA Results:
 <div class="cell">
 <div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select numeric variables for correlation analysis</span></span>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>numeric_vars <span class="ot">&lt;-</span> matched_data <span class="sc">%&gt;%</span></span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(wet_wgt, dry_wgt, water_mg, leaf_length, Flowers, Buds, Fruit, gsw) <span class="sc">%&gt;%</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(wet_wgt, dry_wgt, water_mg, leaf_length, flowers, buds, fruit, gsw) <span class="sc">%&gt;%</span></span>
 <span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select_if</span>(is.numeric)</span>
 <span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate correlation matrix</span></span>
@@ -724,7 +726,7 @@ ANOVA Results:
 </div>
 </section>
 <section id="population-specific-trends" class="level2">
-<h2 class="anchored" data-anchor-id="population-specific-trends">Population-Specific Trends</h2>
+<h2 class="anchored" data-anchor-id="population-specific-trends">population-Specific Trends</h2>
 <p>Let’s examine relationships between key variables within each population:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to create scatter plots of two variables by population</span></span>
@@ -734,7 +736,7 @@ ANOVA Results:
 <span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
 <span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(<span class="sc">!!</span>x_sym) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(<span class="sc">!!</span>y_sym)) <span class="sc">%&gt;%</span></span>
-<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="sc">!!</span>x_sym, <span class="at">y =</span> <span class="sc">!!</span>y_sym, <span class="at">color =</span> Population)) <span class="sc">+</span></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="sc">!!</span>x_sym, <span class="at">y =</span> <span class="sc">!!</span>y_sym, <span class="at">color =</span> population)) <span class="sc">+</span></span>
 <span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
 <span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">TRUE</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
 <span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
@@ -754,7 +756,7 @@ ANOVA Results:
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_relationship</span>(matched_data, <span class="st">"leaf_length"</span>, <span class="st">"gsw"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_relationship</span>(matched_data, <span class="st">"dry_wgt"</span>, <span class="st">"gsw"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -762,7 +764,7 @@ ANOVA Results:
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_relationship</span>(matched_data, <span class="st">"Flowers"</span>, <span class="st">"gsw"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_relationship</span>(matched_data, <span class="st">"wet_wgt"</span>, <span class="st">"dry_wgt"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -814,17 +816,17 @@ ANOVA Results:
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Flowers</td>
+<td style="text-align: left;">flowers</td>
 <td style="text-align: right;">0.0000</td>
 <td style="text-align: left;">Yes</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Buds</td>
-<td style="text-align: right;">0.0249</td>
+<td style="text-align: left;">buds</td>
+<td style="text-align: right;">0.0000</td>
 <td style="text-align: left;">Yes</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Fruit</td>
+<td style="text-align: left;">fruit</td>
 <td style="text-align: right;">0.0000</td>
 <td style="text-align: left;">Yes</td>
 </tr>
@@ -850,80 +852,9 @@ ANOVA Results:
 </tr>
 <tr class="even">
 <td style="text-align: left;">gsw</td>
-<td style="text-align: right;">0.1424</td>
+<td style="text-align: right;">0.2846</td>
 <td style="text-align: left;">No</td>
 </tr>
-</tbody>
-</table>
-</div>
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Print a summary of the unmatched data</span></span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">### Summary of Unmatched Data</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-### Summary of Unmatched Data</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Total unmatched entries:"</span>, <span class="fu">nrow</span>(unmatched_data), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Total unmatched entries: 0 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Breakdown of missing values:</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Breakdown of missing values:</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>missing_summary <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Variable =</span> <span class="fu">c</span>(<span class="st">"wet_wgt (petal data)"</span>, <span class="st">"Leaves (plant traits)"</span>, <span class="st">"gsw (porometer)"</span>),</span>
-<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Missing_Count =</span> <span class="fu">c</span>(</span>
-<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sum</span>(<span class="fu">is.na</span>(unmatched_data<span class="sc">$</span>wet_wgt)),</span>
-<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sum</span>(<span class="fu">is.na</span>(unmatched_data<span class="sc">$</span>Leaves)),</span>
-<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sum</span>(<span class="fu">is.na</span>(unmatched_data<span class="sc">$</span>gsw))</span>
-<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(missing_summary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: left;">Variable</th>
-<th style="text-align: right;">Missing_Count</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">wet_wgt (petal data)</td>
-<td style="text-align: right;">0</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Leaves (plant traits)</td>
-<td style="text-align: right;">0</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">gsw (porometer)</td>
-<td style="text-align: right;">0</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Population representation in unmatched data</span></span>
-<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>unmatched_by_pop <span class="ot">&lt;-</span> unmatched_data <span class="sc">%&gt;%</span></span>
-<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Population) <span class="sc">%&gt;%</span></span>
-<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Count =</span> <span class="fu">n</span>(), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Count))</span>
-<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Unmatched data by population:</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Unmatched data by population:</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(unmatched_by_pop)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th style="text-align: left;">Population</th>
-<th style="text-align: right;">Count</th>
-</tr>
-</thead>
-<tbody>
 </tbody>
 </table>
 </div>
@@ -932,7 +863,7 @@ Unmatched data by population:</code></pre>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>This analysis examined population-level variation in several plant traits across multiple populations. We found significant differences among populations in several key variables, particularly [variables with p &lt; 0.05]. These findings suggest that local adaptation may play a role in shaping plant physiological responses.</p>
-<p>The correlation between gsw (stomatal conductance) and other morphological traits indicates that [describe main pattern]. Population-specific trends show that [describe any population-specific relationships observed].</p>
+<p>The correlation between gsw (stomatal conductance) and other morphological traits indicates that [describe main pattern]. population-specific trends show that [describe any population-specific relationships observed].</p>
 <p>Future research could focus on understanding the genetic and environmental factors driving these population-level differences.</p>
 </section>
 
@@ -1020,8 +951,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -1132,7 +1061,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {

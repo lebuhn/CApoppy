@@ -1,5 +1,5 @@
 ---
-title: "Plant Data Analysis"
+title: "plant Data Analysis"
 format: html
 editor: visual
 ---
@@ -20,14 +20,14 @@ First, we'll import the three datasets and clean them to prepare for merging.
 ```{r import-data}
 # Import datasets
 petal_data <- read_csv("../data/raw/plant/petal_weight.csv", na = c("", "NA", "NULL")) %>%
-  filter(!is.na(Population)) # Remove rows with missing population data
+  filter(!is.na(population)) # Remove rows with missing population data
 
 plant_traits <- read_csv("../data/raw/plant/plant_traits.csv", na = c("", "NA", "NULL"))
 
 # For porometer data, skip the first row which contains headers
 porometer <- read_csv("../data/processed/porometer_4pops.csv", skip = 1, na = c("", "NA", "NULL")) %>%
   # Drop data from April 19 and April 20
-  filter(Date != "2025-04-19" & Date != "2025-04-20"& Date != "2025-04-21")
+  filter(date != "2025-04-19" & date != "2025-04-20"& date != "2025-04-21")
 ```
 
 Let's inspect the data structure of each dataset:
@@ -36,12 +36,12 @@ Let's inspect the data structure of each dataset:
 # Inspect first few rows
 glimpse(petal_data)
 glimpse(plant_traits)
-glimpse(select(porometer, "Obs#", Time, Date, Population, Plant, gsw)) # Show relevant columns
+glimpse(select(porometer, "Obs#", time, date, population, plant, gsw)) # Show relevant columns
 
 # Check for unique populations in each dataset
-cat("Unique populations in petal_data:", paste(unique(petal_data$Population), collapse = ", "), "\n")
-cat("Unique populations in plant_traits:", paste(unique(plant_traits$Population), collapse = ", "), "\n")
-cat("Unique populations in porometer:", paste(unique(porometer$Population), collapse = ", "), "\n")
+cat("Unique populations in petal_data:", paste(unique(petal_data$population), collapse = ", "), "\n")
+cat("Unique populations in plant_traits:", paste(unique(plant_traits$population), collapse = ", "), "\n")
+cat("Unique populations in porometer:", paste(unique(porometer$population), collapse = ", "), "\n")
 ```
 
 ## Data Preparation
@@ -51,77 +51,77 @@ We need to standardize the datasets before merging: 1. Fix date formats 2. Stand
 ```{r prepare-data}
 # Clean and standardize petal weight data
 petal_clean <- petal_data %>%
-  # Convert Plant to numeric if not already numeric
-  mutate(Plant = as.numeric(Plant),
+  # Convert plant to numeric if not already numeric
+  mutate(plant = as.numeric(plant),
          # Ensure date is in proper format
-         Date = as_date(Date)) %>%
+        date = as_date(date)) %>%
   # Standardize population names
   mutate(
     # First fix the specific Pt. Conception issue
-    Population = ifelse(Population == "Pt. Conception", "Pt_Conception", Population),
+    population = ifelse(population == "Pt. Conception", "Pt_Conception", population),
     # Then handle other standardizations
-    Population = str_replace(Population, "\\.", "_"),
+    population = str_replace(population, "\\.", "_"),
     # Finally handle specific populations
-    Population = case_when(
-      Population == "Cojo" | Population == "CojoHQ" ~ "Cojo",
-      TRUE ~ Population
+    population = case_when(
+      population == "Cojo" | population == "CojoHQ" ~ "Cojo",
+      TRUE ~ population
     ))
 
 # Clean and standardize plant traits data
 plant_traits_clean <- plant_traits %>%
   # Convert date format - handle DD-MMM-YY format
-  mutate(Date = dmy(Date),
-         # Rename Individual to Plant for consistency
-         Plant = Individual) %>%
+  mutate(date = dmy(date),
+         # Rename individual to plant for consistency
+         plant = individual) %>%
   # Standardize population names
   mutate(
     # First fix the specific Pt. Conception issue
-    Population = ifelse(Population == "Pt. Conception", "Pt_Conception", Population),
+    population = ifelse(population == "Pt. Conception", "Pt_Conception", population),
     # Then handle other standardizations
-    Population = str_replace(Population, "\\.", "_"),
+    population = str_replace(population, "\\.", "_"),
     # Finally handle specific populations
-    Population = case_when(
-      Population == "Cojo" | Population == "CojoHQ" ~ "Cojo",
-      TRUE ~ Population
+    population = case_when(
+      population == "Cojo" | population == "CojoHQ" ~ "Cojo",
+      TRUE ~ population
     )
   ) %>%
   # Select relevant columns
-  select(-Individual) # Remove original Individual column
+  select(-individual) # Remove original individual column
 
 # Clean and standardize porometer data
 porometer_clean <- porometer %>%
   # Select only relevant columns
-  select(Date, 
-         Time,
-         Population, 
-         Plant, 
+  select(date, 
+         time,
+         population, 
+         plant, 
          gsw) %>%
   # Convert date to proper format
-  mutate(Date = as_date(Date),
-         # Convert Plant to numeric
-         Plant = as.numeric(Plant)) %>%
+  mutate(date = as_date(date),
+         # Convert plant to numeric
+         plant = as.numeric(plant)) %>%
   # Standardize population names
   mutate(
     # First fix the specific Pt. Conception issue
-    Population = ifelse(Population == "Pt. Conception", "Pt_Conception", Population),
+    population = ifelse(population == "Pt. Conception", "Pt_Conception", population),
     # Then handle other standardizations
-    Population = str_replace(Population, "\\.", "_"),
+    population = str_replace(population, "\\.", "_"),
     # Finally handle specific populations
-    Population = case_when(
-      Population == "Cojo" | Population == "CojoHQ" ~ "Cojo",
-      TRUE ~ Population
+    population = case_when(
+      population == "Cojo" | population == "CojoHQ" ~ "Cojo",
+      TRUE ~ population
     )
   )
 
 # Check our cleaned data
-cat("Date format in petal_clean:", class(petal_clean$Date[1]), "\n")
-cat("Date format in plant_traits_clean:", class(plant_traits_clean$Date[1]), "\n")
-cat("Date format in porometer_clean:", class(porometer_clean$Date[1]), "\n")
+cat("date format in petal_clean:", class(petal_clean$date[1]), "\n")
+cat("date format in plant_traits_clean:", class(plant_traits_clean$date[1]), "\n")
+cat("date format in porometer_clean:", class(porometer_clean$date[1]), "\n")
 
 # Check population names after standardization
-cat("Cleaned populations in petal_clean:", paste(unique(petal_clean$Population), collapse = ", "), "\n")
-cat("Cleaned populations in plant_traits_clean:", paste(unique(plant_traits_clean$Population), collapse = ", "), "\n")
-cat("Cleaned populations in porometer_clean:", paste(unique(porometer_clean$Population), collapse = ", "), "\n")
+cat("Cleaned populations in petal_clean:", paste(unique(petal_clean$population), collapse = ", "), "\n")
+cat("Cleaned populations in plant_traits_clean:", paste(unique(plant_traits_clean$population), collapse = ", "), "\n")
+cat("Cleaned populations in porometer_clean:", paste(unique(porometer_clean$population), collapse = ", "), "\n")
 ```
 
 ## Data Merging Strategy
@@ -132,33 +132,33 @@ Before merging the datasets, let's examine the potential date matches to ensure 
 # Check dates in each dataset
 date_summary <- bind_rows(
   petal_clean %>% 
-    distinct(Population, Date) %>% 
+    distinct(population, date) %>% 
     mutate(Dataset = "Petal Weight"),
   plant_traits_clean %>% 
-    distinct(Population, Date) %>% 
-    mutate(Dataset = "Plant Traits"),
+    distinct(population, date) %>% 
+    mutate(Dataset = "plant Traits"),
   porometer_clean %>% 
-    distinct(Population, Date) %>% 
+    distinct(population, date) %>% 
     mutate(Dataset = "Porometer")
 )
 
 # View dates by population and dataset
-ggplot(date_summary, aes(x = Date, y = Dataset, color = Population)) +
+ggplot(date_summary, aes(x = date, y = Dataset, color = population)) +
   geom_point(size = 3) +
   theme_minimal() +
-  labs(title = "Available Dates by Dataset and Population",
-       x = "Date",
+  labs(title = "Available dates by Dataset and population",
+       x = "date",
        y = "Dataset") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 # Count measurements per plant per date in porometer data
 porometer_measurements <- porometer_clean %>%
-  group_by(Population, Plant, Date) %>%
+  group_by(population, plant, date) %>%
   summarize(Measurements = n(), .groups = "drop") %>%
   arrange(desc(Measurements))
 
 # Show plants with multiple measurements
-cat("Plants with multiple porometer measurements on the same date:\n")
+cat("plants with multiple porometer measurements on the same date:\n")
 print(head(porometer_measurements %>% filter(Measurements > 1), 10))
 ```
 
@@ -169,31 +169,31 @@ Since we're dealing with multiple measurements per plant per date in the poromet
 merged_data <- full_join(
   petal_clean, 
   plant_traits_clean,
-  by = c("Population", "Plant")
+  by = c("population", "plant")
 )
 
 # Then merge with porometer_clean
 # For porometer data, we might have multiple measurements per plant per day
 # We'll sum the gsw values for each plant-day combination
 porometer_summary <- porometer_clean %>%
-  group_by(Population, Plant, Date) %>%
+  group_by(population, plant, date) %>%
   summarize(gsw = sum(gsw, na.rm = TRUE), .groups = "drop")
 
 # Now merge this summary with our merged data
 matched_data <- full_join(
   merged_data,
   porometer_summary,
-  by = c("Population", "Plant")
+  by = c("population", "plant")
 )
 
 # Create separate dataframes for matched and unmatched data
 # Matched data has values from all three datasets
 matched_data <- matched_data %>%
-  filter(!is.na(wet_wgt) & !is.na(Flowers) & !is.na(gsw))
+  filter(!is.na(wet_wgt) & !is.na(flowers) & !is.na(gsw))
 
 # Unmatched data is everything else
 unmatched_data <- matched_data %>%
-  filter(is.na(wet_wgt) | is.na(Flowers) | is.na(gsw))
+  filter(is.na(wet_wgt) | is.na(flowers) | is.na(gsw))
 
 # Summary of our data
 cat("Total rows in final merged dataset:", nrow(matched_data), "\n")
@@ -204,7 +204,7 @@ cat("Rows in unmatched dataset:", nrow(unmatched_data), "\n")
 head(matched_data)
 ```
 
-## Population-Level Analysis
+## population-Level Analysis
 
 Now we'll analyze population-level variation in the specified variables: flowers, buds, fruits, leaf_length, wet_wgt, dry_wgt, water_mg, and gsw.
 
@@ -216,7 +216,7 @@ analyze_by_population <- function(data, variable) {
   # Create summary statistics by population
   summary_stats <- data %>%
     filter(!is.na(!!var_sym)) %>%
-    group_by(Population) %>%
+    group_by(population) %>%
     summarize(
       Mean = mean(!!var_sym, na.rm = TRUE),
       SD = sd(!!var_sym, na.rm = TRUE),
@@ -227,7 +227,7 @@ analyze_by_population <- function(data, variable) {
     )
   
   # Perform ANOVA
-  formula <- as.formula(paste(variable, "~ Population"))
+  formula <- as.formula(paste(variable, "~ population"))
   model <- aov(formula, data = data)
   model_summary <- summary(model)
   
@@ -243,7 +243,7 @@ analyze_by_population <- function(data, variable) {
 }
 
 # Variables to analyze
-variables <- c("Flowers", "Buds", "Fruit", "leaf_length", "wet_wgt", "dry_wgt", "water_mg", "gsw")
+variables <- c("flowers", "buds", "fruit", "leaf_length", "wet_wgt", "dry_wgt", "water_mg", "gsw")
 
 # Loop through variables and perform analysis
 results <- list()
@@ -252,7 +252,7 @@ for (var in variables) {
     results[[var]] <- analyze_by_population(matched_data, var)
     
     # Print summary table
-    cat("\n## Analysis of", var, "by Population\n\n")
+    cat("\n## Analysis of", var, "by population\n\n")
     print(kable(results[[var]]$summary_stats, digits = 3))
     
     # Print ANOVA results
@@ -262,18 +262,18 @@ for (var in variables) {
     # Create visualization
     p <- matched_data %>%
       filter(!is.na(!!sym(var))) %>%
-      ggplot(aes(x = Population, y = !!sym(var), fill = Population)) +
+      ggplot(aes(x = population, y = !!sym(var), fill = population)) +
       geom_boxplot(alpha = 0.7) +
       theme_minimal() +
-      labs(title = paste("Distribution of", var, "by Population"),
+      labs(title = paste("Distribution of", var, "by population"),
            y = var,
-           x = "Population") +
+           x = "population") +
       theme(legend.position = "none",
             axis.text.x = element_text(angle = 45, hjust = 1))
     
     print(p)
   } else {
-    cat("\n## Analysis of", var, "by Population\n")
+    cat("\n## Analysis of", var, "by population\n")
     cat("Variable", var, "not found in dataset\n")
   }
 }
@@ -286,7 +286,7 @@ Let's examine correlations between key variables across populations:
 ```{r correlation-analysis}
 # Select numeric variables for correlation analysis
 numeric_vars <- matched_data %>%
-  select(wet_wgt, dry_wgt, water_mg, leaf_length, Flowers, Buds, Fruit, gsw) %>%
+  select(wet_wgt, dry_wgt, water_mg, leaf_length, flowers, buds, fruit, gsw) %>%
   select_if(is.numeric)
 
 # Calculate correlation matrix
@@ -301,7 +301,7 @@ corrplot::corrplot(cor_matrix, method = "circle", type = "upper",
 pairs(numeric_vars, pch = 19, cex = 0.5)
 ```
 
-## Population-Specific Trends
+## population-Specific Trends
 
 Let's examine relationships between key variables within each population:
 
@@ -313,7 +313,7 @@ plot_relationship <- function(data, x_var, y_var) {
   
   p <- data %>%
     filter(!is.na(!!x_sym) & !is.na(!!y_sym)) %>%
-    ggplot(aes(x = !!x_sym, y = !!y_sym, color = Population)) +
+    ggplot(aes(x = !!x_sym, y = !!y_sym, color = population)) +
     geom_point(alpha = 0.7) +
     geom_smooth(method = "lm", se = TRUE, alpha = 0.2) +
     theme_minimal() +
@@ -362,6 +362,6 @@ kable(sig_table, digits = 4)
 
 This analysis examined population-level variation in several plant traits across multiple populations. We found significant differences among populations in several key variables, particularly \[variables with p \< 0.05\]. These findings suggest that local adaptation may play a role in shaping plant physiological responses.
 
-The correlation between gsw (stomatal conductance) and other morphological traits indicates that \[describe main pattern\]. Population-specific trends show that \[describe any population-specific relationships observed\].
+The correlation between gsw (stomatal conductance) and other morphological traits indicates that \[describe main pattern\]. population-specific trends show that \[describe any population-specific relationships observed\].
 
 Future research could focus on understanding the genetic and environmental factors driving these population-level differences.
