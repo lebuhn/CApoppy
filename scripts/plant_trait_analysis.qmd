@@ -1,171 +1,6 @@
-### Total Flowers (Buds + Fruits)
-
-```{r total-flowers-analysis}
-# Extract data for this variable
-total_flowers_data <- plant_data %>%
-  select(Population, total_flowers)
-
-# Visualize with histogram by population
-ggplot(total_flowers_data, aes(x = total_flowers, fill = Population)) +
-  geom_histogram(position = "dodge", bins = 8, alpha = 0.7) +
-  theme_minimal() +
-  labs(title = "Distribution of Total Flowers (Buds + Fruits) by Population",
-       x = "Total Flowers",
-       y = "Frequency") +
-  scale_fill_brewer(palette = "Set2")
-
-# Perform statistical test results for pairwise comparisons",
-           y = "Total Flowers",
-           x = "Population") +
-      scale_fill_brewer(palette = "Set2")
-  }
-}
-```
-
-### Fruit Length
-total_flowers_result <- compare_variable(plant_data, "total_flowers", "Total Flowers (Buds + Fruits)")
-
-# Display detailed result
-total_flowers_result %>%
-  select(-Post_hoc) %>%  # Exclude post-hoc column to fit in display
-  kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
-
-# If we have significant results, visualize the differences
-if(total_flowers_result$Significant == "Yes" && !is.na(total_flowers_result$p_value)) {
-  if(total_flowers_result$Test == "One-way ANOVA") {
-    # Create a model for emmeans
-    model <- aov(total_flowers ~ Population, data = plant_data)
-    # Get estimated marginal means
-    emm <- emmeans(model, "Population")
-    # Create CLD (compact letter display) to show significance groups
-    cld_result <- cld(emm, Letters = letters)
-    # Plot with letter annotations
-    ggplot(as.data.frame(cld_result), aes(x = Population, y = emmean, fill = Population)) +
-      geom_bar(stat = "identity", alpha = 0.7) +
-      geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = 0.2) +
-      geom_text(aes(label = .group), vjust = -0.5) +
-      theme_minimal() +
-      labs(title = "Total Flowers by Population with Significance Groups",
-           y = "Mean Total Flowers",
-           x = "Population") +
-      scale_fill_brewer(palette = "Set2")
-  } else if(total_flowers_result$Test == "Kruskal-Wallis test (non-parametric)") {
-    # For non-parametric test, just show the boxplot again with a note
-    ggplot(total_flowers_data, aes(x = Population, y = total_flowers, fill = Population)) +
-      geom_boxplot(alpha = 0.7) +
-      geom_jitter(width = 0.2, alpha = 0.5) +
-      theme_minimal() +
-      labs(title = "Total Flowers by Population (Kruskal-Wallis significant)",
-           subtitle = "See post-hoc
-# Extract data for this variable and remove NA values
-fruit_length_data <- plant_data %>%
-  select(Population, fruit_length) %>%
-  filter(!is.na(fruit_length))
-
-# Visualize with boxplot and jittered points
-ggplot(fruit_length_data, aes(x = Population, y = fruit_length, fill = Population)) +
-  geom_boxplot(alpha = 0.7) +
-  geom_jitter(width = 0.2, alpha = 0.5) +
-  theme_minimal() +
-  labs(title = "Comparison of Fruit Length among Populations",
-       y = "Fruit Length (mm)",
-       x = "Population") +
-  scale_fill_brewer(palette = "Set2")
-
-# Perform statistical test
-fruit_length_result <- compare_variable(plant_data, "fruit_length", "Fruit Length")
-
-# Display detailed result
-fruit_length_result %>%
-  select(-Post_hoc) %>%  # Exclude post-hoc column to fit in display
-  kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
-
-# If we have significant results, visualize the differences
-if(fruit_length_result$Significant == "Yes" && !is.na(fruit_length_result$p_value)) {
-  if(fruit_length_result$Test == "One-way ANOVA") {
-    # Create a model for emmeans
-    model <- aov(fruit_length ~ Population, data = fruit_length_data)
-    # Get estimated marginal means
-    emm <- emmeans(model, "Population")
-    # Create CLD (compact letter display) to show significance groups
-    cld_result <- cld(emm, Letters = letters)
-    # Plot with letter annotations
-    ggplot(as.data.frame(cld_result), aes(x = Population, y = emmean, fill = Population)) +
-      geom_bar(stat = "identity", alpha = 0.7) +
-      geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = 0.2) +
-      geom_text(aes(label = .group), vjust = -0.5) +
-      theme_minimal() +
-      labs(title = "Fruit Length by Population with Significance Groups",
-           y = "Mean Fruit Length (mm)",
-           x = "Population") +
-      scale_fill_brewer(palette = "Set2")
-  }
-}
-```
-
-## Discussion and Interpretation
-
-Let's summarize our findings and interpretations for each trait:
-
-```{r summary-table}
-# Create a cleaner summary table
-summary_table <- results %>%
-  select(Variable, Mean_Pt_Conception, SD_Pt_Conception, 
-         Mean_CojoHQ, SD_CojoHQ, 
-         Mean_Perry, SD_Perry,
-         p_value, Significant, Interpretation)
-
-# Display the summary table
-summary_table %>%
-  kable(caption = "Summary of Population Comparisons") %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
-```
-
-## Statistical Methods Justification
-
-In this analysis, I chose a systematic approach to comparing populations for each trait:
-
-1. **Test Selection Rationale**:
-   - For each trait, I first tested for normality using the Shapiro-Wilk test
-   - Then tested for equal variances using Levene's test
-   - Based on these results, I selected the appropriate statistical test:
-     - Normal data → One-way ANOVA with Tukey's HSD post-hoc test
-     - Non-normal data → Kruskal-Wallis test with pairwise Wilcoxon tests (adjusted for multiple comparisons)
-
-2. **Why This Approach Works for These Data**:
-   - The data consists of three independent populations
-   - Sample sizes are relatively small (n=15 per population) which requires careful consideration of normality
-   - Some variables (like fruit_length) have many missing values, requiring special handling
-   - Plant traits often exhibit non-normal distributions, especially count data like number of flowers or buds
-   - The combined "total_flowers" variable provides an additional reproductive metric that may be more informative than individual measures
-   - By using the Wilcoxon test with `exact=FALSE`, we properly handle ties in the data
-   - For multiple population comparisons, post-hoc tests are essential to identify which specific pairs differ
-
-3. **Handling Missing Data**:
-   - For traits with substantial missing data (flower_length, fruit_length), we filtered out NA values before analysis
-   - We reported sample sizes for each test to ensure transparency about available data
-
-4. **Error Handling**:
-   - The analysis includes robust error handling to prevent failures when analyzing challenging data
-   - We report basic statistics even when formal statistical tests cannot be completed
-
-5. **Multiple Comparisons Consideration**:
-   - When comparing more than two populations, the chance of Type I errors increases
-   - The post-hoc tests (Tukey's HSD for ANOVA, Bonferroni-adjusted Wilcoxon for Kruskal-Wallis) account for this by adjusting p-values
-
-## Conclusion
-
-This analysis provides a comprehensive comparison of three plant populations (Pt_Conception, CojoHQ, and Perry) across various morphological traits. The systematic approach to statistical testing allows for appropriate comparisons while accounting for the specific characteristics of each trait's distribution.
-
-The most notable differences among the populations appear to be in [specific traits with significant differences]. The newly created total_flowers variable (sum of buds and fruits) offers a more holistic view of the plants' reproductive investment, and shows [result of total_flowers analysis]. 
-
-These findings suggest potential ecological, genetic, or environmental factors influencing population differences that may warrant further investigation. The combined reproductive metric (total_flowers) may be particularly useful for understanding differences in reproductive strategy among populations.
-
-Adding the Perry population to our analysis has revealed new patterns in the data, particularly in terms of [mention specific traits where Perry differs from the other populations]. This additional population provides a broader context for understanding plant trait variation across different locations.---
+---
 title: "Comparison of Plant Populations: Pt_Conception, CojoHQ, and Perry"
-author: "Plant Ecologist"
+author: "Gretchen LeBuhn"
 date: "2025-03-18"
 format: 
   html:
@@ -177,189 +12,35 @@ format:
 ---
 
 ```{r setup, include=FALSE}
-# Visualize with histogram by population
-ggplot(buds_data, aes(x = Buds, fill = Population)) +
-  geom_histogram(position = "dodge", bins = 8, alpha = 0.7) +
-  theme_minimal() +
-  labs(title = "Distribution of Bud Count by Population",
-       x = "Number of Buds",
-       y = "Frequency") +
-  scale_fill_brewer(palette = "Set2")
-
-# Perform statistical test
-buds_result <- compare_variable(plant_data, "Buds", "Number of Buds")
-
-# Display detailed result
-buds_result %>%
-  select(-Post_hoc) %>%  # Exclude post-hoc column to fit in display
-  kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
-
-# If we have significant results, visualize the differences
-if(buds_result$Significant == "Yes" && !is.na(buds_result$p_value)) {
-  if(buds_result$Test == "One-way ANOVA") {
-    # Create a model for emmeans
-    model <- aov(Buds ~ Population, data = plant_data)
-    # Get estimated marginal means
-    emm <- emmeans(model, "Population")
-    # Create CLD (compact letter display) to show significance groups
-    cld_result <- cld(emm, Letters = letters)
-    # Plot with letter annotations
-    ggplot(as.data.frame(cld_result), aes(x = Population, y = emmean, fill = Population)) +
-      geom_bar(stat = "identity", alpha = 0.7) +
-      geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = 0.2) +
-      geom_text(aes(label = .group), vjust = -0.5) +
-      theme_minimal() +
-      labs(title = "Number of Buds by Population with Significance Groups",
-           y = "Mean Number of Buds",
-           x = "Population") +
-      scale_fill_brewer(palette = "Set2")
-  } else if(buds_result$Test == "Kruskal-Wallis test (non-parametric)") {
-    # For non-parametric test, just show the boxplot again with a note
-    ggplot(buds_data, aes(x = Population, y = Buds, fill = Population)) +
-      geom_boxplot(alpha = 0.7) +
-      geom_jitter(width = 0.2, alpha = 0.5) +
-      theme_minimal() +
-      labs(title = "Number of Buds by Population (Kruskal-Wallis significant)",
-           subtitle = "See post-hoc test results for pairwise comparisons",
-           y = "Number of Buds",
-           x = "Population") +
-      scale_fill_brewer(palette = "Set2")
-  }
-}
-```
-
-### Leaf Length
-
-```{r leaf-length-analysis}
-# Extract data for this variable
-leaf_length_data <- plant_data %>%
-  select(Population, leaf_length)
-
-# Q-Q plots to check normality
-ggplot(leaf_length_data, aes(sample = leaf_length)) +
-  geom_qq() +
-  geom_qq_line() +
-  facet_wrap(~ Population) +
-  theme_minimal() +
-  labs(title = "Q-Q Plots for Leaf Length by Population")
-
-# Visualize with boxplot and jittered points
-ggplot(leaf_length_data, aes(x = Population, y = leaf_length, fill = Population)) +
-  geom_boxplot(alpha = 0.7) +
-  geom_jitter(width = 0.2, alpha = 0.5) +
-  theme_minimal() +
-  labs(title = "Comparison of Leaf Length among Populations",
-       y = "Leaf Length (mm)",
-       x = "Population") +
-  scale_fill_brewer(palette = "Set2")
-
-# Perform statistical test
-leaf_length_result <- compare_variable(plant_data, "leaf_length", "Leaf Length")
-
-# Display detailed result
-leaf_length_result %>%
-  select(-Post_hoc) %>%  # Exclude post-hoc column to fit in display
-  kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
-
-# If we have significant results, visualize the differences with post-hoc test
-if(leaf_length_result$Significant == "Yes" && !is.na(leaf_length_result$p_value)) {
-  if(leaf_length_result$Test == "One-way ANOVA") {
-    # Create a model for emmeans
-    model <- aov(leaf_length ~ Population, data = plant_data)
-    # Get estimated marginal means
-    emm <- emmeans(model, "Population")
-    # Create CLD (compact letter display) to show significance groups
-    cld_result <- cld(emm, Letters = letters)
-    # Plot with letter annotations
-    ggplot(as.data.frame(cld_result), aes(x = Population, y = emmean, fill = Population)) +
-      geom_bar(stat = "identity", alpha = 0.7) +
-      geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = 0.2) +
-      geom_text(aes(label = .group), vjust = -0.5) +
-      theme_minimal() +
-      labs(title = "Leaf Length by Population with Significance Groups",
-           y = "Mean Leaf Length (mm)",
-           x = "Population") +
-      scale_fill_brewer(palette = "Set2")
-  }
-}
-```
-
-### Flower Length
-
-```{r flower-length-analysis}
-# Extract data for this variable and remove NA values
-flower_length_data <- plant_data %>%
-  select(Population, flower_length) %>%
-  filter(!is.na(flower_length))
-
-# Visualize with boxplot and jittered points
-ggplot(flower_length_data, aes(x = Population, y = flower_length, fill = Population)) +
-  geom_boxplot(alpha = 0.7) +
-  geom_jitter(width = 0.2, alpha = 0.5) +
-  theme_minimal() +
-  labs(title = "Comparison of Flower Length among Populations",
-       y = "Flower Length (mm)",
-       x = "Population") +
-  scale_fill_brewer(palette = "Set2")
-
-# Perform statistical test
-flower_length_result <- compare_variable(plant_data, "flower_length", "Flower Length")
-
-# Display detailed result
-flower_length_result %>%
-  select(-Post_hoc) %>%  # Exclude post-hoc column to fit in display
-  kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
-
-# If we have significant results, visualize the differences
-if(flower_length_result$Significant == "Yes" && !is.na(flower_length_result$p_value)) {
-  if(flower_length_result$Test == "One-way ANOVA") {
-    # Create a model for emmeans
-    model <- aov(flower_length ~ Population, data = flower_length_data)
-    # Get estimated marginal means
-    emm <- emmeans(model, "Population")
-    # Create CLD (compact letter display) to show significance groups
-    cld_result <- cld(emm, Letters = letters)
-    # Plot with letter annotations
-    ggplot(as.data.frame(cld_result), aes(x = Population, y = emmean, fill = Population)) +
-      geom_bar(stat = "identity", alpha = 0.7) +
-      geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = 0.2) +
-      geom_text(aes(label = .group), vjust = -0.5) +
-      theme_minimal() +
-      labs(title = "Flower Length by Population with Significance Groups",
-           y = "Mean Flower Length (mm)",
-           x = "Population") +
-      scale_fill_brewer(palette = "Set2")
-  }
-}
-``` Set global options for code chunks
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE
+)
 
 # Load required packages
-library(tidyverse)  # For data manipulation and visualization
-library(car)        # For Levene's test
-library(ggplot2)    # For creating plots
-library(knitr)      # For nice tables
-library(kableExtra) # For enhanced tables
-library(broom)      # For tidying statistical outputs
-library(gridExtra)  # For arranging multiple plots
-library(emmeans)    # For post-hoc tests after ANOVA
-library(multcompView) # For letter display in post-hoc tests
+library(tidyverse)     # For data manipulation and visualization
+library(car)           # For Levene's test
+library(ggplot2)       # For plots (also in tidyverse, but explicit is fine)
+library(knitr)         # For kable()
+library(kableExtra)    # For kable_styling()
+library(broom)         # For tidying statistical outputs
+library(gridExtra)     # For arranging multiple plots
+library(emmeans)       # For post-hoc tests after ANOVA
+library(multcompView)  # For compact letter displays in post-hoc tests
 ```
 
 ## Introduction
 
-This analysis compares three plant populations (Pt_Conception, CojoHQ, and Perry) across multiple plant traits including:
+This analysis compares three plant populations (Pt_Conception, CojoHQ, and Perry) across multiple plant traits measured on 18 March 2025, including:
 
-- Number of leaves
-- Number of flowers
-- Number of buds
-- Number of fruits
-- Leaf length
-- Flower length
-- Fruit length
+-   Number of leaves\
+-   Number of flowers\
+-   Number of buds\
+-   Number of fruits\
+-   Leaf length\
+-   Flower length\
+-   Fruit length
 
 We will conduct appropriate statistical tests to compare these traits among the three populations.
 
@@ -373,33 +54,50 @@ plant_data <- data.frame(
   Date = rep("18-Mar-25", 45),
   Population = c(rep("Pt_Conception", 15), rep("CojoHQ", 15), rep("Perry", 15)),
   Individual = c(1:15, 1:15, 1:15),
-  Leaves = c(8, 18, 14, 8, 15, 8, 17, 53, 4, 28, 20, 14, 7, 11, 20, 
-             12, 37, 22, 11, 10, 32, 38, 11, 49, 34, 26, 52, 7, 10, 13,
-             15, 22, 19, 26, 31, 13, 29, 16, 24, 32, 18, 21, 17, 25, 23),
-  Flowers = c(0, 0, 2, 1, 1, 1, 1, 2, 1, 2, 0, 0, 0, 0, 0, 
-              0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1,
-              1, 2, 1, 0, 0, 1, 2, 1, 0, 3, 1, 0, 2, 1, 0),
-  Buds = c(2, 0, 1, 1, 0, 0, 0, 1, 2, 1, 2, 0, 0, 0, 0, 
-           1, 3, 2, 0, 1, 1, 4, 1, 6, 5, 2, 6, 0, 1, 1,
-           3, 1, 2, 0, 4, 2, 5, 3, 1, 6, 4, 3, 2, 1, 3),
-  Fruit = c(1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 
-            0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 1, 0, 0,
-            2, 1, 0, 0, 1, 0, 2, 1, 0, 0, 1, 0, 0, 1, 0),
-  leaf_length = c(60.1, 116.4, 168.9, 93.2, 54.1, 46.6, 76.8, 170, 86.2, 192.6, 
-                  136.3, 99.3, 50.8, 43.2, 55.4, 41.3, 129, 99.9, 75.8, 44.5, 
-                  78.4, 203.6, 100.3, 180.6, 102.8, 88.2, 174.8, 32.3, 85.5, 58.1,
-                  82.4, 135.7, 94.2, 115.6, 162.3, 78.9, 143.2, 91.5, 120.8, 156.9, 
-                  105.7, 118.3, 87.6, 146.2, 103.9),
-  flower_length = c(NA, NA, 28, 29.7, 32.7, 26, 25.4, 27.9, 24.6, 31.8, 
-                    47.4, NA, NA, NA, NA, NA, 32.8, NA, NA, 47.7, 
-                    NA, 45.7, NA, 44, 32.9, 32.7, 56.8, 27.9, NA, 23.7,
-                    38.6, 42.1, 29.4, NA, NA, 34.7, 40.5, 31.2, NA, 51.3, 
-                    36.8, NA, 43.2, 35.1, NA),
-  fruit_length = c(NA, NA, 36.5, NA, NA, NA, NA, 38.1, NA, NA, 
-                   NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 
-                   NA, NA, NA, NA, NA, 62.6, NA, 33.2, NA, NA,
-                   45.3, 39.7, NA, NA, 52.8, NA, 58.4, 41.6, NA, NA, 
-                   49.2, NA, NA, 43.5, NA)
+  Leaves = c(
+    8, 18, 14, 8, 15, 8, 17, 53, 4, 28, 20, 14, 7, 11, 20,
+    12, 37, 22, 11, 10, 32, 38, 11, 49, 34, 26, 52, 7, 10, 13,
+    15, 22, 19, 26, 31, 13, 29, 16, 24, 32, 18, 21, 17, 25, 23
+  ),
+  Flowers = c(
+    0, 0, 2, 1, 1, 1, 1, 2, 1, 2, 0, 0, 0, 0, 0,
+    0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1,
+    1, 2, 1, 0, 0, 1, 2, 1, 0, 3, 1, 0, 2, 1, 0
+  ),
+  Buds = c(
+    2, 0, 1, 1, 0, 0, 0, 1, 2, 1, 2, 0, 0, 0, 0,
+    1, 3, 2, 0, 1, 1, 4, 1, 6, 5, 2, 6, 0, 1, 1,
+    3, 1, 2, 0, 4, 2, 5, 3, 1, 6, 4, 3, 2, 1, 3
+  ),
+  Fruit = c(
+    1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 1, 0, 0,
+    2, 1, 0, 0, 1, 0, 2, 1, 0, 0, 1, 0, 0, 1, 0
+  ),
+  leaf_length = c(
+    60.1, 116.4, 168.9, 93.2, 54.1, 46.6, 76.8, 170.0, 86.2, 192.6,
+    136.3, 99.3, 50.8, 43.2, 55.4,
+    41.3, 129.0, 99.9, 75.8, 44.5,
+    78.4, 203.6, 100.3, 180.6, 102.8, 88.2, 174.8, 32.3, 85.5, 58.1,
+    82.4, 135.7, 94.2, 115.6, 162.3, 78.9, 143.2, 91.5, 120.8, 156.9,
+    105.7, 118.3, 87.6, 146.2, 103.9
+  ),
+  flower_length = c(
+    NA, NA, 28.0, 29.7, 32.7, 26.0, 25.4, 27.9, 24.6, 31.8,
+    47.4, NA, NA, NA, NA,
+    NA, 32.8, NA, NA, 47.7,
+    NA, 45.7, NA, 44.0, 32.9, 32.7, 56.8, 27.9, NA, 23.7,
+    38.6, 42.1, 29.4, NA, NA, 34.7, 40.5, 31.2, NA, 51.3,
+    36.8, NA, 43.2, 35.1, NA
+  ),
+  fruit_length = c(
+    NA, NA, 36.5, NA, NA, NA, NA, 38.1, NA, NA,
+    NA, NA, NA, NA, NA,
+    NA, NA, NA, NA, NA,
+    NA, NA, NA, NA, NA, 62.6, NA, 33.2, NA, NA,
+    45.3, 39.7, NA, NA, 52.8, NA, 58.4, 41.6, NA, NA,
+    49.2, NA, NA, 43.5, NA
+  )
 )
 
 # Add a new variable total_flowers which is the sum of buds and fruits
@@ -427,9 +125,11 @@ create_boxplot <- function(data, var_name, y_label) {
   ggplot(data, aes(x = Population, y = .data[[var_name]], fill = Population)) +
     geom_boxplot(alpha = 0.7) +
     geom_jitter(width = 0.2, alpha = 0.5) +
-    labs(title = paste("Comparison of", y_label, "among Populations"),
-         y = y_label,
-         x = "Population") +
+    labs(
+      title = paste("Comparison of", y_label, "among Populations"),
+      y = y_label,
+      x = "Population"
+    ) +
     theme_minimal() +
     scale_fill_brewer(palette = "Set2")
 }
@@ -454,10 +154,10 @@ gridExtra::grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, ncol = 2)
 
 We need to select appropriate statistical tests for comparing the populations. For each trait, we'll follow these steps:
 
-1. Check for normality using the Shapiro-Wilk test
-2. Check for equal variances using Levene's test
-3. Based on the results, use either parametric (ANOVA) or non-parametric (Kruskal-Wallis) methods
-4. For variables with significant differences, perform post-hoc tests
+1.  Check for normality using the Shapiro-Wilk test\
+2.  Check for equal variances using Levene's test\
+3.  Based on the results, use either parametric (ANOVA) or non-parametric (Kruskal-Wallis) methods\
+4.  For variables with significant differences, perform post-hoc tests
 
 ### Helper Functions for Statistical Analysis
 
@@ -485,7 +185,8 @@ compare_variable <- function(data, var_name, var_label) {
     p_value = NA,
     Significant = "No",
     Interpretation = "Analysis not possible",
-    Post_hoc = "None"
+    Post_hoc = "None",
+    stringsAsFactors = FALSE
   )
   
   # Extract data for each population
@@ -494,27 +195,30 @@ compare_variable <- function(data, var_name, var_label) {
   pop3_data <- data_filtered[data_filtered$Population == "Perry", var_name]
   
   # Calculate basic statistics
-  if(length(pop1_data) > 0) {
+  if (length(pop1_data) > 0) {
     result$Mean_Pt_Conception <- round(mean(pop1_data, na.rm = TRUE), 2)
-    if(length(pop1_data) > 1) result$SD_Pt_Conception <- round(sd(pop1_data, na.rm = TRUE), 2)
+    if (length(pop1_data) > 1)
+      result$SD_Pt_Conception <- round(sd(pop1_data, na.rm = TRUE), 2)
     result$SampleSize_Pt_Conception <- length(pop1_data)
   }
   
-  if(length(pop2_data) > 0) {
+  if (length(pop2_data) > 0) {
     result$Mean_CojoHQ <- round(mean(pop2_data, na.rm = TRUE), 2)
-    if(length(pop2_data) > 1) result$SD_CojoHQ <- round(sd(pop2_data, na.rm = TRUE), 2)
+    if (length(pop2_data) > 1)
+      result$SD_CojoHQ <- round(sd(pop2_data, na.rm = TRUE), 2)
     result$SampleSize_CojoHQ <- length(pop2_data)
   }
   
-  if(length(pop3_data) > 0) {
+  if (length(pop3_data) > 0) {
     result$Mean_Perry <- round(mean(pop3_data, na.rm = TRUE), 2)
-    if(length(pop3_data) > 1) result$SD_Perry <- round(sd(pop3_data, na.rm = TRUE), 2)
+    if (length(pop3_data) > 1)
+      result$SD_Perry <- round(sd(pop3_data, na.rm = TRUE), 2)
     result$SampleSize_Perry <- length(pop3_data)
   }
   
   # Skip if not enough data
   min_sample_size <- min(length(pop1_data), length(pop2_data), length(pop3_data))
-  if(min_sample_size < 3) {
+  if (min_sample_size < 3) {
     result$Test <- "Insufficient data"
     result$Interpretation <- "Cannot compare due to insufficient data"
     return(result)
@@ -522,22 +226,22 @@ compare_variable <- function(data, var_name, var_label) {
   
   # Try to run statistical tests within a tryCatch block to prevent errors
   tryCatch({
-    # Check for normality in each population
-    shapiro_p1 <- if(length(pop1_data) >= 3) shapiro.test(pop1_data)$p.value else NA
-    shapiro_p2 <- if(length(pop2_data) >= 3) shapiro.test(pop2_data)$p.value else NA
-    shapiro_p3 <- if(length(pop3_data) >= 3) shapiro.test(pop3_data)$p.value else NA
+    # Check for normality in each population (only if n >= 3)
+    shapiro_p1 <- if (length(pop1_data) >= 3) shapiro.test(pop1_data)$p.value else NA
+    shapiro_p2 <- if (length(pop2_data) >= 3) shapiro.test(pop2_data)$p.value else NA
+    shapiro_p3 <- if (length(pop3_data) >= 3) shapiro.test(pop3_data)$p.value else NA
     
     # Determine if data is normally distributed across all populations
     normal_dist <- !any(c(shapiro_p1, shapiro_p2, shapiro_p3) < 0.05, na.rm = TRUE)
-    result$Normality <- if(normal_dist) "Normal" else "Non-normal"
+    result$Normality <- if (normal_dist) "Normal" else "Non-normal"
     
     # Check for equal variances using Levene's test
     levene_result <- car::leveneTest(data_filtered[[var_name]] ~ data_filtered$Population)
     equal_var <- levene_result$`Pr(>F)`[1] > 0.05
-    result$EqualVariances <- if(equal_var) "Equal" else "Unequal"
+    result$EqualVariances <- if (equal_var) "Equal" else "Unequal"
     
     # Choose appropriate test based on normality and variance
-    if(normal_dist) {
+    if (normal_dist) {
       # ANOVA for normally distributed data
       anova_result <- aov(data_filtered[[var_name]] ~ data_filtered$Population)
       anova_summary <- summary(anova_result)
@@ -545,10 +249,10 @@ compare_variable <- function(data, var_name, var_label) {
       result$Test <- "One-way ANOVA"
       result$p_value <- round(p_value, 4)
       is_significant <- p_value < 0.05
-      result$Significant <- if(is_significant) "Yes" else "No"
+      result$Significant <- if (is_significant) "Yes" else "No"
       
       # Perform post-hoc test if ANOVA is significant
-      if(is_significant) {
+      if (is_significant) {
         # Tukey's HSD post-hoc test
         tukey_result <- TukeyHSD(anova_result)
         post_hoc_p_values <- tukey_result$`data_filtered$Population`[, "p adj"]
@@ -557,42 +261,56 @@ compare_variable <- function(data, var_name, var_label) {
         post_hoc_str <- sapply(1:length(post_hoc_p_values), function(i) {
           comparison <- names(post_hoc_p_values)[i]
           p_val <- post_hoc_p_values[i]
-          sig <- if(p_val < 0.05) "*" else "ns"
+          sig <- if (p_val < 0.05) "*" else "ns"
           paste0(comparison, ": ", sig, " (p=", round(p_val, 4), ")")
         })
         result$Post_hoc <- paste(post_hoc_str, collapse = "; ")
         
-        # Create interpretation based on post-hoc test
+        # Simple interpretation based on means and significant pairwise differences
         interp_parts <- c()
-        if(post_hoc_p_values["CojoHQ-Pt_Conception"] < 0.05) {
-          if(result$Mean_CojoHQ > result$Mean_Pt_Conception) {
-            interp_parts <- c(interp_parts, "CojoHQ has significantly higher values than Pt_Conception")
+        # CojoHQ vs Pt_Conception
+        if ("CojoHQ-Pt_Conception" %in% names(post_hoc_p_values) &&
+            post_hoc_p_values["CojoHQ-Pt_Conception"] < 0.05) {
+          if (result$Mean_CojoHQ > result$Mean_Pt_Conception) {
+            interp_parts <- c(interp_parts, "CojoHQ > Pt_Conception")
           } else {
-            interp_parts <- c(interp_parts, "Pt_Conception has significantly higher values than CojoHQ")
+            interp_parts <- c(interp_parts, "Pt_Conception > CojoHQ")
           }
         }
-        if(post_hoc_p_values["Perry-Pt_Conception"] < 0.05) {
-          if(result$Mean_Perry > result$Mean_Pt_Conception) {
-            interp_parts <- c(interp_parts, "Perry has significantly higher values than Pt_Conception")
+        # Perry vs Pt_Conception
+        if ("Perry-Pt_Conception" %in% names(post_hoc_p_values) &&
+            post_hoc_p_values["Perry-Pt_Conception"] < 0.05) {
+          if (result$Mean_Perry > result$Mean_Pt_Conception) {
+            interp_parts <- c(interp_parts, "Perry > Pt_Conception")
           } else {
-            interp_parts <- c(interp_parts, "Pt_Conception has significantly higher values than Perry")
+            interp_parts <- c(interp_parts, "Pt_Conception > Perry")
           }
         }
-        if(post_hoc_p_values["Perry-CojoHQ"] < 0.05) {
-          if(result$Mean_Perry > result$Mean_CojoHQ) {
-            interp_parts <- c(interp_parts, "Perry has significantly higher values than CojoHQ")
+        # Perry vs CojoHQ
+        if ("Perry-CojoHQ" %in% names(post_hoc_p_values) &&
+            post_hoc_p_values["Perry-CojoHQ"] < 0.05) {
+          if (result$Mean_Perry > result$Mean_CojoHQ) {
+            interp_parts <- c(interp_parts, "Perry > CojoHQ")
           } else {
-            interp_parts <- c(interp_parts, "CojoHQ has significantly higher values than Perry")
+            interp_parts <- c(interp_parts, "CojoHQ > Perry")
           }
         }
         
-        if(length(interp_parts) > 0) {
-          result$Interpretation <- paste0("Significant differences found: ", paste(interp_parts, collapse = "; "))
+        if (length(interp_parts) > 0) {
+          result$Interpretation <- paste(
+            "Significant differences among populations:",
+            paste(interp_parts, collapse = "; ")
+          )
         } else {
-          result$Interpretation <- paste0("No significant pairwise differences found despite overall ANOVA significance")
+          result$Interpretation <- paste(
+            "Overall ANOVA significant for", var_label,
+            "but no clear pairwise pattern."
+          )
         }
       } else {
-        result$Interpretation <- paste0("No significant differences in ", var_label, " among populations")
+        result$Interpretation <- paste0(
+          "No significant differences in ", var_label, " among populations"
+        )
       }
     } else {
       # Kruskal-Wallis for non-normally distributed data
@@ -601,42 +319,458 @@ compare_variable <- function(data, var_name, var_label) {
       result$Test <- "Kruskal-Wallis test (non-parametric)"
       result$p_value <- round(p_value, 4)
       is_significant <- p_value < 0.05
-      result$Significant <- if(is_significant) "Yes" else "No"
+      result$Significant <- if (is_significant) "Yes" else "No"
       
-      # Perform post-hoc test if Kruskal-Wallis is significant
-      if(is_significant) {
-        # Dunn's test for pairwise comparisons (using dunn.test package if available or pairwise.wilcox.test)
-        pw_result <- pairwise.wilcox.test(data_filtered[[var_name]], data_filtered$Population, 
-                                          p.adjust.method = "bonferroni", exact = FALSE)
+      if (is_significant) {
+        # Pairwise Wilcoxon tests with Bonferroni adjustment
+        pw_result <- pairwise.wilcox.test(
+          data_filtered[[var_name]],
+          data_filtered$Population,
+          p.adjust.method = "bonferroni",
+          exact = FALSE
+        )
         
-        # Extract p-values from the pairwise test
+        # Extract p-values
         pw_p_values <- pw_result$p.value
-        comparisons <- c("Pt_Conception-CojoHQ", "Pt_Conception-Perry", "CojoHQ-Perry")
         post_hoc_str <- c()
         
-        # Reformat p-values into a string
-        if(!is.null(pw_p_values)) {
-          for(i in 1:nrow(pw_p_values)) {
-            for(j in 1:ncol(pw_p_values)) {
-              if(!is.na(pw_p_values[i,j])) {
+        if (!is.null(pw_p_values)) {
+          for (i in 1:nrow(pw_p_values)) {
+            for (j in 1:ncol(pw_p_values)) {
+              if (!is.na(pw_p_values[i, j])) {
                 comparison <- paste0(rownames(pw_p_values)[i], "-", colnames(pw_p_values)[j])
-                p_val <- pw_p_values[i,j]
-                sig <- if(p_val < 0.05) "*" else "ns"
-                post_hoc_str <- c(post_hoc_str, paste0(comparison, ": ", sig, " (p=", round(p_val, 4), ")"))
+                p_val <- pw_p_values[i, j]
+                sig <- if (p_val < 0.05) "*" else "ns"
+                post_hoc_str <- c(
+                  post_hoc_str,
+                  paste0(comparison, ": ", sig, " (p=", round(p_val, 4), ")")
+                )
               }
             }
           }
         }
         
-        if(length(post_hoc_str) > 0) {
+        if (length(post_hoc_str) > 0) {
           result$Post_hoc <- paste(post_hoc_str, collapse = "; ")
         } else {
           result$Post_hoc <- "Post-hoc test results unavailable"
         }
         
-        # Create interpretation based on post-hoc test
-        result$Interpretation <- paste0("Significant differences found in ", var_label, " among populations (see post-hoc tests)")
+        result$Interpretation <- paste0(
+          "Significant differences found in ",
+          var_label, " among populations (see post-hoc tests)"
+        )
       } else {
-        result$Interpretation <- paste0("No significant differences in ", var_label, " among populations")
+        result$Interpretation <- paste0(
+          "No significant differences in ", var_label, " among populations"
+        )
       }
     }
+    
+  }, error = function(e) {
+    # In case of error, return basic statistics but note the error
+    result$Test <- paste("Error in analysis:", e$message)
+    result$Interpretation <- "Statistical comparison could not be completed"
+  })
+  
+  return(result)
+}
+```
+
+### Summary of All Traits
+
+Now apply `compare_variable()` to all traits of interest and collect the results.
+
+```{r compare-all-variables}
+variables <- list(
+  list(name = "Leaves",        label = "Number of Leaves"),
+  list(name = "Flowers",       label = "Number of Flowers"),
+  list(name = "Buds",          label = "Number of Buds"),
+  list(name = "Fruit",         label = "Number of Fruits"),
+  list(name = "total_flowers", label = "Total Flowers (Buds + Fruits)"),
+  list(name = "leaf_length",   label = "Leaf Length"),
+  list(name = "flower_length", label = "Flower Length"),
+  list(name = "fruit_length",  label = "Fruit Length")
+)
+
+results_list <- lapply(variables, function(v) {
+  compare_variable(plant_data, v$name, v$label)
+})
+
+results <- do.call(rbind, results_list)
+
+results %>%
+  select(
+    Variable,
+    Mean_Pt_Conception, SD_Pt_Conception,
+    Mean_CojoHQ,        SD_CojoHQ,
+    Mean_Perry,         SD_Perry,
+    Test, p_value, Significant, Interpretation
+  ) %>%
+  kable(caption = "Overall Comparison of Traits Among Populations") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+## Detailed Analysis by Trait
+
+### Leaves
+
+```{r leaves-analysis}
+leaves_data <- plant_data %>%
+  select(Population, Leaves)
+
+# Visualize with histogram by population
+ggplot(leaves_data, aes(x = Leaves, fill = Population)) +
+  geom_histogram(position = "dodge", bins = 10, alpha = 0.7) +
+  theme_minimal() +
+  labs(
+    title = "Distribution of Leaf Count by Population",
+    x = "Number of Leaves",
+    y = "Frequency"
+  ) +
+  scale_fill_brewer(palette = "Set2")
+
+# Detailed statistical result
+leaves_result <- compare_variable(plant_data, "Leaves", "Number of Leaves")
+
+leaves_result %>%
+  select(-Post_hoc) %>%  # Exclude detailed post-hoc column in display
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+### Number of Buds
+
+```{r buds-analysis}
+buds_data <- plant_data %>%
+  select(Population, Buds)
+
+# Visualize with histogram by population
+ggplot(buds_data, aes(x = Buds, fill = Population)) +
+  geom_histogram(position = "dodge", bins = 8, alpha = 0.7) +
+  theme_minimal() +
+  labs(
+    title = "Distribution of Bud Count by Population",
+    x = "Number of Buds",
+    y = "Frequency"
+  ) +
+  scale_fill_brewer(palette = "Set2")
+
+# Statistical test
+buds_result <- compare_variable(plant_data, "Buds", "Number of Buds")
+
+buds_result %>%
+  select(-Post_hoc) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+# If we have significant results, visualize the differences
+if (buds_result$Significant == "Yes" && !is.na(buds_result$p_value)) {
+  if (buds_result$Test == "One-way ANOVA") {
+    # Create a model for emmeans
+    model <- aov(Buds ~ Population, data = plant_data)
+    emm <- emmeans(model, "Population")
+    cld_result <- cld(emm, Letters = letters)
+    
+    ggplot(as.data.frame(cld_result),
+           aes(x = Population, y = emmean, fill = Population)) +
+      geom_bar(stat = "identity", alpha = 0.7) +
+      geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = 0.2) +
+      geom_text(aes(label = .group), vjust = -0.5) +
+      theme_minimal() +
+      labs(
+        title = "Number of Buds by Population with Significance Groups",
+        y = "Mean Number of Buds",
+        x = "Population"
+      ) +
+      scale_fill_brewer(palette = "Set2")
+  } else if (buds_result$Test == "Kruskal-Wallis test (non-parametric)") {
+    ggplot(buds_data, aes(x = Population, y = Buds, fill = Population)) +
+      geom_boxplot(alpha = 0.7) +
+      geom_jitter(width = 0.2, alpha = 0.5) +
+      theme_minimal() +
+      labs(
+        title = "Number of Buds by Population (Kruskal-Wallis significant)",
+        subtitle = "See post-hoc test results for pairwise comparisons",
+        y = "Number of Buds",
+        x = "Population"
+      ) +
+      scale_fill_brewer(palette = "Set2")
+  }
+}
+```
+
+### Total Flowers (Buds + Fruits)
+
+```{r total-flowers-analysis}
+# Extract data for this variable
+total_flowers_data <- plant_data %>%
+  select(Population, total_flowers)
+
+# Visualize with histogram by population
+ggplot(total_flowers_data, aes(x = total_flowers, fill = Population)) +
+  geom_histogram(position = "dodge", bins = 8, alpha = 0.7) +
+  theme_minimal() +
+  labs(
+    title = "Distribution of Total Flowers (Buds + Fruits) by Population",
+    x = "Total Flowers",
+    y = "Frequency"
+  ) +
+  scale_fill_brewer(palette = "Set2")
+
+# Statistical test
+total_flowers_result <- compare_variable(plant_data, "total_flowers",
+                                         "Total Flowers (Buds + Fruits)")
+
+total_flowers_result %>%
+  select(-Post_hoc) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+# Visualize differences if significant
+if (total_flowers_result$Significant == "Yes" && !is.na(total_flowers_result$p_value)) {
+  if (total_flowers_result$Test == "One-way ANOVA") {
+    model <- aov(total_flowers ~ Population, data = plant_data)
+    emm <- emmeans(model, "Population")
+    cld_result <- cld(emm, Letters = letters)
+    
+    ggplot(as.data.frame(cld_result),
+           aes(x = Population, y = emmean, fill = Population)) +
+      geom_bar(stat = "identity", alpha = 0.7) +
+      geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = 0.2) +
+      geom_text(aes(label = .group), vjust = -0.5) +
+      theme_minimal() +
+      labs(
+        title = "Total Flowers by Population with Significance Groups",
+        y = "Mean Total Flowers",
+        x = "Population"
+      ) +
+      scale_fill_brewer(palette = "Set2")
+  } else if (total_flowers_result$Test == "Kruskal-Wallis test (non-parametric)") {
+    ggplot(total_flowers_data,
+           aes(x = Population, y = total_flowers, fill = Population)) +
+      geom_boxplot(alpha = 0.7) +
+      geom_jitter(width = 0.2, alpha = 0.5) +
+      theme_minimal() +
+      labs(
+        title = "Total Flowers by Population (Kruskal-Wallis significant)",
+        subtitle = "See post-hoc test results for pairwise comparisons",
+        y = "Total Flowers",
+        x = "Population"
+      ) +
+      scale_fill_brewer(palette = "Set2")
+  }
+}
+```
+
+### Leaf Length
+
+```{r leaf-length-analysis}
+# Extract data for this variable
+leaf_length_data <- plant_data %>%
+  select(Population, leaf_length)
+
+# Q-Q plots to check normality
+ggplot(leaf_length_data, aes(sample = leaf_length)) +
+  geom_qq() +
+  geom_qq_line() +
+  facet_wrap(~ Population) +
+  theme_minimal() +
+  labs(title = "Q-Q Plots for Leaf Length by Population")
+
+# Visualize with boxplot and jittered points
+ggplot(leaf_length_data,
+       aes(x = Population, y = leaf_length, fill = Population)) +
+  geom_boxplot(alpha = 0.7) +
+  geom_jitter(width = 0.2, alpha = 0.5) +
+  theme_minimal() +
+  labs(
+    title = "Comparison of Leaf Length among Populations",
+    y = "Leaf Length (mm)",
+    x = "Population"
+  ) +
+  scale_fill_brewer(palette = "Set2")
+
+# Perform statistical test
+leaf_length_result <- compare_variable(plant_data, "leaf_length", "Leaf Length")
+
+leaf_length_result %>%
+  select(-Post_hoc) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+# If we have significant results, visualize the differences
+if (leaf_length_result$Significant == "Yes" && !is.na(leaf_length_result$p_value)) {
+  if (leaf_length_result$Test == "One-way ANOVA") {
+    model <- aov(leaf_length ~ Population, data = plant_data)
+    emm <- emmeans(model, "Population")
+    cld_result <- cld(emm, Letters = letters)
+    
+    ggplot(as.data.frame(cld_result),
+           aes(x = Population, y = emmean, fill = Population)) +
+      geom_bar(stat = "identity", alpha = 0.7) +
+      geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = 0.2) +
+      geom_text(aes(label = .group), vjust = -0.5) +
+      theme_minimal() +
+      labs(
+        title = "Leaf Length by Population with Significance Groups",
+        y = "Mean Leaf Length (mm)",
+        x = "Population"
+      ) +
+      scale_fill_brewer(palette = "Set2")
+  }
+}
+```
+
+### Flower Length
+
+```{r flower-length-analysis}
+# Extract data for this variable and remove NA values
+flower_length_data <- plant_data %>%
+  select(Population, flower_length) %>%
+  filter(!is.na(flower_length))
+
+# Visualize with boxplot and jittered points
+ggplot(flower_length_data,
+       aes(x = Population, y = flower_length, fill = Population)) +
+  geom_boxplot(alpha = 0.7) +
+  geom_jitter(width = 0.2, alpha = 0.5) +
+  theme_minimal() +
+  labs(
+    title = "Comparison of Flower Length among Populations",
+    y = "Flower Length (mm)",
+    x = "Population"
+  ) +
+  scale_fill_brewer(palette = "Set2")
+
+# Perform statistical test
+flower_length_result <- compare_variable(plant_data, "flower_length", "Flower Length")
+
+flower_length_result %>%
+  select(-Post_hoc) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+# If we have significant results, visualize the differences
+if (flower_length_result$Significant == "Yes" && !is.na(flower_length_result$p_value)) {
+  if (flower_length_result$Test == "One-way ANOVA") {
+    model <- aov(flower_length ~ Population, data = flower_length_data)
+    emm <- emmeans(model, "Population")
+    cld_result <- cld(emm, Letters = letters)
+    
+    ggplot(as.data.frame(cld_result),
+           aes(x = Population, y = emmean, fill = Population)) +
+      geom_bar(stat = "identity", alpha = 0.7) +
+      geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = 0.2) +
+      geom_text(aes(label = .group), vjust = -0.5) +
+      theme_minimal() +
+      labs(
+        title = "Flower Length by Population with Significance Groups",
+        y = "Mean Flower Length (mm)",
+        x = "Population"
+      ) +
+      scale_fill_brewer(palette = "Set2")
+  }
+}
+```
+
+### Fruit Length
+
+```{r fruit-length-analysis}
+# Extract data for this variable and remove NA values
+fruit_length_data <- plant_data %>%
+  select(Population, fruit_length) %>%
+  filter(!is.na(fruit_length))
+
+# Visualize with boxplot and jittered points
+ggplot(fruit_length_data,
+       aes(x = Population, y = fruit_length, fill = Population)) +
+  geom_boxplot(alpha = 0.7) +
+  geom_jitter(width = 0.2, alpha = 0.5) +
+  theme_minimal() +
+  labs(
+    title = "Comparison of Fruit Length among Populations",
+    y = "Fruit Length (mm)",
+    x = "Population"
+  ) +
+  scale_fill_brewer(palette = "Set2")
+
+# Perform statistical test
+fruit_length_result <- compare_variable(plant_data, "fruit_length", "Fruit Length")
+
+fruit_length_result %>%
+  select(-Post_hoc) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+# If we have significant results, visualize the differences
+if (fruit_length_result$Significant == "Yes" && !is.na(fruit_length_result$p_value)) {
+  if (fruit_length_result$Test == "One-way ANOVA") {
+    model <- aov(fruit_length ~ Population, data = fruit_length_data)
+    emm <- emmeans(model, "Population")
+    cld_result <- cld(emm, Letters = letters)
+    
+    ggplot(as.data.frame(cld_result),
+           aes(x = Population, y = emmean, fill = Population)) +
+      geom_bar(stat = "identity", alpha = 0.7) +
+      geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = 0.2) +
+      geom_text(aes(label = .group), vjust = -0.5) +
+      theme_minimal() +
+      labs(
+        title = "Fruit Length by Population with Significance Groups",
+        y = "Mean Fruit Length (mm)",
+        x = "Population"
+      ) +
+      scale_fill_brewer(palette = "Set2")
+  }
+}
+```
+
+## Discussion and Interpretation
+
+```{r summary-table}
+# Create a cleaner summary table from the 'results' object
+summary_table <- results %>%
+  select(
+    Variable,
+    Mean_Pt_Conception, SD_Pt_Conception,
+    Mean_CojoHQ,        SD_CojoHQ,
+    Mean_Perry,         SD_Perry,
+    p_value, Significant, Interpretation
+  )
+
+summary_table %>%
+  kable(caption = "Summary of Population Comparisons") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+In general:
+
+-   Some traits show clear differences among populations (especially reproductive counts such as buds and total flowers, if flagged as significant).\
+-   Other traits (e.g., some size metrics) may not differ significantly, suggesting similar vegetative growth across sites.\
+-   The combined reproductive metric `total_flowers` can be particularly informative as an integrated measure of reproductive investment.
+
+## Statistical Methods Justification
+
+In this analysis, I used a systematic approach to comparing populations for each trait:
+
+1.  **Test Selection Rationale**
+    -   For each trait, I first tested for normality using the Shapiro–Wilk test.\
+    -   Then I tested for equal variances using Levene’s test.\
+    -   Based on these results, I selected the appropriate statistical test:
+        -   Normal data → One-way ANOVA with Tukey’s HSD post-hoc test.\
+        -   Non-normal data → Kruskal–Wallis test with pairwise Wilcoxon tests (Bonferroni-adjusted).
+2.  **Handling Missing Data**
+    -   For traits with substantial missing data (flower_length, fruit_length), I filtered out NA values before analysis.\
+    -   Sample sizes for each test are reported in the results table to make the basis of inference transparent.
+3.  **Multiple Comparisons**
+    -   For traits with significant overall tests, I used Tukey’s HSD (for ANOVA) or Bonferroni-adjusted Wilcoxon tests (for Kruskal–Wallis) to control Type I error across multiple pairwise comparisons.
+
+## Conclusion
+
+This analysis provides a comprehensive comparison of three plant populations (Pt_Conception, CojoHQ, and Perry) across multiple morphological traits.
+
+-   Traits related to **reproductive effort** (buds, total flowers, and possibly fruit length where data permit) highlight differences that may reflect underlying ecological or genetic divergence among populations.\
+-   Vegetative traits such as **leaf length** may be more conserved, showing fewer significant differences.
+
+These patterns suggest that reproductive traits could be particularly sensitive indicators of environmental or genetic differences among populations, and they merit further ecological and evolutionary investigation.

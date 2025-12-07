@@ -1,0 +1,123 @@
+---
+title: "Variable Counts by Categories"
+format: html
+execute:
+  echo: true
+  warning: false
+  message: false
+params:
+  # Path to your data file
+  data_file: "your_data.csv"
+---
+
+## Load packages
+
+```{r}
+# Load required packages
+library(dplyr)
+library(readr)
+library(tidyr)
+```
+
+## Load data and list variables
+
+```{r}
+#| echo: false
+# Read the dataset from the file specified in params
+
+df <- read_csv("data/raw/plant/petal_weight.csv")
+
+# Show the first few rows (optional)
+
+head(df)
+
+cat("Variables in the dataset:\n")
+print(names(df))
+
+```
+
+## Ask the user to specify categorical variables
+
+```{r}
+# Ask which variables should be used for grouping
+print(names(df))
+if (interactive()) {
+cat("\nEnter the names of variables to use for grouping, separated by commas.\n")
+cat("For example: date, block, population, plant\n\n")
+group_vars_input <- readline(prompt = "Grouping variables: ")
+} else {
+
+# Non-interactive fallback: edit this vector manually if needed
+
+cat("\nNon-interactive mode detected. Edit 'group_vars' below if desired.\n")
+group_vars_input <- ""
+}
+
+# Convert the input string to a character vector
+
+group_vars <- group_vars_input |>
+strsplit(",") |>
+unlist() |>
+trimws()
+
+# Validate against actual column names
+
+missing_groups <- setdiff(group_vars, names(df))
+if (length(missing_groups) > 0) {
+warning("These grouping variables are not in the data and will be ignored: ",
+paste(missing_groups, collapse = ", "))
+}
+group_vars <- intersect(group_vars, names(df))
+
+cat("\nGrouping variables actually used:\n")
+print(group_vars)
+
+```
+
+```{r}
+# Variables not used for grouping
+
+other_vars <- setdiff(names(df), group_vars)
+
+cat("\nVariables considered for summarizing (before filtering to numeric):\n")
+print(other_vars)
+
+# Only summarize numeric "other" variables to avoid type conflicts in pivot_longer
+
+numeric_other_vars <- df |>
+select(all_of(other_vars)) |>
+select(where(is.numeric)) |>
+names()
+
+cat("\nNumeric variables to summarize:\n")
+print(numeric_other_vars)
+
+# Long format for numeric variables
+
+long_df <- df |>
+select(all_of(c(group_vars, numeric_other_vars))) |>
+pivot_longer(
+cols      = all_of(numeric_other_vars),
+names_to  = "variable",
+values_to = "value"
+)
+
+# Group and count non-NA values
+
+if (length(group_vars) > 0) {
+counts <- long_df |>
+group_by(across(all_of(group_vars)), variable) |>
+summarize(n = sum(!is.na(value)), .groups = "drop")
+} else {
+
+# No grouping variables: just counts per variable over the whole dataset
+
+counts <- long_df |>
+group_by(variable) |>
+summarize(n = sum(!is.na(value)), .groups = "drop")
+}
+
+counts
+
+
+```

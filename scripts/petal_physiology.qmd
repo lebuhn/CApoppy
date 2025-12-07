@@ -1,0 +1,572 @@
+---
+title: "Microgeographic variation in petal traits and microclimate in *Eschscholzia californica*"
+author: "Gretchen LeBuhn & Kevin Simonin"
+format: pdf
+bibliography: references.bib
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(readr)
+library(dplyr)
+library(tidyr)
+library(lubridate)
+library(ggplot2)
+library(lme4)
+library(lmerTest)
+library(knitr)
+library(kableExtra)
+library(corrplot)
+library(purrr)
+```
+
+# Goals and questions
+
+Here we focus on three questions:
+
+1.  **Do climate and petal traits vary among microsites (populations)?**\
+2.  **Which microclimate variables predict petal traits overall?**\
+3.  **Does among-microsite climate variation predict among-microsite differences in petal traits?**
+
+We use all available core petal traits and physiologically relevant climate metrics derived from 4-day developmental windows.
+
+------------------------------------------------------------------------
+
+# 1. Data loading and trait construction
+
+## 1.1 Petal traits
+
+```{r}
+#| label: load-petal-data
+
+# Path may need adjustment
+petal_raw <- read_csv("../data/raw/plant/petal_weight_2025.csv")
+
+petal_data_all <- petal_raw %>%
+  # Remove flagged outlier
+  filter(!(population == "Cojo" & plant == 1 & block == "1")) %>%
+  # Keep petals only
+  filter(petal_flower == "petal") %>%
+  mutate(
+    date       = mdy(date),
+    block      = as.factor(block),
+    population = as.factor(population),
+    wet_wgt    = as.numeric(wet_wgt),
+    dry_wgt    = as.numeric(dry_wgt)
+  ) %>%
+  filter(!is.na(wet_wgt), !is.na(dry_wgt), wet_wgt > 0, dry_wgt > 0) %>%
+  mutate(
+    # Core tissue economics traits
+    relative_water_content = ((wet_wgt - dry_wgt) / wet_wgt),   # proportion (0–1)
+    dry_matter_content     = dry_wgt / wet_wgt,                 # proportion (0–1)
+    water_per_dry_mass     = (wet_wgt - dry_wgt) / dry_wgt,
+    # Location type for plotting if desired
+    location_type = case_when(
+      population %in% c("Percos", "Pt. Conception") ~ "Coastal",
+      population %in% c("Cojo", "Perry")            ~ "Inland",
+      TRUE                                          ~ NA_character_
+    )
+  )
+
+# For 4-day microclimate analyses: drop Pt. Conception Block 3 (no RH/temp)
+petal_data <- petal_data_all %>%
+  filter(!(population == "Pt. Conception" & block == "3"))
+
+# Earliest collection date per population × block
+collection_dates <- petal_data %>%
+  group_by(population, block) %>%
+  summarise(collection_date = min(date), .groups = "drop")
+```
+
+## 1.2 Microclimate loading functions
+
+```{r}
+#| label: microclimate-functions
+
+load_rhtemp <- function(site_name, file_path) {
+  data <- read_csv(file_path, show_col_types = FALSE)
+  cols <- names(data)
+  time_col <- cols[grepl("Time|time", cols)][1]
+  temp_col <- cols[grepl("Celsius|Temp|temp", cols, ignore.case = TRUE)][1]
+  rh_col   <- cols[grepl("Humidity|RH|rh", cols, ignore.case = TRUE)][1]
+
+  data %>%
+    select(time = all_of(time_col),
+           temp = all_of(temp_col),
+           rh   = all_of(rh_col)) %>%
+    mutate(
+      datetime = mdy_hm(time),
+      site     = site_name,
+      temp     = as.numeric(temp),
+      rh       = as.numeric(rh)
+    ) %>%
+    filter(!is.na(datetime), !is.na(temp), !is.na(rh)) %>%
+    mutate(
+      date = as_date(datetime),
+      hour = hour(datetime)
+    ) %>%
+    select(site, datetime, date, hour, temp, rh)
+}
+
+load_par <- function(site_name, file_path) {
+  data <- read_csv(file_path, show_col_types = FALSE)
+  data %>%
+    select(date_raw = 1, par = 2) %>%
+    mutate(
+      datetime = mdy_hms(date_raw),
+      site     = site_name,
+      par      = as.numeric(gsub(",", "", par))
+    ) %>%
+    filter(!is.na(datetime), !is.na(par)) %>%
+    mutate(
+      date = as_date(datetime),
+      hour = hour(datetime)
+    ) %>%
+    select(site, datetime, date, hour, par)
+}
+
+calculate_vpd <- function(temp, rh) {
+  vp_sat    <- 0.611 * exp((17.27 * temp) / (temp + 237.3))
+  vp_actual <- vp_sat * (rh / 100)
+  vp_sat - vp_actual
+}
+```
+
+## 1.3 Microclimate time series and common window
+
+```{r}
+#| label: load-microclimate
+
+# RH/Temp
+rhtemp_cojo   <- load_rhtemp("Cojo", "../data/raw/rh_temp/Cojo_rhtemp_2025.csv")
+rhtemp_perry  <- load_rhtemp("Perry", "../data/raw/rh_temp/Perry_rhtemp_2025.csv")
+rhtemp_percos <- load_rhtemp("Percos","../data/raw/rh_temp/Percos_rhtemp_2025.csv")
+rhtemp_pt     <- load_rhtemp("Pt. Conception","../data/raw/rh_temp/Pt_Con_rhtemp_2025.csv") %>%
+  # remove clearly bad point
+  filter(datetime != ymd_hms("2025-07-08 17:23:00"))
+
+rhtemp_all <- bind_rows(rhtemp_cojo, rhtemp_perry, rhtemp_percos, rhtemp_pt) %>%
+  mutate(vpd = calculate_vpd(temp, rh))
+
+# PAR
+par_cojo   <- load_par("Cojo", "../data/raw/Apogee_PAR/Cojo_PAR_2025.csv")
+par_perry  <- load_par("Perry","../data/raw/Apogee_PAR/Perry_PAR_2025.csv")
+par_percos <- load_par("Percos","../data/raw/Apogee_PAR/Percos_PAR_2025.csv")
+par_pt     <- load_par("Pt. Conception","../data/raw/Apogee_PAR/Pt_con_PAR_2025.csv")
+
+# QC PAR
+fix_par <- function(df, site) {
+  df %>%
+    mutate(par = ifelse(par < 0, 0, par)) %>%
+    mutate(par = ifelse(site == "Cojo" & par > 3000, NA, par))
+}
+
+par_all <- bind_rows(
+  fix_par(par_cojo, "Cojo"),
+  fix_par(par_perry, "Perry"),
+  fix_par(par_percos, "Percos"),
+  fix_par(par_pt, "Pt. Conception")
+)
+
+# Global start date where all sites have both RH/temp and PAR
+first_rh_dates <- rhtemp_all %>%
+  group_by(site) %>%
+  summarise(first_rh = min(date, na.rm = TRUE), .groups = "drop")
+
+first_par_dates <- par_all %>%
+  group_by(site) %>%
+  summarise(first_par = min(date, na.rm = TRUE), .groups = "drop")
+
+first_all_dates <- first_rh_dates %>%
+  left_join(first_par_dates, by = "site") %>%
+  mutate(first_both = pmax(first_rh, first_par, na.rm = TRUE))
+
+global_start <- max(first_all_dates$first_both, na.rm = TRUE)
+
+rhtemp_all <- rhtemp_all %>%
+  filter(date >= global_start, date <= as_date("2025-10-01"))
+
+par_all <- par_all %>%
+  filter(date >= global_start, date <= as_date("2025-10-01"))
+```
+
+## 1.4 4-day developmental microclimate windows
+
+```{r}
+#| label: microclimate-4day
+
+calc_microclimate_metrics <- function(rhtemp_data, par_data, start_date, end_date) {
+
+  rh_subset  <- rhtemp_data %>%
+    filter(date >= start_date & date <= end_date)
+  par_subset <- par_data %>%
+    filter(date >= start_date & date <= end_date)
+
+  # Daily temp/RH
+  daily_metrics <- rh_subset %>%
+    group_by(site, date) %>%
+    summarise(
+      temp_max  = max(temp, na.rm = TRUE),
+      temp_min  = min(temp, na.rm = TRUE),
+      temp_mean = mean(temp, na.rm = TRUE),
+      rh_min    = min(rh,   na.rm = TRUE),
+      rh_mean   = mean(rh,  na.rm = TRUE),
+      vpd_mean  = mean(vpd, na.rm = TRUE),
+      vpd_max   = max(vpd,  na.rm = TRUE),
+      .groups   = "drop"
+    ) %>%
+    mutate(temp_range = temp_max - temp_min)
+
+  # Midday VPD (11–15)
+  midday_vpd <- rh_subset %>%
+    filter(hour >= 11 & hour <= 15) %>%
+    group_by(site, date) %>%
+    summarise(vpd_midday = mean(vpd, na.rm = TRUE), .groups = "drop")
+
+  # Nighttime RH (20–6)
+  night_rh <- rh_subset %>%
+    filter(hour >= 20 | hour <= 6) %>%
+    group_by(site, date) %>%
+    summarise(rh_night = mean(rh, na.rm = TRUE), .groups = "drop")
+
+  # Fog hours
+  fog_hours <- rh_subset %>%
+    group_by(site, date) %>%
+    summarise(fog_hours = sum(rh > 95, na.rm = TRUE) * 0.5, .groups = "drop")
+
+  # PAR (mol m⁻² d⁻¹ etc.)
+  daily_par <- par_subset %>%
+    group_by(site, date) %>%
+    summarise(
+      par_max          = max(par, na.rm = TRUE),
+      par_mean         = mean(par, na.rm = TRUE),
+      par_integrated   = sum(par, na.rm = TRUE) * (5/60) * (1/1e6),
+      high_light_hours = sum(par > 1000, na.rm = TRUE) * (5/60),
+      .groups          = "drop"
+    )
+
+  daily_combined <- daily_metrics %>%
+    left_join(midday_vpd, by = c("site", "date")) %>%
+    left_join(night_rh,   by = c("site", "date")) %>%
+    left_join(fog_hours,  by = c("site", "date")) %>%
+    left_join(daily_par,  by = c("site", "date"))
+
+  # Period means (per site)
+  daily_combined %>%
+    group_by(site) %>%
+    summarise(
+      n_days               = n(),
+      temp_max_mean        = mean(temp_max,     na.rm = TRUE),
+      temp_min_mean        = mean(temp_min,     na.rm = TRUE),
+      temp_range_mean      = mean(temp_range,   na.rm = TRUE),
+      rh_min_mean          = mean(rh_min,       na.rm = TRUE),
+      rh_night_mean        = mean(rh_night,     na.rm = TRUE),
+      vpd_mean             = mean(vpd_mean,     na.rm = TRUE),
+      vpd_midday_mean      = mean(vpd_midday,   na.rm = TRUE),
+      vpd_max_mean         = mean(vpd_max,      na.rm = TRUE),
+      fog_hours_total      = sum(fog_hours,     na.rm = TRUE),
+      par_integrated_mean  = mean(par_integrated,   na.rm = TRUE),
+      par_max_mean         = mean(par_max,         na.rm = TRUE),
+      high_light_hours_mean = mean(high_light_hours, na.rm = TRUE),
+      .groups              = "drop"
+    )
+}
+
+window_days <- 4
+
+microclimate_by_period <- collection_dates %>%
+  rowwise() %>%
+  mutate(
+    start_date = collection_date - days(window_days),
+    end_date   = collection_date - days(1),
+    microclimate = list(
+      calc_microclimate_metrics(
+        rhtemp_data = rhtemp_all %>% filter(site == population),
+        par_data    = par_all    %>% filter(site == population),
+        start_date  = start_date,
+        end_date    = end_date
+      )
+    )
+  ) %>%
+  unnest(microclimate) %>%
+  select(population, block, everything(), -site)
+```
+
+## 1.5 Merge traits and microclimate, construct analysis variables
+
+```{r}
+#| label: build-analysis-data
+
+petal_microclimate <- petal_data %>%
+  left_join(
+    microclimate_by_period,
+    by = c("population", "block")
+  ) %>%
+  # Keep rows where we actually have climate
+  filter(!is.na(vpd_midday_mean), !is.na(temp_max_mean)) %>%
+  mutate(
+    # Trait transforms
+    log_fresh_wgt = log(wet_wgt),
+    log_dry_wgt   = log(dry_wgt),
+    rwc_prop      = pmax(pmin(relative_water_content,       0.999), 0.001),
+    dmc_prop      = pmax(pmin(dry_matter_content,           0.999), 0.001),
+    water_dry_log = log(water_per_dry_mass),
+    rwc_logit     = qlogis(rwc_prop),
+    dmc_logit     = qlogis(dmc_prop),
+    # Key climate metrics (scaled for comparability)
+    vpd_midday_z  = scale(vpd_midday_mean)[,1],
+    vpd_mean_z    = scale(vpd_mean)[,1],
+    temp_max_z    = scale(temp_max_mean)[,1],
+    temp_range_z  = scale(temp_range_mean)[,1],
+    rh_night_z    = scale(rh_night_mean)[,1],
+    par_int_z     = scale(par_integrated_mean)[,1]
+  )
+```
+
+------------------------------------------------------------------------
+
+# 2. Question 1 – Variation among microsites
+
+## 2.1 Climate variation among microsites
+
+```{r}
+#| label: climate-variation-among-microsites
+
+climate_summary_ms <- microclimate_by_period %>%
+  group_by(population) %>%
+  summarise(
+    n_blocks        = n(),
+    temp_max_mean   = mean(temp_max_mean,      na.rm = TRUE),
+    temp_range_mean = mean(temp_range_mean,    na.rm = TRUE),
+    vpd_midday_mean = mean(vpd_midday_mean,    na.rm = TRUE),
+    vpd_mean        = mean(vpd_mean,           na.rm = TRUE),
+    rh_night_mean   = mean(rh_night_mean,      na.rm = TRUE),
+    par_int_mean    = mean(par_integrated_mean,na.rm = TRUE),
+    .groups = "drop"
+  )
+
+kable(climate_summary_ms,
+      caption = "Mean 4-day developmental microclimate metrics by microsite (population).") %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed"))
+```
+
+## 2.2 Petal trait variation among microsites (variance partitioning)
+
+```{r}
+#| label: trait-icc
+
+analysis_traits <- list(
+  log_fresh_wgt = "log fresh weight",
+  log_dry_wgt   = "log dry weight",
+  rwc_logit     = "RWC (logit)",
+  dmc_logit     = "DMC (logit)",
+  water_dry_log = "water per dry mass (log)"
+)
+
+fit_trait_icc <- function(trait_name) {
+  form <- as.formula(paste(trait_name, "~ block + (1|population)"))
+  m <- lmer(form, data = petal_microclimate, REML = TRUE)
+  vc <- VarCorr(m)
+  v_pop <- as.numeric(vc$population)
+  v_res <- attr(vc, "sc")^2
+  icc <- v_pop / (v_pop + v_res)
+  data.frame(
+    trait = trait_name,
+    icc_microsite = icc,
+    var_pop = v_pop,
+    var_resid = v_res,
+    stringsAsFactors = FALSE
+  )
+}
+
+icc_table <- purrr::map_dfr(names(analysis_traits), fit_trait_icc) %>%
+  mutate(trait_pretty = analysis_traits[trait])
+
+kable(
+  icc_table %>%
+    select(trait = trait_pretty, icc_microsite, var_pop, var_resid),
+  digits = 3,
+  caption = "Variance partitioning for petal traits: proportion of variance at the microsite level (ICC)."
+) %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed"))
+```
+
+```{r}
+cor(petal_microclimate$rwc_logit,
+    -petal_microclimate$dmc_logit)
+
+cor(petal_microclimate$rwc_logit,
+    petal_microclimate$water_dry_log)
+
+cor(-petal_microclimate$dmc_logit,
+    petal_microclimate$water_dry_log)
+
+```
+
+```{r}
+# Load needed packages
+library(ggplot2)
+library(dplyr)
+
+# Recreate your ICC table (replace with your actual object name if you prefer)
+icc_table <- tibble::tribble(
+  ~trait_pretty,              ~icc_microsite,
+  "Log Fresh Weight",          0.427,
+  "Log Dry Weight",            0.479,
+  "RWC (logit)",               0.107,
+  "DMC (logit)",               0.107,
+  "Water per Dry Mass (log)",  0.107
+)
+
+# Order traits for plotting
+icc_table <- icc_table %>%
+  mutate(trait_pretty = factor(trait_pretty,
+         levels = c("Log Fresh Weight", "Log Dry Weight",
+                    "RWC (logit)", "DMC (logit)", "Water per Dry Mass (log)")))
+
+# ICC barplot
+ggplot(icc_table, aes(x = trait_pretty, y = icc_microsite)) +
+  geom_col(fill = "#2E86AB", alpha = 0.8) +
+  geom_point(size = 3, color = "black") +
+  geom_text(aes(label = round(icc_microsite, 2)), 
+            vjust = -0.7, size = 4) +
+  ylim(0, 0.55) +
+  labs(
+    title = "Proportion of Trait Variance Explained by Microsite (ICC)",
+    x = "Petal Trait",
+    y = "ICC (variance proportion)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.text.x = element_text(angle = 25, hjust = 1),
+    plot.title  = element_text(face = "bold")
+  )
+
+```
+
+## What proportion of the total variation in a trait occurs between microsites rather than within microsites (i.e., among plants at the same microsite)?
+
+Notes: High ICC → microsites differ strongly. Indicates there are site-level effects that are not captured by 4-day climate alone.\
+Low ICC → most variation is within microsites (plants vary individually despite being in the same microsite).
+
+**Petal size traits** (fresh and dry mass) are strongly structured by microsite. ICC ≈ 0.43–0.48 means: Plants in the same microsite tend to produce petals of similar size. Microsites differ substantially in the typical mass of petals they produce. Microsite differences (temperature, VPD, RH, light, soil moisture, substrate) are strong enough to create recognizable “microsite phenotypes.”
+
+**Petal water-balance traits** (RWC, DMC, water per dry mass) are weakly structured by microsite. ICC ≈ 0.10 means:
+
+Only about 10% of variability in hydration/density is due to microsite. Most variation is within-microsite, among individual plants or flowers.
+
+**Because ICC was calculated from models including only the 4-day developmental microclimate, the high ICC values for fresh and dry mass indicate that microsites differ in petal size due to factors beyond short-term weather (e.g., long-term microclimate, substrate, or genetic differences). In contrast, hydration traits (RWC, DMC, water:dry mass) showed very low ICC values, indicating that these traits are driven primarily by the immediate microclimate experienced during development rather than persistent microsite differences.**
+
+# 3. Questions 2 & 3 – Climate predictors of petal traits
+
+We now ask:
+
+-   **Overall:** which microclimate variables predict each petal trait, after controlling for block and microsite random intercepts?\
+-   **Among microsites:** do microsites with different climates show different mean petal traits?
+
+## 3.1 Mixed-effects climate–trait models (plant-level)
+
+```{r}
+#| label: climate-trait-mixed-models
+
+fit_trait_climate_lmm <- function(trait_name) {
+  form <- as.formula(
+    paste(
+      trait_name,
+      "~ vpd_midday_z + temp_max_z + temp_range_z + rh_night_z + par_int_z + block + (1|population)"
+    )
+  )
+  lmer(form, data = petal_microclimate, REML = FALSE)
+}
+
+climate_models <- lapply(names(analysis_traits), fit_trait_climate_lmm)
+names(climate_models) <- names(analysis_traits)
+
+extract_fixed <- function(m, trait_label) {
+  cf <- summary(m)$coefficients
+  as.data.frame(cf) %>%
+    tibble::rownames_to_column("term") %>%
+    # Drop intercept and block terms for compactness; keep climate effects
+    filter(term != "(Intercept)", !grepl("^block", term)) %>%
+    mutate(trait = trait_label)
+}
+
+fixed_effects_table <- purrr::map2_dfr(
+  climate_models,
+  analysis_traits[names(climate_models)],
+  extract_fixed
+)
+
+kable(
+  fixed_effects_table %>%
+    select(trait, term, Estimate, `Std. Error`, `df`, `t value`, `Pr(>|t|)`),
+  digits = c(0,0,3,3,1,2,4),
+  col.names = c("Trait", "Term", "Estimate", "SE", "df", "t", "P"),
+  caption = "Fixed effects from mixed models: climate predictors of petal traits (plant-level, with population as random intercept)."
+) %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed"))
+```
+
+## 3.2 Among-microsite trait–climate relationships
+
+```{r}
+#| label: microsite-means
+
+pop_block_means <- petal_microclimate %>%
+  group_by(population, block) %>%
+  summarise(
+    log_fresh_wgt = mean(log_fresh_wgt, na.rm = TRUE),
+    log_dry_wgt   = mean(log_dry_wgt,   na.rm = TRUE),
+    rwc_logit     = mean(rwc_logit,     na.rm = TRUE),
+    dmc_logit     = mean(dmc_logit,     na.rm = TRUE),
+    water_dry_log = mean(water_dry_log, na.rm = TRUE),
+    vpd_midday    = mean(vpd_midday_mean,    na.rm = TRUE),
+    temp_max      = mean(temp_max_mean,      na.rm = TRUE),
+    temp_range    = mean(temp_range_mean,    na.rm = TRUE),
+    rh_night      = mean(rh_night_mean,      na.rm = TRUE),
+    par_int       = mean(par_integrated_mean,na.rm = TRUE),
+    .groups = "drop"
+  )
+
+trait_vars   <- c("log_fresh_wgt","log_dry_wgt","rwc_logit","dmc_logit","water_dry_log")
+climate_vars <- c("vpd_midday","temp_max","temp_range","rh_night","par_int")
+
+cor_mat <- cor(
+  pop_block_means %>% select(all_of(c(trait_vars, climate_vars))),
+  use = "complete.obs"
+)
+
+trait_climate_cors <- cor_mat[trait_vars, climate_vars]
+
+corrplot(
+  trait_climate_cors,
+  method = "color",
+  addCoef.col = "black",
+  tl.col = "black",
+  tl.srt = 45,
+  title = "Population × block mean trait–microclimate correlations",
+  mar = c(0,0,3,0)
+)
+```
+
+```{r}
+#| label: microsite-regression-example
+
+lm_fw_ms <- lm(
+  log_fresh_wgt ~ vpd_midday + temp_max + temp_range + rh_night + par_int,
+  data = pop_block_means
+)
+
+summary(lm_fw_ms)
+```
+
+------------------------------------------------------------------------
+
+# 4. Interpretation roadmap (to be filled with narrative)
+
+-   Use `climate_summary_ms` to describe climatic separation among microsites.\
+-   Use `icc_table` to quantify how much trait variance is structured among microsites.\
+-   Use the mixed-model fixed effects to identify key short-term climate drivers of each trait.\
+-   Use the microsite-level correlations and regressions to link among-microsite climate differences to among-microsite variation in mean petal traits.

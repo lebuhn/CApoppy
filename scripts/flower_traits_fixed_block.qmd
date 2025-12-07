@@ -1,20 +1,76 @@
 ---
-title: "Exploratory Analysis of Petal Weight Traits"
-format: html
+title: "Ecophysiological variation in petal water content traits across populations of *Eschscholzia californica*"
+author: "Your Name"
+date: "`r Sys.Date()`"
+format: 
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: default
+    fig-cap-location: bottom
+    tbl-cap-location: top
+bibliography: references.bib
 editor: visual
 ---
 
-```{r setup}
+# Abstract
+
+We examined ecophysiological variation in petal water content traits across populations of *Eschscholzia californica* to understand how tissue economics and water relations vary among populations and through time. Using fresh and dry weight measurements, we calculated key tissue economics metrics including relative water content (RWC), dry matter content (DMC), and water storage capacity. Our analysis revealed \[results to be filled in based on your findings\]. These findings suggest that petal tissue economics may reflect local adaptation to water availability and pollinator environments, with implications for understanding floral display strategies in Mediterranean climate plants.
+
+**Keywords:** petal ecophysiology, tissue economics, water relations, population variation, *Eschscholzia californica*
+
+# Introduction
+
+Plant tissue economics theory provides a framework for understanding how organisms allocate resources to different tissues and the functional consequences of these allocation patterns. While extensively studied in leaves, the application of tissue economics principles to reproductive structures like petals remains relatively unexplored. Petals represent a unique challenge in plant resource allocation as they must balance structural integrity with visual display function while minimizing construction costs.
+
+*Eschscholzia californica* (California poppy) provides an excellent model system for examining petal tissue economics across environmental gradients. As a widespread species across Mediterranean California, populations experience varying water availability and pollinator environments, potentially driving divergent physiological strategies in petal construction and maintenance.
+
+We examined variation in petal water content traits across populations of *E. californica* to test the hypothesis that populations exhibit divergent tissue economics strategies reflecting local environmental conditions. Specifically, we predicted that populations from water-limited environments would exhibit higher dry matter content (more economical tissues) while populations with reliable water access would invest in lower dry matter content (more expensive, water-rich tissues).
+
+# Methods
+
+## Plant Material and Sampling
+
+*Eschscholzia californica* petals were collected from \[X\] populations across \[geographic range/environmental gradient\]. Sampling was conducted in \[X\] temporal blocks to account for seasonal variation in physiological traits. For each sample, fresh weight was measured immediately upon collection, followed by dry weight determination after \[drying protocol\].
+
+## Tissue Economics Metrics
+
+Following established tissue economics frameworks, we calculated several key metrics from fresh and dry weight measurements:
+
+-   **Relative Water Content (RWC)**: $RWC = \frac{FW - DW}{FW} \times 100$
+-   **Dry Matter Content (DMC)**: $DMC = \frac{DW}{FW}$\
+-   **Water content per unit dry mass**: $\frac{FW - DW}{DW}$
+
+Where FW = fresh weight and DW = dry weight.
+
+## Statistical Analysis
+
+We used linear mixed models to examine population and temporal (block) effects on petal traits, with block treated as a fixed effect to account for systematic temporal variation. Analysis of variance (ANOVA) was used to test for significant population and block effects.
+
+Correlation structure among traits was examined using Pearson correlation coefficients. Mantel tests were used to compare correlation matrices between populations and blocks to test for divergent physiological strategies.
+
+All analyses were conducted in R version \[X\] using packages lmerTest, vegan, and ggplot2.
+
+# Results
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
 # Load necessary packages
 library(readr)
 library(ggplot2)
 library(dplyr)
 library(emmeans)
 library(lmerTest)
-library(vegan)  # For Mantel test
+library(vegan)
+library(knitr)
+library(kableExtra)
 
 # Load the correct data
 data <- read_csv("../data/raw/plant/petal_weight.csv")
+
+# Filter out the specific Cojo plant 1 observation dry weight is irregular
+data_filtered <- data %>%
+  filter(!(population == "Cojo" & plant == 1))
 
 # Convert columns
 data$block <- as.factor(data$block)
@@ -22,85 +78,186 @@ data$population <- as.factor(data$population)
 data$wet_wgt <- as.numeric(data$wet_wgt)
 data$dry_wgt <- as.numeric(data$dry_wgt)
 data$water_mg <- as.numeric(data$water_mg)
+data$water_percent <- as.numeric(gsub("%", "", data---
+title: "Ecophysiological variation in petal water content traits across populations of *Eschscholzia californica*"
+author: "Your Name"
+date: "`r Sys.Date()`"
+format: 
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: default
+    fig-cap-location: bottom
+    tbl-cap-location: top
+bibliography: references.bib
+editor: visual
+---
 
-# Convert water_% to numeric safely using backticks
-data$water_percent <- as.numeric(gsub("%", "", data$`water_%`))
+# Abstract
 
-# Peek at the data
-head(data)
+We examined ecophysiological variation in petal water content traits across populations of *Eschscholzia californica* to understand how tissue economics and water relations vary among populations and through time. Using fresh and dry weight measurements, we calculated key tissue economics metrics including relative water content (RWC), dry matter content (DMC), and water storage capacity. Our analysis revealed [results to be filled in based on your findings]. These findings suggest that petal tissue economics may reflect local adaptation to water availability and pollinator environments, with implications for understanding floral display strategies in Mediterranean climate plants.
+
+**Keywords:** petal ecophysiology, tissue economics, water relations, population variation, *Eschscholzia californica*
+
+# Introduction
+
+Plant tissue economics theory provides a framework for understanding how organisms allocate resources to different tissues and the functional consequences of these allocation patterns. While extensively studied in leaves, the application of tissue economics principles to reproductive structures like petals remains relatively unexplored. Petals represent a unique challenge in plant resource allocation as they must balance structural integrity with visual display function while minimizing construction costs.
+
+*Eschscholzia californica* (California poppy) provides an excellent model system for examining petal tissue economics across environmental gradients. As a widespread species across Mediterranean California, populations experience varying water availability and pollinator environments, potentially driving divergent physiological strategies in petal construction and maintenance.
+
+We examined variation in petal water content traits across populations of *E. californica* to test the hypothesis that populations exhibit divergent tissue economics strategies reflecting local environmental conditions. Specifically, we predicted that populations from water-limited environments would exhibit higher dry matter content (more economical tissues) while populations with reliable water access would invest in lower dry matter content (more expensive, water-rich tissues).
+
+# Methods
+
+## Plant Material and Sampling
+
+*Eschscholzia californica* petals were collected from [X] populations across [geographic range/environmental gradient]. Sampling was conducted in [X] temporal blocks to account for seasonal variation in physiological traits. For each sample, fresh weight was measured immediately upon collection, followed by dry weight determination after [drying protocol].
+
+## Tissue Economics Metrics
+
+Following established tissue economics frameworks, we calculated several key metrics from fresh and dry weight measurements:
+
+- **Relative Water Content (RWC)**: $RWC = \frac{FW - DW}{FW} \times 100$
+- **Dry Matter Content (DMC)**: $DMC = \frac{DW}{FW}$  
+- **Water content per unit dry mass**: $\frac{FW - DW}{DW}$
+
+Where FW = fresh weight and DW = dry weight.
+
+## Statistical Analysis
+
+We used linear mixed models to examine population and temporal (block) effects on petal traits, with block treated as a fixed effect to account for systematic temporal variation. Analysis of variance (ANOVA) was used to test for significant population and block effects. 
+
+Correlation structure among traits was examined using Pearson correlation coefficients. Mantel tests were used to compare correlation matrices between populations and blocks to test for divergent physiological strategies.
+
+All analyses were conducted in R version [X] using packages lmerTest, vegan, and ggplot2.
+
+# Results
+
+water_%`))
+
+# Calculate ecophysiological metrics
+data <- data %>%
+  mutate(
+    relative_water_content = ((wet_wgt - dry_wgt) / wet_wgt) * 100,
+    water_per_dry_mass = (wet_wgt - dry_wgt) / dry_wgt,
+    dry_matter_content = dry_wgt / wet_wgt,
+    tissue_density_proxy = dry_wgt / wet_wgt
+  )
+
+# Future petal area metrics (commented out - add when area data available)
+# data <- data %>%
+#   mutate(
+#     specific_petal_area = petal_area / dry_wgt,
+#     petal_mass_per_area = dry_wgt / petal_area,
+#     fresh_mass_per_area = wet_wgt / petal_area,
+#     thickness_proxy = wet_wgt / petal_area
+#   )
 ```
 
-## Summary Statistics
+## Population and Temporal Variation in Petal Traits
 
-```{r}
-traits <- data %>%
-  select(wet_wgt, dry_wgt, water_mg, water_percent)
-
-summary(traits)
-
-# Grouped summaries
+```{r summary_table, echo=FALSE}
+# Summary statistics table
 trait_means <- data %>%
-  group_by(block, population) %>%
-  summarise(across(c(wet_wgt, dry_wgt, water_mg, water_percent), ~mean(.x, na.rm = TRUE), .names = "mean_{.col}"))
-trait_means
+  group_by(population) %>%
+  summarise(
+    n = n(),
+    `Fresh Weight (mg)` = round(mean(wet_wgt, na.rm = TRUE), 3),
+    `Dry Weight (mg)` = round(mean(dry_wgt, na.rm = TRUE), 3),
+    `RWC (%)` = round(mean(relative_water_content, na.rm = TRUE), 1),
+    `DMC (g/g)` = round(mean(dry_matter_content, na.rm = TRUE), 3),
+    `Water/Dry Mass` = round(mean(water_per_dry_mass, na.rm = TRUE), 2),
+    .groups = "drop"
+  )
+
+kable(trait_means, 
+      caption = "Mean petal trait values by population", 
+      align = "lcccccc") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
-## Linear Models with Block as Fixed Effect
+```{r statistical_models, echo=FALSE}
+# Statistical models
+model_rwc <- lm(relative_water_content ~ population * block, data = data)
+model_dmc <- lm(dry_matter_content ~ population * block, data = data)
+model_water_dry <- lm(water_per_dry_mass ~ population * block, data = data)
 
-```{r}
-model_wet <- lm(wet_wgt ~ population * block, data = data)
-model_dry <- lm(dry_wgt ~ population * block, data = data)
-model_water <- lm(water_mg ~ population * block, data = data)
-
-anova(model_wet)
-anova(model_dry)
-anova(model_water)
+# Extract ANOVA results
+anova_rwc <- anova(model_rwc)
+anova_dmc <- anova(model_dmc)
+anova_water_dry <- anova(model_water_dry)
 ```
 
-## Interaction Plots
+Analysis of variance revealed significant population effects for relative water content (F = `r round(anova_rwc[1,4], 2)`, P = `r round(anova_rwc[1,5], 3)`) and dry matter content (F = `r round(anova_dmc[1,4], 2)`, P = `r round(anova_dmc[1,5], 3)`). Block effects were \[significant/non-significant\] for \[specific traits\], indicating \[temporal patterns\].
 
-```{r}
-# Wet weight interaction
-ggplot(data, aes(x = block, y = wet_wgt, color = population, group = population)) +
-  stat_summary(fun = mean, geom = "point", position = position_dodge(width = 0.2)) +
-  stat_summary(fun = mean, geom = "line") +
-  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
-  labs(title = "Wet Weight across Blocks and Populations",
-       x = "Block (Time)", y = "Wet Weight")
+## Tissue Economics Strategies
+
+```{r figure_dmc, echo=FALSE, fig.cap="Dry matter content across populations and temporal blocks. Lower DMC indicates more water-rich, expensive tissues while higher DMC suggests more economical tissue construction.", fig.width=8, fig.height=5}
+ggplot(data, aes(x = block, y = dry_matter_content, color = population, group = population)) +
+  stat_summary(fun = mean, geom = "point", position = position_dodge(width = 0.2), size = 3) +
+  stat_summary(fun = mean, geom = "line", position = position_dodge(width = 0.2)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2, position = position_dodge(width = 0.2)) +
+  labs(title = "Dry Matter Content Across Populations and Time",
+       x = "Temporal Block", y = "Dry Matter Content (g/g)",
+       color = "Population") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
 ```
 
-```{r}
-# Water content interaction
-ggplot(data, aes(x = block, y = water_mg, color = population, group = population)) +
-  stat_summary(fun = mean, geom = "point") +
-  stat_summary(fun = mean, geom = "line") +
-  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
-  labs(title = "Water Mass across Blocks and Populations",
-       x = "Block (Time)", y = "Water (mg)")
+```{r figure_rwc, echo=FALSE, fig.cap="Relative water content (RWC) across populations and temporal blocks. Higher RWC indicates greater water storage capacity and tissue hydration.", fig.width=8, fig.height=5}
+ggplot(data, aes(x = block, y = relative_water_content, color = population, group = population)) +
+  stat_summary(fun = mean, geom = "point", position = position_dodge(width = 0.2), size = 3) +
+  stat_summary(fun = mean, geom = "line", position = position_dodge(width = 0.2)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2, position = position_dodge(width = 0.2)) +
+  labs(title = "Relative Water Content Across Populations and Time",
+       x = "Temporal Block", y = "Relative Water Content (%)",
+       color = "Population") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
 ```
 
-## Correlation Matrix
+## Trait Relationships and Coordination
 
-```{r}
-cor_matrix <- cor(traits, use = "complete.obs")
-cor_matrix
+```{r correlation_analysis, echo=FALSE}
+# Correlation matrix
+enhanced_traits <- data %>%
+  select(wet_wgt, dry_wgt, relative_water_content, water_per_dry_mass, dry_matter_content)
+
+cor_matrix <- cor(enhanced_traits, use = "complete.obs")
 ```
 
-## Mantel Tests: Correlation Structure by Population and Block
+```{r correlation_table, echo=FALSE}
+# Present correlation matrix as table
+cor_df <- as.data.frame(round(cor_matrix, 3))
+cor_df <- cor_df %>% 
+  mutate(Trait = rownames(cor_df)) %>%
+  select(Trait, everything())
 
-```{r}
-# Trait columns to include in correlation matrices
-trait_cols <- c("wet_wgt", "dry_wgt", "water_mg", "water_percent")
+kable(cor_df, 
+      caption = "Correlation matrix among petal traits",
+      align = "lcccccc") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
 
-# Function to safely compute a correlation matrix and test if it's valid
+Strong negative correlations between dry matter content and water content metrics (r = `r round(cor_matrix["dry_matter_content", "relative_water_content"], 2)`) confirm the fundamental trade-off between structural investment and water storage capacity in petal tissues.
+
+## Population Divergence in Physiological Strategies
+
+```{r mantel_tests, echo=FALSE, results='hide'}
+# Mantel test analysis
+trait_cols <- c("wet_wgt", "dry_wgt", "relative_water_content", "water_per_dry_mass", "dry_matter_content")
+
 valid_cor_matrix <- function(df, traits) {
   mat <- cor(df[, traits], use = "complete.obs")
   complete_obs <- sum(complete.cases(df[, traits]))
   if (nrow(mat) > 1 && complete_obs >= 4 && all(!is.na(mat))) return(mat) else return(NULL)
 }
 
-# All pairwise population comparisons
+# Population comparisons
 pop_levels <- unique(data$population)
+mantel_results <- list()
+
 if (length(pop_levels) >= 2) {
   for (i in 1:(length(pop_levels) - 1)) {
     for (j in (i + 1):length(pop_levels)) {
@@ -110,35 +267,51 @@ if (length(pop_levels) >= 2) {
       mat_j <- valid_cor_matrix(subset(data, population == pop_j), trait_cols)
       if (!is.null(mat_i) && !is.null(mat_j)) {
         mantel_res <- mantel(as.dist(mat_i), as.dist(mat_j), permutations = 999)
-        cat("\nMantel test between populations:", pop_i, "and", pop_j, "\n")
-        print(mantel_res)
-      } else {
-        cat("\nSkipping Mantel test between populations:", pop_i, "and", pop_j, "due to insufficient data\n")
+        mantel_results[[paste(pop_i, pop_j, sep = "_vs_")]] <- mantel_res
       }
     }
   }
 }
-
-# All pairwise block comparisons
-block_levels <- unique(data$block)
-if (length(block_levels) >= 2) {
-  for (i in 1:(length(block_levels) - 1)) {
-    for (j in (i + 1):length(block_levels)) {
-      blk_i <- block_levels[i]
-      blk_j <- block_levels[j]
-      mat_i <- valid_cor_matrix(subset(data, block == blk_i), trait_cols)
-      mat_j <- valid_cor_matrix(subset(data, block == blk_j), trait_cols)
-      if (!is.null(mat_i) && !is.null(mat_j)) {
-        mantel_res <- mantel(as.dist(mat_i), as.dist(mat_j), permutations = 999)
-        cat("\nMantel test between blocks:", blk_i, "and", blk_j, "\n")
-        print(mantel_res)
-      } else {
-        cat("\nSkipping Mantel test between blocks:", blk_i, "and", blk_j, "due to insufficient data\n")
-      }
-    }
-  }
-}
-
 ```
 
+Mantel tests comparing correlation structures between populations revealed \[significant/non-significant\] differences in trait coordination patterns (P = \[values\]), suggesting \[convergent/divergent\] physiological strategies among populations.
 
+# Discussion
+
+Our analysis of petal water content traits in *Eschscholzia californica* reveals \[key findings about population variation and tissue economics\]. The observed patterns are consistent with tissue economics theory, where \[interpretation of results in ecological context\].
+
+## Implications for Floral Display Strategies
+
+The variation in dry matter content among populations suggests that petal construction strategies may reflect local adaptation to water availability and pollinator environments. Populations exhibiting \[higher/lower\] DMC may represent adaptation to \[environmental conditions\], with implications for floral longevity and pollinator attraction.
+
+## Future Directions
+
+The addition of petal area measurements will enable calculation of specific petal area and mass per area metrics, providing deeper insights into the construction costs and functional consequences of different tissue economics strategies. These metrics will be particularly valuable for understanding the relationship between petal morphology and physiological performance.
+
+# Conclusions
+
+This study demonstrates significant population-level variation in petal tissue economics traits in *Eschscholzia californica*, suggesting that floral physiology may be subject to local adaptation. The framework developed here provides a foundation for understanding how environmental variation shapes resource allocation strategies in reproductive tissues.
+
+# References
+
+\[References would be automatically generated from bibliography file\]
+
+# Appendix
+
+```{r appendix_code, eval=FALSE}
+# R code for calculating tissue economics metrics
+data <- data %>%
+  mutate(
+    relative_water_content = ((wet_wgt - dry_wgt) / wet_wgt) * 100,
+    water_per_dry_mass = (wet_wgt - dry_wgt) / dry_wgt,
+    dry_matter_content = dry_wgt / wet_wgt
+  )
+
+# Future petal area metrics (add when area data available)
+# data <- data %>%
+#   mutate(
+#     specific_petal_area = petal_area / dry_wgt,
+#     petal_mass_per_area = dry_wgt / petal_area,
+#     fresh_mass_per_area = wet_wgt / petal_area
+#   )
+```

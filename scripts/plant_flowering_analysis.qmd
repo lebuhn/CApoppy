@@ -1,5 +1,5 @@
 ---
-title: "Analysis of Flowering Timing and Duration in Two Populations"
+title: "Analysis of Flowering Timing and Duration in Three Populations"
 format: pdf
 editor: visual
 ---
@@ -22,7 +22,7 @@ library(emmeans)   # For post-hoc comparisons
 
 ## Introduction
 
-This analysis examines the timing and duration of flowering in two populations: PC and CojoHQ. We will analyze whether there are differences between these populations in terms of:
+This analysis examines the timing and duration of flowering in three populations: Percos, PC and CojoHQ. We will analyze whether there are differences between these populations in terms of:
 
 1.  Timing of flowering (when flowers open and close)
 2.  Duration of flowering (how long flowers remain open)

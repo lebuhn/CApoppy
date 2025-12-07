@@ -25,19 +25,19 @@ data <- read.csv("~/GitHub/CApoppy/data/processed/porometer_4pops.csv", skip = 1
 
 # Clean the data: remove NA values and ensure factor types
 data_clean <- data %>%
-  mutate(Date = as.Date(Date)) %>%  # Convert Date column to Date type
-  filter(!is.na(gsw), !is.na(Population), !is.na(Plant), !is.na(`Top.or.Bottom`)) %>%
+  mutate(date = as.Date(as.character(date), format = "%m/%d/%y")) %>%  # Convert date column to Date type
+  filter(!is.na(gsw), !is.na(population), !is.na(plant), !is.na(`Top.or.Bottom`)) %>%
   filter(gsw < 0.05, gsw > -0.05) %>%
   mutate(
-    Population = case_when(
-      Population %in% c("Cojo", "CojoHQ") ~ "Cojo",
-      TRUE ~ as.character(Population)
+    population = case_when(
+      population %in% c("Cojo", "CojoHQ") ~ "Cojo",
+      TRUE ~ as.character(population)
     ),
-    Plant = case_when(
-  Date %in% as.Date(c("2025-04-19", "2025-04-20", "2025-04-21")) ~ Plant + 16,
-  TRUE ~ Plant
+    plant = case_when(
+  date %in% as.Date(c("2025-04-19", "2025-04-20", "2025-04-21")) ~ plant + 16,
+  TRUE ~ plant
 ),
-    Population = factor(Population),
+    population = factor(population),
     TopBottom = factor(`Top.or.Bottom`)
   )
 
@@ -48,7 +48,7 @@ head(data_clean)
 
 ```{r}
 data_clean %>%
-  group_by(Population, TopBottom) %>%
+  group_by(population, TopBottom) %>%
   summarise(
     mean_gsw = mean(gsw),
     sd_gsw = sd(gsw),
@@ -71,7 +71,7 @@ hist_overall <- ggplot(data_clean, aes(x = gsw)) +
 
 # Calculate means per TopBottom x Population group
 means_df <- data_clean %>%
-  group_by(TopBottom, Population) %>%
+  group_by(TopBottom, population) %>%
   summarize(mean_gsw = mean(gsw, na.rm = TRUE))
 
 # Faceted histogram with means
@@ -81,7 +81,7 @@ hist_by_population <- ggplot(data_clean, aes(x = gsw)) +
              color = "blue", linetype = "solid", linewidth = 0.6) +
   labs(title = "Histogram of gsw by Population and Leaf Surface",
        x = "gsw", y = "Count") +
-  facet_grid(TopBottom ~ Population) +
+  facet_grid(TopBottom ~ population) +
   theme_minimal()
 
 # Show the overall histogram
@@ -94,7 +94,7 @@ print(hist_by_population)
 ## Boxplot of gsw by Population and Leaf Surface
 
 ```{r}
-ggplot(data_clean, aes(x = Population, y = gsw, fill = TopBottom)) +
+ggplot(data_clean, aes(x = population, y = gsw, fill = TopBottom)) +
   geom_boxplot(position = position_dodge(width = 0.8)) +
   labs(
     title = "gsw by Population and Leaf Surface",
@@ -108,7 +108,7 @@ ggplot(data_clean, aes(x = Population, y = gsw, fill = TopBottom)) +
 
 ```{r}
 library(stats)
-anova2 <- lm(gsw ~ Population * TopBottom, data = data_clean, contrasts = "type3")
+anova2 <- lm(gsw ~ population * TopBottom, data = data_clean, contrasts = "type3")
 summary(anova2)
 ```
 
@@ -122,7 +122,7 @@ TukeyHSD(anova2)
 ## Interaction Plot
 
 ```{r}
-gginteraction <- ggplot(data_clean, aes(x = TopBottom, y = gsw, color = Population, group = Population)) +
+gginteraction <- ggplot(data_clean, aes(x = TopBottom, y = gsw, color = population, group = population)) +
   stat_summary(fun = mean, geom = "line") +
   stat_summary(fun = mean, geom = "point") +
   labs(title = "Interaction Plot: Population × Leaf Surface", x = "Leaf Surface", y = "Mean gsw") +
@@ -142,7 +142,7 @@ Separate figures for each population
 ```{r}
 
 
-gginteraction2 <- ggplot(data_clean, aes(x = TopBottom, y = gsw, group = Population)) +
+gginteraction2 <- ggplot(data_clean, aes(x = TopBottom, y = gsw, group = population)) +
   stat_summary(fun = mean, geom = "line") +
   stat_summary(fun = mean, geom = "point") +
   stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.1) +
@@ -151,7 +151,7 @@ gginteraction2 <- ggplot(data_clean, aes(x = TopBottom, y = gsw, group = Populat
     x = "Leaf Surface",
     y = "Mean gsw ± SE"
   ) +
-  facet_wrap(~ Population) +  # Creates one plot per population
+  facet_wrap(~ population) +  # Creates one plot per population
   theme_minimal()
 
 gginteraction2
@@ -167,16 +167,16 @@ library(broom)
 
 # First, let's check which plant measurements are duplicated
 duplicates_check <- data_clean %>%
-  group_by(Population, Plant, TopBottom) %>%
+  group_by(population, plant, TopBottom) %>%
   summarise(n = n(), .groups = "drop") %>%
   filter(n > 1)
 
 t_test_results <- data_clean %>%
   filter(TopBottom %in% c("Top", "Bottom")) %>%
-  select(Population, Plant, TopBottom, gsw) %>%
+  select(population, plant, TopBottom, gsw) %>%
   pivot_wider(names_from = TopBottom, values_from = gsw) %>%
   filter(!is.na(Top) & !is.na(Bottom)) %>%
-  group_by(Population) %>%
+  group_by(population) %>%
   summarise(
     n = n(),  # number of plants with both Top and Bottom values
     t_test = list(t.test(Top, Bottom, paired = TRUE)),
@@ -193,7 +193,7 @@ t_test_results <- data_clean %>%
       TRUE ~ "n.s."
     )
   ) %>%
-  select(Population, n, estimate, statistic, p.value, sig, conf.low, conf.high)
+  select(population, n, estimate, statistic, p.value, sig, conf.low, conf.high)
 
 print(t_test_results)
 ```

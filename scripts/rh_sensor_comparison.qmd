@@ -1,0 +1,412 @@
+---
+title: "RH Sensor Comparison for Pt. Conception"
+author: "Gretchen LeBuhn"
+date: today
+format:
+  html:
+    toc: true
+    code-fold: true
+    theme: cosmo
+editor: visual
+---
+
+## Overview
+
+This analysis compares three relative humidity sensors for Pt. Conception during their overlapping time period, testing different RH aggregation methods (max, min, average).
+
+**Sensors:** 1. Old Sensor (LeBuhn3) 2. TNC Sensor 1 (Dangermond_UCSB_North_Beach) 3. TNC Sensor 2 (Dangermond_North Beach)
+
+## Setup
+
+```{r setup, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(lubridate)
+library(patchwork)
+
+theme_set(theme_bw(base_size = 12))
+```
+
+## Data Import
+
+```{r import-data, message=FALSE, warning=FALSE}
+# Import old sensor
+old_sensor <- read_csv("../data/raw/rh_temp/Pt_Con_rhtemp_2025.csv") %>%
+  mutate(
+    datetime = mdy_hm(Time),
+    temp_old = `Celsius(∞C)`,
+    rh_old = `Humidity(%rh)`
+  ) %>%
+  select(datetime, temp_old, rh_old)
+
+# Import TNC sensor 1
+tnc1 <- read_csv("../data/raw/rh_temp/Cojo_Pt_Con_rhtemp_2025_tncsensor.csv") %>%
+  mutate(
+    datetime = mdy_hm(Time),
+    temp_tnc1 = `Dangermond_UCSB_North_Beach Air Temperature Average degC`,
+    rh_max_tnc1 = `Dangermond_UCSB_North_Beach Relative Humidity Maximum %`,
+    rh_min_tnc1 = `Dangermond_UCSB_North_Beach Relative Humidity Minimum %`,
+    rh_avg_tnc1 = (rh_max_tnc1 + rh_min_tnc1) / 2
+  ) %>%
+  select(datetime, temp_tnc1, rh_max_tnc1, rh_min_tnc1, rh_avg_tnc1)
+
+# Import TNC sensor 2
+tnc2 <- read_csv("../data/raw/rh_temp/pt-conception-alternate.csv") %>%
+  mutate(
+    datetime = ymd_hms(Time, tz = "UTC"),
+    temp_tnc2 = `Dangermond_North Beach Air Temp Avg degC`,
+    rh_max_tnc2 = `Dangermond_North Beach Relative Humidity Max %`,
+    rh_min_tnc2 = `Dangermond_North Beach Relative Humidity Min %`,
+    rh_avg_tnc2 = (rh_max_tnc2 + rh_min_tnc2) / 2
+  ) %>%
+  select(datetime, temp_tnc2, rh_max_tnc2, rh_min_tnc2, rh_avg_tnc2)
+```
+
+## Find Overlapping Period
+
+```{r overlap-period}
+# Find date range where all three sensors have data
+overlap_start <- max(
+  min(old_sensor$datetime[!is.na(old_sensor$temp_old)], na.rm = TRUE),
+  min(tnc1$datetime[!is.na(tnc1$temp_tnc1)], na.rm = TRUE),
+  min(tnc2$datetime[!is.na(tnc2$temp_tnc2)], na.rm = TRUE)
+)
+
+overlap_end <- min(
+  max(old_sensor$datetime[!is.na(old_sensor$temp_old)], na.rm = TRUE),
+  max(tnc1$datetime[!is.na(tnc1$temp_tnc1)], na.rm = TRUE),
+  max(tnc2$datetime[!is.na(tnc2$temp_tnc2)], na.rm = TRUE)
+)
+
+cat("Overlapping period:\n")
+cat("Start:", format(overlap_start, "%Y-%m-%d %H:%M"), "\n")
+cat("End:", format(overlap_end, "%Y-%m-%d %H:%M"), "\n")
+```
+
+## Aggregate to Hourly
+
+```{r hourly-aggregation}
+# Hourly aggregation for old sensor
+old_hourly <- old_sensor %>%
+  filter(datetime >= overlap_start & datetime <= overlap_end) %>%
+  mutate(hour = floor_date(datetime, "hour")) %>%
+  group_by(hour) %>%
+  summarise(
+    temp_old = mean(temp_old, na.rm = TRUE),
+    rh_old = mean(rh_old, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Hourly aggregation for TNC1
+tnc1_hourly <- tnc1 %>%
+  filter(datetime >= overlap_start & datetime <= overlap_end) %>%
+  mutate(hour = floor_date(datetime, "hour")) %>%
+  group_by(hour) %>%
+  summarise(
+    temp_tnc1 = mean(temp_tnc1, na.rm = TRUE),
+    rh_max_tnc1 = mean(rh_max_tnc1, na.rm = TRUE),
+    rh_min_tnc1 = mean(rh_min_tnc1, na.rm = TRUE),
+    rh_avg_tnc1 = mean(rh_avg_tnc1, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Hourly aggregation for TNC2
+tnc2_hourly <- tnc2 %>%
+  filter(datetime >= overlap_start & datetime <= overlap_end) %>%
+  mutate(hour = floor_date(datetime, "hour")) %>%
+  group_by(hour) %>%
+  summarise(
+    temp_tnc2 = mean(temp_tnc2, na.rm = TRUE),
+    rh_max_tnc2 = mean(rh_max_tnc2, na.rm = TRUE),
+    rh_min_tnc2 = mean(rh_min_tnc2, na.rm = TRUE),
+    rh_avg_tnc2 = mean(rh_avg_tnc2, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Combine all sensors - keep only complete cases
+all_data <- old_hourly %>%
+  inner_join(tnc1_hourly, by = "hour") %>%
+  inner_join(tnc2_hourly, by = "hour") %>%
+  filter(complete.cases(.))
+
+cat("Complete hourly observations:", nrow(all_data), "\n")
+```
+
+## Temperature Comparison
+
+### Summary Statistics
+
+```{r temp-summary}
+temp_summary <- tibble(
+  Sensor = c("Old", "TNC1", "TNC2"),
+  Mean = c(mean(all_data$temp_old), mean(all_data$temp_tnc1), mean(all_data$temp_tnc2)),
+  SD = c(sd(all_data$temp_old), sd(all_data$temp_tnc1), sd(all_data$temp_tnc2)),
+  Min = c(min(all_data$temp_old), min(all_data$temp_tnc1), min(all_data$temp_tnc2)),
+  Max = c(max(all_data$temp_old), max(all_data$temp_tnc1), max(all_data$temp_tnc2))
+)
+
+knitr::kable(temp_summary, digits = 2, caption = "Temperature Summary (°C)")
+```
+
+### Temperature Correlations
+
+```{r temp-correlations}
+temp_cors <- tibble(
+  Sensor = c("TNC1", "TNC2"),
+  Correlation = c(
+    cor(all_data$temp_old, all_data$temp_tnc1),
+    cor(all_data$temp_old, all_data$temp_tnc2)
+  ),
+  RMSE = c(
+    sqrt(mean((all_data$temp_old - all_data$temp_tnc1)^2)),
+    sqrt(mean((all_data$temp_old - all_data$temp_tnc2)^2))
+  ),
+  Mean_Bias = c(
+    mean(all_data$temp_tnc1 - all_data$temp_old),
+    mean(all_data$temp_tnc2 - all_data$temp_old)
+  ),
+  MAE = c(
+    mean(abs(all_data$temp_tnc1 - all_data$temp_old)),
+    mean(abs(all_data$temp_tnc2 - all_data$temp_old))
+  )
+)
+
+knitr::kable(temp_cors, digits = 3, caption = "Temperature Comparisons vs Old Sensor")
+
+# Find best temperature sensor
+best_temp <- temp_cors %>%
+  arrange(RMSE) %>%
+  slice(1)
+
+cat("\nBEST TEMPERATURE MATCH:\n")
+cat("Sensor:", best_temp$Sensor, "\n")
+cat("Correlation:", round(best_temp$Correlation, 3), "\n")
+cat("RMSE:", round(best_temp$RMSE, 3), "°C\n")
+cat("Mean Bias:", round(best_temp$Mean_Bias, 3), "°C\n")
+cat("MAE:", round(best_temp$MAE, 3), "°C\n")
+```
+
+### Temperature Scatter Plots
+
+```{r temp-scatter, fig.height=4, fig.width=10}
+p1 <- ggplot(all_data, aes(x = temp_old, y = temp_tnc1)) +
+  geom_point(alpha = 0.3, color = "#56B4E9") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(title = "Old vs TNC1", x = "Old Temp (°C)", y = "TNC1 Temp (°C)") +
+  coord_fixed() +
+  annotate("text", x = Inf, y = -Inf, 
+           label = paste0("r = ", round(cor(all_data$temp_old, all_data$temp_tnc1), 3)),
+           hjust = 1.1, vjust = -0.5)
+
+p2 <- ggplot(all_data, aes(x = temp_old, y = temp_tnc2)) +
+  geom_point(alpha = 0.3, color = "#009E73") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(title = "Old vs TNC2", x = "Old Temp (°C)", y = "TNC2 Temp (°C)") +
+  coord_fixed() +
+  annotate("text", x = Inf, y = -Inf, 
+           label = paste0("r = ", round(cor(all_data$temp_old, all_data$temp_tnc2), 3)),
+           hjust = 1.1, vjust = -0.5)
+
+p3 <- ggplot(all_data, aes(x = temp_tnc1, y = temp_tnc2)) +
+  geom_point(alpha = 0.3, color = "#CC79A7") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(title = "TNC1 vs TNC2", x = "TNC1 Temp (°C)", y = "TNC2 Temp (°C)") +
+  coord_fixed() +
+  annotate("text", x = Inf, y = -Inf, 
+           label = paste0("r = ", round(cor(all_data$temp_tnc1, all_data$temp_tnc2), 3)),
+           hjust = 1.1, vjust = -0.5)
+
+p1 | p2 | p3
+```
+
+## RH Comparison by Method
+
+### RH Correlations with Old Sensor
+
+```{r rh-correlations}
+rh_cors <- tibble(
+  Sensor = rep(c("TNC1", "TNC2"), each = 3),
+  Method = rep(c("Maximum", "Minimum", "Average"), 2),
+  Correlation = c(
+    cor(all_data$rh_old, all_data$rh_max_tnc1),
+    cor(all_data$rh_old, all_data$rh_min_tnc1),
+    cor(all_data$rh_old, all_data$rh_avg_tnc1),
+    cor(all_data$rh_old, all_data$rh_max_tnc2),
+    cor(all_data$rh_old, all_data$rh_min_tnc2),
+    cor(all_data$rh_old, all_data$rh_avg_tnc2)
+  ),
+  RMSE = c(
+    sqrt(mean((all_data$rh_old - all_data$rh_max_tnc1)^2)),
+    sqrt(mean((all_data$rh_old - all_data$rh_min_tnc1)^2)),
+    sqrt(mean((all_data$rh_old - all_data$rh_avg_tnc1)^2)),
+    sqrt(mean((all_data$rh_old - all_data$rh_max_tnc2)^2)),
+    sqrt(mean((all_data$rh_old - all_data$rh_min_tnc2)^2)),
+    sqrt(mean((all_data$rh_old - all_data$rh_avg_tnc2)^2))
+  ),
+  Mean_Bias = c(
+    mean(all_data$rh_max_tnc1 - all_data$rh_old),
+    mean(all_data$rh_min_tnc1 - all_data$rh_old),
+    mean(all_data$rh_avg_tnc1 - all_data$rh_old),
+    mean(all_data$rh_max_tnc2 - all_data$rh_old),
+    mean(all_data$rh_min_tnc2 - all_data$rh_old),
+    mean(all_data$rh_avg_tnc2 - all_data$rh_old)
+  ),
+  MAE = c(
+    mean(abs(all_data$rh_max_tnc1 - all_data$rh_old)),
+    mean(abs(all_data$rh_min_tnc1 - all_data$rh_old)),
+    mean(abs(all_data$rh_avg_tnc1 - all_data$rh_old)),
+    mean(abs(all_data$rh_max_tnc2 - all_data$rh_old)),
+    mean(abs(all_data$rh_min_tnc2 - all_data$rh_old)),
+    mean(abs(all_data$rh_avg_tnc2 - all_data$rh_old))
+  )
+)
+
+knitr::kable(rh_cors, digits = 3, caption = "RH Comparisons vs Old Sensor")
+
+# Find best RH method
+best_rh <- rh_cors %>%
+  arrange(RMSE) %>%
+  slice(1)
+
+cat("\nBEST RH MATCH:\n")
+cat("Sensor:", best_rh$Sensor, "\n")
+cat("Method:", best_rh$Method, "\n")
+cat("Correlation:", round(best_rh$Correlation, 3), "\n")
+cat("RMSE:", round(best_rh$RMSE, 2), "%\n")
+cat("Mean Bias:", round(best_rh$Mean_Bias, 2), "%\n")
+cat("MAE:", round(best_rh$MAE, 2), "%\n")
+```
+
+### RH Scatter Plots
+
+```{r rh-scatter, fig.height=8, fig.width=10}
+# TNC1 comparisons
+p1 <- ggplot(all_data, aes(x = rh_old, y = rh_max_tnc1)) +
+  geom_point(alpha = 0.3, color = "#CC79A7") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(title = "TNC1 Maximum", x = "Old RH (%)", y = "TNC1 RH (%)") +
+  coord_fixed(xlim = c(0, 100), ylim = c(0, 100)) +
+  annotate("text", x = 5, y = 95, 
+           label = paste0("r = ", round(cor(all_data$rh_old, all_data$rh_max_tnc1), 3)),
+           hjust = 0)
+
+p2 <- ggplot(all_data, aes(x = rh_old, y = rh_min_tnc1)) +
+  geom_point(alpha = 0.3, color = "#D55E00") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(title = "TNC1 Minimum", x = "Old RH (%)", y = "TNC1 RH (%)") +
+  coord_fixed(xlim = c(0, 100), ylim = c(0, 100)) +
+  annotate("text", x = 5, y = 95, 
+           label = paste0("r = ", round(cor(all_data$rh_old, all_data$rh_min_tnc1), 3)),
+           hjust = 0)
+
+p3 <- ggplot(all_data, aes(x = rh_old, y = rh_avg_tnc1)) +
+  geom_point(alpha = 0.3, color = "#56B4E9") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(title = "TNC1 Average", x = "Old RH (%)", y = "TNC1 RH (%)") +
+  coord_fixed(xlim = c(0, 100), ylim = c(0, 100)) +
+  annotate("text", x = 5, y = 95, 
+           label = paste0("r = ", round(cor(all_data$rh_old, all_data$rh_avg_tnc1), 3)),
+           hjust = 0)
+
+# TNC2 comparisons
+p4 <- ggplot(all_data, aes(x = rh_old, y = rh_max_tnc2)) +
+  geom_point(alpha = 0.3, color = "#CC79A7") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(title = "TNC2 Maximum", x = "Old RH (%)", y = "TNC2 RH (%)") +
+  coord_fixed(xlim = c(0, 100), ylim = c(0, 100)) +
+  annotate("text", x = 5, y = 95, 
+           label = paste0("r = ", round(cor(all_data$rh_old, all_data$rh_max_tnc2), 3)),
+           hjust = 0)
+
+p5 <- ggplot(all_data, aes(x = rh_old, y = rh_min_tnc2)) +
+  geom_point(alpha = 0.3, color = "#D55E00") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(title = "TNC2 Minimum", x = "Old RH (%)", y = "TNC2 RH (%)") +
+  coord_fixed(xlim = c(0, 100), ylim = c(0, 100)) +
+  annotate("text", x = 5, y = 95, 
+           label = paste0("r = ", round(cor(all_data$rh_old, all_data$rh_min_tnc2), 3)),
+           hjust = 0)
+
+p6 <- ggplot(all_data, aes(x = rh_old, y = rh_avg_tnc2)) +
+  geom_point(alpha = 0.3, color = "#009E73") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(title = "TNC2 Average", x = "Old RH (%)", y = "TNC2 RH (%)") +
+  coord_fixed(xlim = c(0, 100), ylim = c(0, 100)) +
+  annotate("text", x = 5, y = 95, 
+           label = paste0("r = ", round(cor(all_data$rh_old, all_data$rh_avg_tnc2), 3)),
+           hjust = 0)
+
+(p1 | p2 | p3) / (p4 | p5 | p6)
+```
+
+## Time Series Comparison
+
+```{r timeseries, fig.height=10}
+# Temperature time series
+temp_plot <- all_data %>%
+  select(hour, temp_old, temp_tnc1, temp_tnc2) %>%
+  pivot_longer(cols = starts_with("temp"), names_to = "sensor", values_to = "temp") %>%
+  mutate(sensor = recode(sensor, 
+                         temp_old = "Old", 
+                         temp_tnc1 = "TNC1", 
+                         temp_tnc2 = "TNC2")) %>%
+  ggplot(aes(x = hour, y = temp, color = sensor)) +
+  geom_line(alpha = 0.6) +
+  scale_color_manual(values = c("Old" = "#E69F00", "TNC1" = "#56B4E9", "TNC2" = "#009E73")) +
+  labs(title = "Temperature Comparison", x = "Date", y = "Temperature (°C)", color = "Sensor") +
+  theme(legend.position = "bottom")
+
+# RH time series - Average method
+rh_plot <- all_data %>%
+  select(hour, rh_old, rh_avg_tnc1, rh_avg_tnc2) %>%
+  pivot_longer(cols = starts_with("rh"), names_to = "sensor", values_to = "rh") %>%
+  mutate(sensor = recode(sensor, 
+                         rh_old = "Old", 
+                         rh_avg_tnc1 = "TNC1 (Avg)", 
+                         rh_avg_tnc2 = "TNC2 (Avg)")) %>%
+  ggplot(aes(x = hour, y = rh, color = sensor)) +
+  geom_line(alpha = 0.6) +
+  scale_color_manual(values = c("Old" = "#E69F00", "TNC1 (Avg)" = "#56B4E9", "TNC2 (Avg)" = "#009E73")) +
+  labs(title = "RH Comparison (Average Method)", x = "Date", y = "RH (%)", color = "Sensor") +
+  theme(legend.position = "bottom")
+
+temp_plot / rh_plot
+```
+
+## Summary
+
+```{r summary}
+cat("OVERALL RECOMMENDATION:\n")
+cat("=======================\n\n")
+
+cat("BEST TEMPERATURE MATCH:\n")
+cat("  Sensor:", best_temp$Sensor, "\n")
+cat("  Correlation:", round(best_temp$Correlation, 3), "\n")
+cat("  RMSE:", round(best_temp$RMSE, 3), "°C\n")
+cat("  Mean Bias:", round(best_temp$Mean_Bias, 3), "°C\n\n")
+
+cat("BEST RH MATCH:\n")
+cat("  Sensor:", best_rh$Sensor, "\n")
+cat("  Method:", best_rh$Method, "\n")
+cat("  Correlation:", round(best_rh$Correlation, 3), "\n")
+cat("  RMSE:", round(best_rh$RMSE, 2), "%\n")
+cat("  Mean Bias:", round(best_rh$Mean_Bias, 2), "%\n\n")
+
+if (best_temp$Sensor == best_rh$Sensor) {
+  cat("✓ Same sensor performs best for both temperature and RH!\n")
+  cat("  Recommended:", best_temp$Sensor, "with", best_rh$Method, "RH\n")
+} else {
+  cat("⚠ Different sensors perform best:\n")
+  cat("  Temperature:", best_temp$Sensor, "\n")
+  cat("  RH:", best_rh$Sensor, "with", best_rh$Method, "\n")
+  cat("\n  Consider which variable is more important for your analysis.\n")
+}
+```

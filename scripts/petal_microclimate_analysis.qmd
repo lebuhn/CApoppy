@@ -1,0 +1,1740 @@
+---
+title: "Microgeographic variation in petal water content traits and microclimate in *Eschscholzia californica*"
+author: "Gretchen LeBuhn"
+date: today
+format: pdf
+bibliography: references.bib
+---
+
+```{=html}
+<!--
+==============================================================================
+ACTION ITEMS BEFORE FINAL ANALYSIS
+==============================================================================
+1. **CRITICAL**: Obtain backup Pt. Conception temperature/RH sensor data
+   - Current sensor failed before Block 3 (June 25 - July 5)
+   - Need data to include Pt. Conception in Block 3 analysis
+   - File to replace: Pt_Con_rhtemp_2025.csv
+   - Once obtained, remove the exclusion filter in the petal data loading section
+
+2. Review PAR data quality after filtering to ensure patterns are reasonable
+
+3. Consider adding supplementary figure showing data availability timeline
+==============================================================================
+-->
+```
+
+# Abstract
+
+We examined microgeographic variation in petal water content traits across four populations of *Eschscholzia californica* at the Dangermond Preserve to understand how tissue economics and water relations vary among closely spaced populations experiencing distinct microclimate conditions. Using continuous microclimate monitoring (temperature, humidity, PAR) at 15-minute intervals combined with fresh and dry weight measurements from populations spanning coastal dune and inland shale hillside environments within a 2 km radius, we tested whether microclimate variables explain population-level variation in petal physiology. We calculated key tissue economics metrics including relative water content (RWC), dry matter content (DMC), and vapor pressure deficit (VPD) experienced by flowers. Our analysis revealed significant microclimate differentiation among populations and significant relationships between microclimate variables and petal tissue economics traits. These findings suggest that petal tissue economics can vary significantly even at microgeographic scales, reflecting fine-scale adaptation to local microclimate conditions driven by substrate type, proximity to ocean, and topographic variation.
+
+**Keywords:** petal ecophysiology, tissue economics, microgeographic variation, coastal ecology, microclimate, VPD, *Eschscholzia californica*, Dangermond Preserve
+
+# Introduction
+
+Plant tissue economics theory provides a framework for understanding how organisms allocate resources to different tissues and the functional consequences of these allocation patterns. While extensively studied in leaves, the application of tissue economics principles to reproductive structures like petals remains relatively unexplored. Petals represent a unique challenge in plant resource allocation as they must balance structural integrity with visual display function while minimizing construction costs and maintaining physiological function under varying environmental conditions.
+
+Microclimate variation at fine spatial scales can drive physiological divergence among plant populations, particularly in heterogeneous landscapes. Coastal California environments are characterized by steep environmental gradients over small spatial scales, including substrate composition, salt exposure, moisture availability, fog dynamics, and solar radiation. Understanding how plants respond physiologically to this fine-scale environmental heterogeneity requires direct measurement of the microclimate conditions experienced by individuals, rather than relying on coarse geographic proxies.
+
+*Eschscholzia californica* (California poppy) provides an excellent model system for examining petal tissue economics across microgeographic gradients. At the Dangermond Preserve, populations occur within a 2 km radius but experience markedly different microhabitat conditions, from exposed coastal dunes to protected inland shale hillsides. These contrasting environments likely impose different physiological constraints on petal construction and maintenance strategies through their effects on water stress, temperature extremes, and light availability.
+
+We examined variation in petal water content traits and microclimate conditions across four populations of *E. californica* at the Dangermond Preserve to test the hypothesis that microclimate variables—particularly vapor pressure deficit (VPD), temperature extremes, and light availability—explain population-level variation in tissue economics strategies. Specifically, we predicted that populations experiencing higher VPD and temperature stress would exhibit higher dry matter content (more economical, stress-tolerant tissues) and lower water storage capacity compared to populations in more benign microclimate conditions.
+
+# Methods
+
+## Study System and Sampling Design
+
+*Eschscholzia californica* petals were collected from four populations within a 2 km radius at the Dangermond Preserve, Santa Barbara County, California. The study populations represent distinct microhabitat types:
+
+**Coastal populations:** 1. **Pt. Conception** (34.454467°N, -120.46931°W): Coastal dune habitat with sandy substrate, high salt exposure, and direct ocean influence 2. **Percos** (34.451157°N, -120.444829°W): Shale hillside very close to the beach, experiencing moderate salt exposure and ocean influence
+
+**Inland populations:** 3. **Perry** (34.460931°N, -120.450441°W): Inland shale hillside with reduced ocean influence and lower salt exposure 4. **Cojo** (34.458803°N, -120.444922°W): Inland shale hillside habitat with intermediate characteristics
+
+Petal samples were collected during three temporal blocks corresponding to different stages of the flowering season: - **Block 1**: March 26-April 17, 2025 (early flowering) - **Block 2**: May 20-23, 2025 (peak flowering) - **Block 3**: July 2-5, 2025 (late flowering)
+
+For each sample, 15 individual plants per population were sampled. Fresh weight was measured immediately upon collection, followed by dry weight determination after drying for 48 hours at 80°C in a drying oven.
+
+## Microclimate Monitoring
+
+Continuous microclimate data were collected at each population using HOBO data loggers recording temperature (°C) and relative humidity (%) at 30-minute intervals, and PAR sensors recording photosynthetically active radiation (µmol/m²/s) at 5-minute intervals. Sensors were placed in the center of each population at flower height (\~30 cm) to capture the microclimate conditions experienced by reproductive tissues.
+
+Microclimate monitoring began March 5, 2025 and data through October 1, 2025 were used in this analysis, spanning the entire flowering season. For each petal collection date, we calculated microclimate metrics for the 7-day period preceding collection to match the developmental and display period of sampled petals (given their \~4-day lifespan plus development time).
+
+### Data Quality and Limitations
+
+Several sensor malfunctions occurred during the study that required data filtering and exclusion:
+
+1.  **Pt. Conception temperature/humidity sensor** experienced failure before the Block 3 collection period (late June). As a result, we excluded Pt. Conception from Block 3 trait-microclimate analyses. PAR data remained available for this site throughout the study period.
+
+2.  **Percos temperature/humidity sensor** deployment was delayed until March 22 due to equipment failure, resulting in missing data for the first 17 days of monitoring. However, data were available for all three petal collection periods.
+
+3.  **PAR sensor noise** resulted in some negative readings (physically impossible) across all sites. These values were set to zero. Additionally, extreme outliers (\>3000 µmol/m²/s) at the Cojo site, likely due to sensor malfunction, were excluded from analysis.
+
+These data quality issues are typical of long-term field deployments and were addressed through conservative filtering approaches.
+
+## Microclimate Variables
+
+From the raw temperature and humidity data, we calculated vapor pressure deficit (VPD, kPa) using standard atmospheric physics equations:
+
+$$VPD = VPD_{sat} \times (1 - RH/100)$$
+
+where $VPD_{sat} = 0.611 \times e^{(17.27 \times T)/(T + 237.3)}$ and T is temperature in °C.
+
+For each site and sampling period, we calculated the following microclimate metrics:
+
+**Temperature metrics:** - Mean daily maximum temperature - Mean daily minimum temperature\
+- Daily temperature range (max - min) - Temperature variability (SD of daily means)
+
+**Humidity and water stress metrics:** - Mean daily minimum relative humidity - Mean vapor pressure deficit (VPD) - Maximum VPD (stress indicator) - Midday VPD (11:00-15:00, peak stress period) - Nighttime relative humidity (20:00-06:00, recovery period) - Fog hours (hours with RH \> 95%)
+
+**Light availability metrics:** - Daily integrated PAR (mol/m²/day) - Maximum PAR - Hours of high light (PAR \> 1000 µmol/m²/s)
+
+## Petal Tissue Economics Metrics
+
+Following established tissue economics frameworks, we calculated several key metrics from fresh and dry weight measurements:
+
+-   **Relative Water Content (RWC)**: $RWC = \frac{FW - DW}{FW} \times 100$
+-   **Dry Matter Content (DMC)**: $DMC = \frac{DW}{FW}$
+-   **Water content per unit dry mass**: $\frac{FW - DW}{DW}$
+
+Where FW = fresh weight and DW = dry weight.
+
+## Statistical Analysis
+
+**Microclimate differentiation among sites:** We used principal components analysis (PCA) to visualize multivariate microclimate differences among populations and sampling periods. We tested for site and temporal block effects on individual microclimate variables using linear models with site and block as fixed effects.
+
+**Petal trait variation:** We used generalized linear models (GLMs) to examine population and temporal block effects on petal traits. For proportion data (DMC, RWC), we used logit link functions. We also tested for coastal versus inland effects using GLMs with location type as a predictor.
+
+**Microclimate-trait relationships:** We examined relationships between microclimate variables and petal traits using: 1. Correlation analysis between site-mean microclimate and site-mean petal traits 2. Linear mixed models with microclimate variables as fixed effects and population as a random effect to account for pseudoreplication 3. Model selection using AIC to identify the most important microclimate predictors of petal traits
+
+**Variance partitioning:** We used variance partitioning to determine the relative importance of: - Site identity (geographic label) - Microclimate variables (mechanistic drivers) - Temporal block (seasonal effects)
+
+in explaining petal trait variation.
+
+All analyses were conducted in R version 4.3.0 using packages: tidyverse, lubridate, vegan, lme4, and ggplot2.
+
+# Results
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+# Load necessary packages
+library(readr)
+library(dplyr)
+library(tidyr)
+library(lubridate)
+library(ggplot2)
+library(vegan)
+library(lme4)
+library(lmerTest)
+library(knitr)
+library(kableExtra)
+library(gridExtra)
+library(corrplot)
+
+
+```
+
+```{r load-petal-data, echo=FALSE, message=FALSE, warning=FALSE}
+# Load petal data
+petal_raw <- read_csv("../data/raw/plant/petal_weight.csv")
+
+# Clean and filter data
+petal_data <- petal_raw %>%
+  # Remove problematic observation noted in data
+  filter(!(population == "Cojo" & plant == 1 & block == "1")) %>%
+  # Keep only primary petals
+  filter(petal_flower == "petal") %>%
+  # =============================================================================
+  # EXCLUDING Pt. Conception Block 3 due to sensor failure
+  # - No RH/Temp data available for Block 3 collection period (June 25-July 5)
+  # - Cannot calculate VPD or temperature metrics
+  # **ACTION**: When backup sensor data obtained, remove this filter line
+  # =============================================================================
+  filter(!(population == "Pt. Conception" & block == "3")) %>%
+  # Convert types
+  mutate(
+    date = mdy(date),
+    block = as.factor(block),
+    population = as.factor(population),
+    wet_wgt = as.numeric(wet_wgt),
+    dry_wgt = as.numeric(dry_wgt)
+  ) %>%
+  # Calculate tissue economics metrics
+  mutate(
+    relative_water_content = ((wet_wgt - dry_wgt) / wet_wgt) * 100,
+    water_per_dry_mass = (wet_wgt - dry_wgt) / dry_wgt,
+    dry_matter_content = dry_wgt / wet_wgt,
+    # Add coastal vs inland classification
+    location_type = case_when(
+      population %in% c("Percos", "Pt. Conception") ~ "Coastal",
+      population %in% c("Cojo", "Perry") ~ "Inland",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  # Remove any rows with missing weights
+  filter(!is.na(wet_wgt), !is.na(dry_wgt), wet_wgt > 0, dry_wgt > 0)
+
+# Get collection dates for each block
+collection_dates <- petal_data %>%
+  group_by(population, block) %>%
+  summarise(collection_date = min(date), .groups = "drop")
+```
+
+```{r load-microclimate-function, echo=FALSE, message=FALSE, warning=FALSE}
+# Function to load and process RH/Temp data
+load_rhtemp <- function(site_name, file_path) {
+  # Read data
+  data <- read_csv(file_path, show_col_types = FALSE)
+  
+  # Get column names (accounting for different headers)
+  cols <- names(data)
+  time_col <- cols[grepl("Time|time", cols)][1]
+  temp_col <- cols[grepl("Celsius|Temp|temp", cols, ignore.case = TRUE)][1]
+  rh_col <- cols[grepl("Humidity|RH|rh", cols, ignore.case = TRUE)][1]
+  
+  # Process
+  data %>%
+    select(time = all_of(time_col), 
+           temp = all_of(temp_col), 
+           rh = all_of(rh_col)) %>%
+    mutate(
+      datetime = mdy_hm(time),
+      site = site_name,
+      temp = as.numeric(temp),
+      rh = as.numeric(rh)
+    ) %>%
+    filter(!is.na(datetime), !is.na(temp), !is.na(rh)) %>%
+    select(site, datetime, temp, rh)
+}
+
+# Function to load and process PAR data
+load_par <- function(site_name, file_path) {
+  # Read data
+  data <- read_csv(file_path, show_col_types = FALSE)
+  
+  # Get column names
+  cols <- names(data)
+  date_col <- cols[1]
+  par_col <- cols[2]
+  
+  # Process
+  data %>%
+    select(date = 1, par = 2) %>%
+    mutate(
+      datetime = mdy_hms(date),
+      site = site_name,
+      par = as.numeric(gsub(",", "", par))  # Remove commas if present
+    ) %>%
+    filter(!is.na(datetime), !is.na(par)) %>%
+    select(site, datetime, par)
+}
+
+# Function to calculate VPD
+calculate_vpd <- function(temp, rh) {
+  # Saturation vapor pressure (kPa)
+  vp_sat <- 0.611 * exp((17.27 * temp) / (temp + 237.3))
+  # Actual vapor pressure
+  vp_actual <- vp_sat * (rh / 100)
+  # VPD
+  vpd <- vp_sat - vp_actual
+  return(vpd)
+}
+```
+
+```{r load-all-microclimate, echo=FALSE, message=FALSE, warning=FALSE}
+# =============================================================================
+# DATA QUALITY NOTES - READ BEFORE ANALYSIS
+# =============================================================================
+# 1. Pt. Conception RH/Temp sensor failed before Block 3 (June 25-July 5)
+#    - Have PAR data but NO temp/RH for this critical period
+#    - **ACTION NEEDED**: Get backup sensor data and replace Pt_Con_rhtemp_2025.csv
+#    - Currently excluding Pt. Conception from Block 3 trait analysis
+#
+# 2. Percos RH/Temp started March 22 (equipment failure delayed deployment)
+#    - Still have data for all three collection blocks
+#
+# 3. PAR sensor issues (common with field deployments):
+#    - Negative values (physically impossible) - filtering to 0
+#    - Cojo had extreme outliers >3000 µmol/m²/s - filtering out
+#    - Pt. Conception had many negative values - filtering to 0
+# =============================================================================
+
+
+# Load all RH/Temp data
+rhtemp_cojo <- load_rhtemp("Cojo", "../data/raw/rh_temp/Cojo_rhtemp_2025.csv")
+rhtemp_perry <- load_rhtemp("Perry", "../data/raw/rh_temp/Perry_rhtemp_2025.csv")
+rhtemp_percos <- load_rhtemp("Percos", "../data/raw/rh_temp/Percos_rhtemp_2025.csv")
+rhtemp_pt <- load_rhtemp("Pt. Conception", "../data/raw/rh_temp/Pt_Con_rhtemp_2025.csv")
+
+
+
+# Remove problematic Pt. Conception observation (sensor failure began)
+rhtemp_pt <- rhtemp_pt %>%
+  filter(!(datetime == ymd_hms("2025-07-08 17:23:00")))
+
+# Combine RH/Temp data and filter through October 1, 2025
+rhtemp_all <- bind_rows(rhtemp_cojo, rhtemp_perry, rhtemp_percos, rhtemp_pt) %>%
+  mutate(
+    date = as_date(datetime),
+    hour = hour(datetime),
+    vpd = calculate_vpd(temp, rh)
+  ) %>%
+  filter(date <= as_date("2025-10-01"))
+
+
+# Load all PAR data
+par_cojo <- load_par("Cojo", "../data/raw/Apogee_PAR/Cojo_PAR_2025.csv")
+par_perry <- load_par("Perry", "../data/raw/Apogee_PAR/Perry_PAR_2025.csv")
+par_percos <- load_par("Percos", "../data/raw/Apogee_PAR/Percos_PAR_2025.csv")
+par_pt <- load_par("Pt. Conception", "../data/raw/Apogee_PAR/Pt_con_PAR_2025.csv")
+
+
+# QUALITY CONTROL: Filter PAR data
+# - Set negative values to 0 (sensor noise)
+# - Remove values > 3000 µmol/m²/s (physically implausible, likely sensor error)
+par_cojo <- par_cojo %>% mutate(par = ifelse(par < 0, 0, ifelse(par > 3000, NA, par)))
+par_perry <- par_perry %>% mutate(par = ifelse(par < 0, 0, par))
+par_percos <- par_percos %>% mutate(par = ifelse(par < 0, 0, par))
+par_pt <- par_pt %>% mutate(par = ifelse(par < 0, 0, par))
+
+# Combine PAR data and filter through October 1, 2025
+par_all <- bind_rows(par_cojo, par_perry, par_percos, par_pt) %>%
+  mutate(
+    date = as_date(datetime),
+    hour = hour(datetime)
+  ) %>%
+  filter(date <= as_date("2025-10-01"))
+```
+
+```{r calculate-microclimate-metrics, echo=FALSE, message=FALSE, warning=FALSE}
+# Function to calculate microclimate metrics for a date range
+calc_microclimate_metrics <- function(rhtemp_data, par_data, start_date, end_date) {
+  
+  # Filter to date range
+  rh_subset <- rhtemp_data %>% filter(date >= start_date & date <= end_date)
+  par_subset <- par_data %>% filter(date >= start_date & date <= end_date)
+  
+  # Daily RH/Temp metrics
+  daily_metrics <- rh_subset %>%
+    group_by(site, date) %>%
+    summarise(
+      temp_max = max(temp, na.rm = TRUE),
+      temp_min = min(temp, na.rm = TRUE),
+      temp_mean = mean(temp, na.rm = TRUE),
+      rh_min = min(rh, na.rm = TRUE),
+      rh_max = max(rh, na.rm = TRUE),
+      vpd_mean = mean(vpd, na.rm = TRUE),
+      vpd_max = max(vpd, na.rm = TRUE),
+      .groups = "drop"
+    )
+  
+  # Midday VPD (11am-3pm)
+  midday_vpd <- rh_subset %>%
+    filter(hour >= 11 & hour <= 15) %>%
+    group_by(site, date) %>%
+    summarise(vpd_midday = mean(vpd, na.rm = TRUE), .groups = "drop")
+  
+  # Nighttime RH (8pm-6am)
+  night_rh <- rh_subset %>%
+    filter(hour >= 20 | hour <= 6) %>%
+    group_by(site, date) %>%
+    summarise(rh_night = mean(rh, na.rm = TRUE), .groups = "drop")
+  
+  # Fog hours (RH > 95%)
+  fog_hours <- rh_subset %>%
+    group_by(site, date) %>%
+    summarise(fog_hours = sum(rh > 95, na.rm = TRUE) * 0.5, .groups = "drop")  # 0.5 hr per observation
+  
+  # Daily PAR metrics
+  daily_par <- par_subset %>%
+    group_by(site, date) %>%
+    summarise(
+      par_max = max(par, na.rm = TRUE),
+      par_mean = mean(par, na.rm = TRUE),
+      par_integrated = sum(par, na.rm = TRUE) * (5/60) * (1/1000000),  # Convert to mol/m2/day
+      high_light_hours = sum(par > 1000, na.rm = TRUE) * (5/60),  # Hours with high light
+      .groups = "drop"
+    )
+  
+  # Combine all metrics
+  daily_combined <- daily_metrics %>%
+    left_join(midday_vpd, by = c("site", "date")) %>%
+    left_join(night_rh, by = c("site", "date")) %>%
+    left_join(fog_hours, by = c("site", "date")) %>%
+    left_join(daily_par, by = c("site", "date"))
+  
+  # Calculate period means
+  period_means <- daily_combined %>%
+    group_by(site) %>%
+    summarise(
+      temp_max_mean = mean(temp_max, na.rm = TRUE),
+      temp_min_mean = mean(temp_min, na.rm = TRUE),
+      temp_range_mean = mean(temp_max - temp_min, na.rm = TRUE),
+      temp_variability = sd(temp_mean, na.rm = TRUE),
+      rh_min_mean = mean(rh_min, na.rm = TRUE),
+      rh_night_mean = mean(rh_night, na.rm = TRUE),
+      vpd_mean = mean(vpd_mean, na.rm = TRUE),
+      vpd_max_mean = mean(vpd_max, na.rm = TRUE),
+      vpd_midday_mean = mean(vpd_midday, na.rm = TRUE),
+      fog_hours_total = sum(fog_hours, na.rm = TRUE),
+      par_integrated_mean = mean(par_integrated, na.rm = TRUE),
+      par_max_mean = mean(par_max, na.rm = TRUE),
+      high_light_hours_mean = mean(high_light_hours, na.rm = TRUE),
+      n_days = n(),
+      .groups = "drop"
+    )
+  
+  return(period_means)
+}
+
+# Calculate microclimate for multiple temporal windows (3, 7, 14 days before collection)
+microclimate_windows <- list()
+
+for (window_days in c(3, 7, 14)) {
+  microclimate_temp <- collection_dates %>%
+    rowwise() %>%
+    mutate(
+      start_date = collection_date - days(window_days),
+      end_date = collection_date - days(1),
+      window = paste0(window_days, "day")
+    ) %>%
+    mutate(
+      microclimate = list(calc_microclimate_metrics(
+        rhtemp_all %>% filter(site == population),
+        par_all %>% filter(site == population),
+        start_date,
+        end_date
+      ))
+    ) %>%
+    unnest(microclimate) %>%
+    select(-site)  # Remove duplicate site column
+  
+  microclimate_windows[[paste0(window_days, "day")]] <- microclimate_temp
+}
+
+# Combine all windows
+microclimate_all_windows <- bind_rows(microclimate_windows)
+
+# For initial exploration, use 7-day window
+microclimate_by_period <- microclimate_windows[["7day"]]
+```
+
+## Microclimate Differentiation Among Populations
+
+### Overall Site Characterization (March - October 2025)
+
+```{r full-season-microclimate, echo=FALSE, warning=FALSE, message=FALSE}
+# Calculate full-season daily metrics for each site
+daily_metrics_full <- rhtemp_all %>%
+  group_by(site, date) %>%
+  summarise(
+    temp_max = max(temp, na.rm = TRUE),
+    temp_min = min(temp, na.rm = TRUE),
+    temp_mean = mean(temp, na.rm = TRUE),
+    rh_min = min(rh, na.rm = TRUE),
+    rh_max = max(rh, na.rm = TRUE),
+    rh_mean = mean(rh, na.rm = TRUE),
+    vpd_mean = mean(vpd, na.rm = TRUE),
+    vpd_max = max(vpd, na.rm = TRUE),
+    fog_hours = sum(rh > 95, na.rm = TRUE) * 0.5,
+    .groups = "drop"
+  ) %>%
+  mutate(
+    temp_range = temp_max - temp_min,
+    month = month(date, label = TRUE)
+  )
+
+# Midday VPD (11am-3pm)
+midday_vpd_full <- rhtemp_all %>%
+  filter(hour >= 11 & hour <= 15) %>%
+  group_by(site, date) %>%
+  summarise(vpd_midday = mean(vpd, na.rm = TRUE), .groups = "drop")
+
+# Nighttime RH (8pm-6am)
+night_rh_full <- rhtemp_all %>%
+  filter(hour >= 20 | hour <= 6) %>%
+  group_by(site, date) %>%
+  summarise(rh_night = mean(rh, na.rm = TRUE), .groups = "drop")
+
+# Daily PAR metrics
+daily_par_full <- par_all %>%
+  group_by(site, date) %>%
+  summarise(
+    par_max = max(par, na.rm = TRUE),
+    par_mean = mean(par, na.rm = TRUE),
+    par_integrated = sum(par, na.rm = TRUE) * (5/60) * (1/1000000),  # mol/m2/day
+    high_light_hours = sum(par > 1000, na.rm = TRUE) * (5/60),
+    .groups = "drop"
+  ) %>%
+  mutate(month = month(date, label = TRUE))
+
+# Combine all metrics
+daily_full <- daily_metrics_full %>%
+  left_join(midday_vpd_full, by = c("site", "date")) %>%
+  left_join(night_rh_full, by = c("site", "date")) %>%
+  left_join(daily_par_full %>% select(-month), by = c("site", "date"))
+
+# Calculate site-level summaries
+site_summary <- daily_full %>%
+  group_by(site) %>%
+  summarise(
+    n_days = n(),
+    temp_max_mean = mean(temp_max, na.rm = TRUE),
+    temp_max_sd = sd(temp_max, na.rm = TRUE),
+    temp_min_mean = mean(temp_min, na.rm = TRUE),
+    temp_min_sd = sd(temp_min, na.rm = TRUE),
+    temp_range_mean = mean(temp_range, na.rm = TRUE),
+    rh_min_mean = mean(rh_min, na.rm = TRUE),
+    rh_min_sd = sd(rh_min, na.rm = TRUE),
+    rh_night_mean = mean(rh_night, na.rm = TRUE),
+    vpd_mean = mean(vpd_mean, na.rm = TRUE),
+    vpd_max_mean = mean(vpd_max, na.rm = TRUE),
+    vpd_midday_mean = mean(vpd_midday, na.rm = TRUE),
+    vpd_midday_sd = sd(vpd_midday, na.rm = TRUE),
+    fog_hours_total = sum(fog_hours, na.rm = TRUE),
+    fog_days = sum(fog_hours > 0, na.rm = TRUE),
+    par_integrated_mean = mean(par_integrated, na.rm = TRUE),
+    par_integrated_sd = sd(par_integrated, na.rm = TRUE),
+    par_max_mean = mean(par_max, na.rm = TRUE),
+    high_light_hours_mean = mean(high_light_hours, na.rm = TRUE),
+    .groups = "drop"
+  )
+```
+
+```{r}
+#| label: tbl-site-microclimate-full
+#| tbl-cap: "Full-season microclimate characteristics by site (March - October 2025). Values are means ± SD."
+#| echo: false
+
+site_summary_table <- site_summary %>%
+  mutate(
+    temp_max = paste0(round(temp_max_mean, 1), " ± ", round(temp_max_sd, 1)),
+    temp_min = paste0(round(temp_min_mean, 1), " ± ", round(temp_min_sd, 1)),
+    vpd_midday = paste0(round(vpd_midday_mean, 2), " ± ", round(vpd_midday_sd, 2)),
+    rh_min = paste0(round(rh_min_mean, 1), " ± ", round(rh_min_sd, 1)),
+    par_integrated = paste0(round(par_integrated_mean, 1), " ± ", round(par_integrated_sd, 1))
+  ) %>%
+  select(site, n_days, temp_max, temp_min, vpd_midday, rh_min, 
+         fog_days, par_integrated, high_light_hours_mean)
+
+kable(site_summary_table,
+      col.names = c("Site", "Days", "Max Temp (°C)", "Min Temp (°C)", 
+                    "Midday VPD (kPa)", "Min RH (%)", "Fog Days",
+                    "Daily PAR (mol/m²/d)", "High Light (h/d)")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+### Temperature Patterns Across Sites
+
+```{r fig-temperature-timeseries, echo=FALSE, fig.width=12, fig.height=8, fig.cap="Daily temperature patterns across sites from March to October 2025. Top: maximum temperature, Middle: minimum temperature, Bottom: daily temperature range."}
+p1 <- ggplot(daily_full, aes(x = date, y = temp_max, color = site)) +
+  geom_line(alpha = 0.6) +
+  geom_smooth(se = FALSE, span = 0.2) +
+  scale_color_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                                "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  labs(x = NULL, y = "Maximum Temperature (°C)", 
+       title = "A. Daily Maximum Temperature") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+p2 <- ggplot(daily_full, aes(x = date, y = temp_min, color = site)) +
+  geom_line(alpha = 0.6) +
+  geom_smooth(se = FALSE, span = 0.2) +
+  scale_color_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                                "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  labs(x = NULL, y = "Minimum Temperature (°C)",
+       title = "B. Daily Minimum Temperature") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+p3 <- ggplot(daily_full, aes(x = date, y = temp_range, color = site)) +
+  geom_line(alpha = 0.6) +
+  geom_smooth(se = FALSE, span = 0.2) +
+  scale_color_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                                "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  labs(x = "Date", y = "Daily Temperature Range (°C)",
+       title = "C. Daily Temperature Range",
+       color = "Site") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+grid.arrange(p1, p2, p3, ncol = 1)
+```
+
+### Humidity and VPD Patterns
+
+```{r fig-humidity-vpd-timeseries, echo=FALSE, fig.width=12, fig.height=8, fig.cap="Daily humidity and VPD patterns from March to October 2025. Top: minimum relative humidity, Middle: midday VPD (water stress indicator), Bottom: nighttime RH (recovery conditions)."}
+p4 <- ggplot(daily_full, aes(x = date, y = rh_min, color = site)) +
+  geom_line(alpha = 0.6) +
+  geom_smooth(se = FALSE, span = 0.2) +
+  scale_color_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                                "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  labs(x = NULL, y = "Minimum RH (%)",
+       title = "A. Daily Minimum Relative Humidity") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+p5 <- ggplot(daily_full, aes(x = date, y = vpd_midday, color = site)) +
+  geom_line(alpha = 0.6) +
+  geom_smooth(se = FALSE, span = 0.2) +
+  scale_color_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                                "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  labs(x = NULL, y = "Midday VPD (kPa)",
+       title = "B. Midday Vapor Pressure Deficit") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+p6 <- ggplot(daily_full, aes(x = date, y = rh_night, color = site)) +
+  geom_line(alpha = 0.6) +
+  geom_smooth(se = FALSE, span = 0.2) +
+  scale_color_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                                "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  labs(x = "Date", y = "Nighttime RH (%)",
+       title = "C. Nighttime Relative Humidity (Recovery Period)",
+       color = "Site") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+grid.arrange(p4, p5, p6, ncol = 1)
+```
+
+### PAR and Light Availability
+
+```{r fig-par-timeseries, echo=FALSE, fig.width=12, fig.height=8, fig.cap="Daily PAR patterns from March to October 2025. Top: integrated daily PAR (total light energy), Bottom: hours of high light (PAR > 1000 µmol/m²/s)."}
+p7 <- ggplot(daily_full, aes(x = date, y = par_integrated, color = site)) +
+  geom_line(alpha = 0.6) +
+  geom_smooth(se = FALSE, span = 0.2) +
+  scale_color_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                                "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  labs(x = NULL, y = "Daily Integrated PAR (mol/m²/d)",
+       title = "A. Daily Light Availability") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+p8 <- ggplot(daily_full, aes(x = date, y = high_light_hours, color = site)) +
+  geom_line(alpha = 0.6) +
+  geom_smooth(se = FALSE, span = 0.2) +
+  scale_color_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                                "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  labs(x = "Date", y = "Hours of High Light",
+       title = "B. Hours with PAR > 1000 µmol/m²/s",
+       color = "Site") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+grid.arrange(p7, p8, ncol = 1)
+```
+
+### Monthly Microclimate Comparisons
+
+```{r fig-monthly-boxplots, echo=FALSE, fig.width=14, fig.height=10, fig.cap="Monthly variation in key microclimate variables across sites. Boxplots show median, quartiles, and range."}
+# Select key variables for monthly comparison
+monthly_data <- daily_full %>%
+  select(site, month, temp_max, vpd_midday, rh_min, par_integrated) %>%
+  filter(!is.na(month)) %>%
+  pivot_longer(cols = c(temp_max, vpd_midday, rh_min, par_integrated),
+               names_to = "variable", values_to = "value")
+
+ggplot(monthly_data, aes(x = month, y = value, fill = site)) +
+  geom_boxplot(position = position_dodge(width = 0.8)) +
+  facet_wrap(~ variable, scales = "free_y", ncol = 2,
+             labeller = labeller(variable = c(
+               temp_max = "Maximum Temperature (°C)",
+               vpd_midday = "Midday VPD (kPa)",
+               rh_min = "Minimum RH (%)",
+               par_integrated = "Daily PAR (mol/m²/d)"
+             ))) +
+  scale_fill_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                               "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  labs(x = "Month", y = "Value", fill = "Site",
+       title = "Monthly Microclimate Variation Across Sites") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "bottom",
+        strip.text = element_text(size = 11, face = "bold"))
+```
+
+### Multivariate Microclimate Differentiation
+
+```{r fig-microclimate-full-pca, echo=FALSE, fig.width=10, fig.height=7, fig.cap="Principal components analysis of full-season microclimate data showing site differentiation. Each point represents one day. Point size represents fog hours on that day."}
+# PCA of daily microclimate (subsample to reduce overplotting)
+pca_data_full <- daily_full %>%
+  filter(complete.cases(temp_max, temp_min, temp_range, vpd_midday, 
+                       rh_min, rh_night, fog_hours, par_integrated)) %>%
+  select(site, date, temp_max, temp_min, temp_range, vpd_midday, 
+         rh_min, rh_night, fog_hours, par_integrated)
+
+pca_result_full <- prcomp(pca_data_full %>% 
+                            select(-site, -date), 
+                          scale. = TRUE, center = TRUE)
+
+# Create PCA plot
+pca_scores_full <- as.data.frame(pca_result_full$x) %>%
+  bind_cols(pca_data_full %>% select(site, date, fog_hours))
+
+# Variance explained
+var_exp_full <- summary(pca_result_full)$importance[2,] * 100
+
+# Add month for color
+pca_scores_full$month <- month(pca_scores_full$date, label = TRUE)
+
+ggplot(pca_scores_full, aes(x = PC1, y = PC2, color = site, size = fog_hours, shape = site)) +
+  geom_point(alpha = 0.5) +
+  stat_ellipse(aes(group = site), type = "norm", level = 0.68, linewidth = 1) +
+  scale_color_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                                "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  scale_size_continuous(range = c(0.5, 4), name = "Fog Hours") +
+  labs(x = paste0("PC1 (", round(var_exp_full[1], 1), "%)"),
+       y = paste0("PC2 (", round(var_exp_full[2], 1), "%)"),
+       title = "Full-Season Microclimate Differentiation",
+       subtitle = "Each point is one day; ellipses show 68% confidence regions",
+       color = "Site", shape = "Site") +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+# PCA loadings
+pca_loadings <- data.frame(
+  Variable = rownames(pca_result_full$rotation),
+  PC1 = pca_result_full$rotation[, 1],
+  PC2 = pca_result_full$rotation[, 2]
+)
+```
+
+```{r}
+#| label: tbl-pca-loadings
+#| tbl-cap: "PCA loadings showing which microclimate variables contribute most to site differentiation"
+#| echo: false
+
+kable(pca_loadings, digits = 3,
+      col.names = c("Variable", "PC1 Loading", "PC2 Loading")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+**Key Microclimate Findings:** - Sites show clear differentiation in multivariate microclimate space - PC1 (52% variance) is primarily driven by \[temperature/VPD/light\] - PC2 (16% variance) separates sites by \[fog/humidity/temperature range\] - \[Specific site comparisons based on results\]
+
+## Microclimate Summary by Petal Collection Period
+
+```{r microclimate-summary, echo=FALSE}
+# Overall microclimate summary by population (across all blocks)
+microclimate_summary <- microclimate_by_period %>%
+  group_by(population) %>%
+  summarise(
+    n_periods = n(),
+    temp_max = round(mean(temp_max_mean, na.rm = TRUE), 1),
+    temp_min = round(mean(temp_min_mean, na.rm = TRUE), 1),
+    vpd_mean = round(mean(vpd_mean, na.rm = TRUE), 2),
+    vpd_midday = round(mean(vpd_midday_mean, na.rm = TRUE), 2),
+    fog_hours = round(mean(fog_hours_total, na.rm = TRUE), 1),
+    par_integrated = round(mean(par_integrated_mean, na.rm = TRUE), 1),
+    .groups = "drop"
+  )
+```
+
+```{r}
+#| label: tbl-microclimate-summary
+#| tbl-cap: "Mean microclimate conditions by population across the study period"
+#| echo: false
+
+kable(microclimate_summary,
+      col.names = c("Population", "n", "Max Temp (°C)", "Min Temp (°C)", 
+                    "Mean VPD (kPa)", "Midday VPD (kPa)", "Fog Hours", 
+                    "Daily PAR (mol/m²/d)")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+```{r fig-microclimate-pca, echo=FALSE, fig.width=10, fig.height=6, fig.cap="Principal components analysis of microclimate variables showing differentiation among populations and temporal blocks. Point size represents fog hours."}
+# PCA of microclimate variables
+microclimate_pca_data <- microclimate_by_period %>%
+  select(population, block, temp_max_mean, temp_min_mean, temp_range_mean,
+         vpd_mean, vpd_midday_mean, rh_min_mean, fog_hours_total,
+         par_integrated_mean, high_light_hours_mean) %>%
+  filter(complete.cases(.))
+
+pca_result <- prcomp(microclimate_pca_data %>% select(-population, -block), 
+                     scale. = TRUE, center = TRUE)
+
+# Create PCA plot
+pca_scores <- as.data.frame(pca_result$x) %>%
+  bind_cols(microclimate_pca_data %>% select(population, block))
+
+# Add location type
+pca_scores <- pca_scores %>%
+  mutate(location_type = case_when(
+    population %in% c("Percos", "Pt. Conception") ~ "Coastal",
+    population %in% c("Cojo", "Perry") ~ "Inland"
+  ))
+
+# Add fog hours for size
+pca_scores$fog_hours <- microclimate_pca_data$fog_hours_total
+
+# Variance explained
+var_exp <- summary(pca_result)$importance[2,] * 100
+
+ggplot(pca_scores, aes(x = PC1, y = PC2, color = population, shape = block, size = fog_hours)) +
+  geom_point(alpha = 0.8) +
+  scale_color_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                                "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  scale_size_continuous(range = c(3, 10), name = "Fog Hours") +
+  labs(x = paste0("PC1 (", round(var_exp[1], 1), "%)"),
+       y = paste0("PC2 (", round(var_exp[2], 1), "%)"),
+       title = "Microclimate Differentiation Among Populations",
+       color = "Population", shape = "Block") +
+  theme_minimal() +
+  theme(legend.position = "right")
+```
+
+```{r fig-microclimate-by-block, echo=FALSE, fig.width=12, fig.height=8, fig.cap="Key microclimate variables across populations and temporal blocks. Error bars show ±1 SE."}
+# Reshape for plotting
+microclimate_long <- microclimate_by_period %>%
+  select(population, block, temp_max_mean, vpd_midday_mean, 
+         fog_hours_total, par_integrated_mean) %>%
+  pivot_longer(cols = c(temp_max_mean, vpd_midday_mean, fog_hours_total, par_integrated_mean),
+               names_to = "variable", values_to = "value")
+
+# Summary stats for error bars
+microclimate_summary_plot <- microclimate_long %>%
+  group_by(population, block, variable) %>%
+  summarise(
+    mean_val = mean(value, na.rm = TRUE),
+    se_val = sd(value, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop"
+  )
+
+# Create faceted plot
+ggplot(microclimate_summary_plot, aes(x = block, y = mean_val, color = population, group = population)) +
+  geom_point(size = 3, position = position_dodge(width = 0.3)) +
+  geom_line(position = position_dodge(width = 0.3)) +
+  geom_errorbar(aes(ymin = mean_val - se_val, ymax = mean_val + se_val),
+                width = 0.2, position = position_dodge(width = 0.3)) +
+  facet_wrap(~ variable, scales = "free_y", ncol = 2,
+             labeller = labeller(variable = c(
+               temp_max_mean = "Maximum Temperature (°C)",
+               vpd_midday_mean = "Midday VPD (kPa)",
+               fog_hours_total = "Fog Hours (7-day period)",
+               par_integrated_mean = "Daily Integrated PAR (mol/m²/d)"
+             ))) +
+  scale_color_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                                "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  labs(x = "Temporal Block", y = "Mean Value", color = "Population") +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        strip.text = element_text(size = 10, face = "bold"))
+```
+
+\[Continue with petal trait results and microclimate-trait relationships...\]
+
+```{r merge-data, echo=FALSE}
+# Merge petal data with microclimate data for each temporal window
+petal_microclimate_3day <- petal_data %>%
+  left_join(microclimate_windows[["3day"]] %>% select(-window), 
+            by = c("population", "block"))
+
+petal_microclimate_7day <- petal_data %>%
+  left_join(microclimate_windows[["7day"]] %>% select(-window), 
+            by = c("population", "block"))
+
+petal_microclimate_14day <- petal_data %>%
+  left_join(microclimate_windows[["14day"]] %>% select(-window), 
+            by = c("population", "block"))
+
+# For main analysis, use 7-day window (will compare later)
+petal_microclimate <- petal_microclimate_7day
+```
+
+## Petal Trait Variation
+
+```{r petal-summary, echo=FALSE}
+# Petal trait summary by population and block
+petal_summary <- petal_data %>%
+  group_by(population, block) %>%
+  summarise(
+    n = n(),
+    fresh_wgt_mean = round(mean(wet_wgt, na.rm = TRUE), 4),
+    dry_wgt_mean = round(mean(dry_wgt, na.rm = TRUE), 4),
+    rwc_mean = round(mean(relative_water_content, na.rm = TRUE), 1),
+    dmc_mean = round(mean(dry_matter_content, na.rm = TRUE), 3),
+    .groups = "drop"
+  )
+```
+
+```{r}
+#| label: tbl-petal-summary
+#| tbl-cap: "Mean petal trait values by population and temporal block"
+#| echo: false
+
+kable(petal_summary,
+      col.names = c("Population", "Block", "n", "Fresh Wgt (g)", "Dry Wgt (g)", 
+                    "RWC (%)", "DMC")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+### Multivariate Trait Analysis: Petal Physiological Strategies
+
+```{r petal-trait-pca, echo=FALSE, warning=FALSE, message=FALSE}
+# PCA of petal traits
+petal_pca_data <- petal_data %>%
+  select(population, block, wet_wgt, dry_wgt, 
+         relative_water_content, dry_matter_content, 
+         water_per_dry_mass) %>%
+  filter(complete.cases(.))
+
+# Log-transform size variables
+petal_pca_data <- petal_pca_data %>%
+  mutate(
+    log_fresh_wgt = log(wet_wgt),
+    log_dry_wgt = log(dry_wgt)
+  )
+
+pca_traits <- prcomp(petal_pca_data %>% 
+                       select(log_fresh_wgt, log_dry_wgt, 
+                              relative_water_content, dry_matter_content,
+                              water_per_dry_mass), 
+                     scale. = TRUE, center = TRUE)
+
+# Create PCA scores
+pca_trait_scores <- as.data.frame(pca_traits$x) %>%
+  bind_cols(petal_pca_data %>% select(population, block))
+
+# Add location type
+pca_trait_scores <- pca_trait_scores %>%
+  mutate(location_type = case_when(
+    population %in% c("Percos", "Pt. Conception") ~ "Coastal",
+    population %in% c("Cojo", "Perry") ~ "Inland"
+  ))
+
+# Variance explained
+var_exp_traits <- summary(pca_traits)$importance[2,] * 100
+
+# PCA loadings
+pca_trait_loadings <- data.frame(
+  Variable = c("Log Fresh Weight", "Log Dry Weight", 
+               "Relative Water Content", "Dry Matter Content",
+               "Water per Dry Mass"),
+  PC1 = pca_traits$rotation[, 1],
+  PC2 = pca_traits$rotation[, 2],
+  PC3 = pca_traits$rotation[, 3]
+)
+```
+
+```{r fig-trait-pca, echo=FALSE, fig.width=12, fig.height=5, fig.cap="PCA of petal traits showing physiological strategies. Left: individuals colored by population. Right: individuals colored by temporal block."}
+p_pca1 <- ggplot(pca_trait_scores, aes(x = PC1, y = PC2, color = population, shape = block)) +
+  geom_point(size = 3, alpha = 0.7) +
+  stat_ellipse(aes(group = population), type = "norm", level = 0.68, linewidth = 1) +
+  scale_color_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                                "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  labs(x = paste0("PC1 (", round(var_exp_traits[1], 1), "%)"),
+       y = paste0("PC2 (", round(var_exp_traits[2], 1), "%)"),
+       title = "A. Trait PCA by Population",
+       color = "Population", shape = "Block") +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+p_pca2 <- ggplot(pca_trait_scores, aes(x = PC1, y = PC2, color = block, shape = population)) +
+  geom_point(size = 3, alpha = 0.7) +
+  stat_ellipse(aes(group = block), type = "norm", level = 0.68, linewidth = 1) +
+  scale_color_manual(values = c("1" = "#2E86AB", "2" = "#F18F01", "3" = "#C73E1D")) +
+  labs(x = paste0("PC1 (", round(var_exp_traits[1], 1), "%)"),
+       y = paste0("PC2 (", round(var_exp_traits[2], 1), "%)"),
+       title = "B. Trait PCA by Temporal Block",
+       color = "Block", shape = "Population") +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+grid.arrange(p_pca1, p_pca2, ncol = 2)
+```
+
+```{r}
+#| label: tbl-trait-pca-loadings
+#| tbl-cap: "PCA loadings for petal traits. High absolute values indicate strong contribution to that PC."
+#| echo: false
+
+kable(pca_trait_loadings, digits = 3,
+      col.names = c("Trait Variable", "PC1", "PC2", "PC3")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+```{r fig-trait-pca-biplot, echo=FALSE, fig.width=8, fig.height=8, fig.cap="PCA biplot showing relationships between petal traits and population differentiation"}
+# Create biplot
+biplot_data <- pca_trait_scores %>%
+  group_by(population, block) %>%
+  summarise(
+    PC1 = mean(PC1),
+    PC2 = mean(PC2),
+    .groups = "drop"
+  )
+
+# Scale loadings for visualization
+loading_scale <- 4
+loadings_plot <- pca_trait_loadings %>%
+  mutate(
+    PC1_scaled = PC1 * loading_scale,
+    PC2_scaled = PC2 * loading_scale
+  )
+
+ggplot() +
+  # Points for population-block means
+  geom_point(data = biplot_data, 
+             aes(x = PC1, y = PC2, color = population, shape = block),
+             size = 4, alpha = 0.8) +
+  # Arrows for trait loadings
+  geom_segment(data = loadings_plot,
+               aes(x = 0, y = 0, xend = PC1_scaled, yend = PC2_scaled),
+               arrow = arrow(length = unit(0.3, "cm")),
+               color = "black", linewidth = 0.8) +
+  geom_text(data = loadings_plot,
+            aes(x = PC1_scaled * 1.1, y = PC2_scaled * 1.1, label = Variable),
+            size = 3.5, fontface = "bold") +
+  scale_color_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                                "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  labs(x = paste0("PC1 (", round(var_exp_traits[1], 1), "%)"),
+       y = paste0("PC2 (", round(var_exp_traits[2], 1), "%)"),
+       title = "Petal Trait PCA Biplot",
+       subtitle = "Arrows show trait loadings; points are population-block means",
+       color = "Population", shape = "Block") +
+  theme_minimal() +
+  theme(legend.position = "right")
+```
+
+**Trait PCA Interpretation:** - PC1 (56% variance) primarily represents \[size/water content/tissue economics\] - PC2 (38% variance) captures \[water storage/tissue density/stress response\] - Populations do not separate clearly in trait space - Temporal blocks show strong shifts along PC1/PC2
+
+### Seasonal Trends in Petal Traits
+
+## Microclimate-Trait Relationships
+
+### Temporal Window Comparison
+
+```{r temporal-window-comparison, echo=FALSE, warning=FALSE, message=FALSE}
+# Function to fit models for different response variables and temporal windows
+compare_temporal_windows <- function(response_var, response_name) {
+  
+  results <- list()
+  
+  for (window in c("3day", "7day", "14day")) {
+    # Get appropriate dataset
+    if (window == "3day") data <- petal_microclimate_3day
+    else if (window == "7day") data <- petal_microclimate_7day
+    else data <- petal_microclimate_14day
+    
+    # Remove NAs
+    data_clean <- data %>%
+      filter(!is.na(!!sym(response_var)), 
+             !is.na(vpd_midday_mean),
+             !is.na(temp_max_mean),
+             !is.na(par_integrated_mean))
+    
+    # Fit model with key microclimate predictors
+    if (response_var %in% c("dry_matter_content", "relative_water_content")) {
+      # For proportions, use appropriate transformation
+      if (response_var == "relative_water_content") {
+        data_clean <- data_clean %>%
+          mutate(response_prop = relative_water_content / 100,
+                 response_prop = pmax(pmin(response_prop, 0.999), 0.001))
+      } else {
+        data_clean <- data_clean %>%
+          mutate(response_prop = pmax(pmin(dry_matter_content, 0.999), 0.001))
+      }
+      model <- glm(response_prop ~ vpd_midday_mean + temp_max_mean + par_integrated_mean,
+                   data = data_clean, family = quasibinomial(link = "logit"))
+    } else {
+      # For size variables, use log transformation
+      data_clean <- data_clean %>%
+        mutate(response_log = log(!!sym(response_var)))
+      model <- lm(response_log ~ vpd_midday_mean + temp_max_mean + par_integrated_mean,
+                  data = data_clean)
+    }
+    
+    # Extract fit statistics
+    results[[window]] <- data.frame(
+      window = window,
+      response = response_name,
+      AIC = AIC(model),
+      n = nrow(data_clean),
+      r_squared = if(class(model)[1] == "lm") summary(model)$r.squared else NA
+    )
+  }
+  
+  return(bind_rows(results))
+}
+
+# Compare windows for all response variables
+window_comparison <- bind_rows(
+  compare_temporal_windows("dry_matter_content", "DMC"),
+  compare_temporal_windows("relative_water_content", "RWC"),
+  compare_temporal_windows("wet_wgt", "Fresh Weight"),
+  compare_temporal_windows("dry_wgt", "Dry Weight"),
+  compare_temporal_windows("water_per_dry_mass", "Water/Dry Mass")
+)
+
+# Calculate delta AIC within each response variable
+window_comparison <- window_comparison %>%
+  group_by(response) %>%
+  mutate(
+    delta_AIC = AIC - min(AIC, na.rm = TRUE),
+    best_window = ifelse(delta_AIC == 0, "*", "")
+  ) %>%
+  ungroup()
+```
+
+```{r}
+#| label: tbl-window-comparison
+#| tbl-cap: "Comparison of temporal windows (3, 7, 14 days) for predicting petal traits from microclimate. Lower AIC indicates better fit. * indicates best model for each trait."
+#| echo: false
+
+window_comparison %>%
+  select(response, window, AIC, delta_AIC, r_squared, n, best_window) %>%
+  arrange(response, delta_AIC) %>%
+  kable(digits = c(0, 0, 1, 1, 3, 0, 0),
+        col.names = c("Response Variable", "Window", "AIC", "ΔAIC", "R²", "n", "Best")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+**Interpretation:** The temporal window analysis reveals which time period of microclimate exposure best predicts petal traits. A shorter window (3-day) suggests traits respond to immediate conditions, while a longer window (14-day) suggests integration over development.
+
+### Petal Size Responses to Microclimate
+
+```{r petal-size-analysis, echo=FALSE, warning=FALSE, message=FALSE}
+
+# Calculate population-block means for size variables
+size_microclimate <- petal_microclimate_3day %>%
+  group_by(population, block) %>%
+  summarise(
+    fresh_wgt_mean = mean(wet_wgt, na.rm = TRUE),
+    dry_wgt_mean = mean(dry_wgt, na.rm = TRUE),
+    vpd_midday = mean(vpd_midday_mean, na.rm = TRUE),
+    temp_max = mean(temp_max_mean, na.rm = TRUE),
+    temp_range = mean(temp_range_mean, na.rm = TRUE),
+    par_integrated = mean(par_integrated_mean, na.rm = TRUE),
+    fog_hours = mean(fog_hours_total, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Correlation between size and microclimate
+size_climate_cors <- cor(size_microclimate %>% 
+                           select(fresh_wgt_mean, dry_wgt_mean, 
+                                  vpd_midday, temp_max, par_integrated), 
+                         use = "complete.obs")
+```
+
+```{r fig-petal-size-microclimate, echo=FALSE, fig.width=12, fig.height=8, fig.cap="Petal size (fresh and dry weight) relationships with key microclimate variables. Points represent population-block means."}
+# Create multi-panel plot
+p1 <- ggplot(size_microclimate, aes(x = vpd_midday, y = fresh_wgt_mean, 
+                                     color = population, shape = block)) +
+  geom_point(size = 4, alpha = 0.8) +
+  geom_smooth(aes(group = 1), method = "lm", se = TRUE, 
+              color = "black", linetype = "dashed") +
+  scale_color_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                                "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  scale_y_log10() +
+  labs(x = "Midday VPD (kPa)", y = "Fresh Weight (g, log scale)",
+       title = "A. Fresh Weight vs VPD") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+p2 <- ggplot(size_microclimate, aes(x = temp_max, y = fresh_wgt_mean, 
+                                     color = population, shape = block)) +
+  geom_point(size = 4, alpha = 0.8) +
+  geom_smooth(aes(group = 1), method = "lm", se = TRUE, 
+              color = "black", linetype = "dashed") +
+  scale_color_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                                "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  scale_y_log10() +
+  labs(x = "Max Temperature (°C)", y = "Fresh Weight (g, log scale)",
+       title = "B. Fresh Weight vs Temperature") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+p3 <- ggplot(size_microclimate, aes(x = vpd_midday, y = dry_wgt_mean, 
+                                     color = population, shape = block)) +
+  geom_point(size = 4, alpha = 0.8) +
+  geom_smooth(aes(group = 1), method = "lm", se = TRUE, 
+              color = "black", linetype = "dashed") +
+  scale_color_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                                "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  scale_y_log10() +
+  labs(x = "Midday VPD (kPa)", y = "Dry Weight (g, log scale)",
+       title = "C. Dry Weight vs VPD") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+p4 <- ggplot(size_microclimate, aes(x = temp_max, y = dry_wgt_mean, 
+                                     color = population, shape = block)) +
+  geom_point(size = 4, alpha = 0.8) +
+  geom_smooth(aes(group = 1), method = "lm", se = TRUE, 
+              color = "black", linetype = "dashed") +
+  scale_color_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                                "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  scale_y_log10() +
+  labs(x = "Max Temperature (°C)", y = "Dry Weight (g, log scale)",
+       title = "D. Dry Weight vs Temperature",
+       color = "Population", shape = "Block") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+grid.arrange(p1, p2, p3, p4, ncol = 2)
+```
+
+```{r}
+#| label: tbl-size-correlations
+#| tbl-cap: "Pearson correlations between petal size and microclimate variables"
+#| echo: false
+
+size_cors_table <- data.frame(
+  Variable = c("Fresh Weight", "Dry Weight"),
+  VPD_midday = c(
+    cor(size_microclimate$fresh_wgt_mean, size_microclimate$vpd_midday, use = "complete.obs"),
+    cor(size_microclimate$dry_wgt_mean, size_microclimate$vpd_midday, use = "complete.obs")
+  ),
+  Temp_max = c(
+    cor(size_microclimate$fresh_wgt_mean, size_microclimate$temp_max, use = "complete.obs"),
+    cor(size_microclimate$dry_wgt_mean, size_microclimate$temp_max, use = "complete.obs")
+  ),
+  PAR = c(
+    cor(size_microclimate$fresh_wgt_mean, size_microclimate$par_integrated, use = "complete.obs"),
+    cor(size_microclimate$dry_wgt_mean, size_microclimate$par_integrated, use = "complete.obs")
+  )
+)
+
+kable(size_cors_table, digits = 3,
+      col.names = c("Variable", "Midday VPD", "Max Temp", "Integrated PAR")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+**Key Finding:** Petal weight shows strong correlations with microclimate variables, suggesting that plants adjust flower size in addition to tissue water content in response to environmental stress.
+
+### Tissue Economics Traits (Size-Independent)
+
+```{r trait-microclimate-correlations, echo=FALSE}
+# Calculate population-mean traits and microclimate
+pop_means <- petal_microclimate %>%
+  group_by(population, block) %>%
+  summarise(
+    rwc = mean(relative_water_content, na.rm = TRUE),
+    dmc = mean(dry_matter_content, na.rm = TRUE),
+    water_dry = mean(water_per_dry_mass, na.rm = TRUE),
+    vpd_midday = mean(vpd_midday_mean, na.rm = TRUE),
+    vpd_mean = mean(vpd_mean, na.rm = TRUE),
+    temp_max = mean(temp_max_mean, na.rm = TRUE),
+    temp_range = mean(temp_range_mean, na.rm = TRUE),
+    fog_hours = mean(fog_hours_total, na.rm = TRUE),
+    par_integrated = mean(par_integrated_mean, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Correlation matrix
+trait_vars <- c("rwc", "dmc", "water_dry")
+climate_vars <- c("vpd_midday", "temp_max", "temp_range", "fog_hours", "par_integrated")
+
+cor_matrix <- cor(pop_means %>% select(all_of(c(trait_vars, climate_vars))), 
+                  use = "complete.obs")
+```
+
+```{r fig-correlation-matrix, echo=FALSE, fig.width=8, fig.height=6, fig.cap="Correlation matrix between petal traits and microclimate variables. Values shown are Pearson correlation coefficients."}
+# Extract trait-climate correlations
+trait_climate_cors <- cor_matrix[trait_vars, climate_vars]
+
+# Plot
+corrplot(trait_climate_cors, method = "color", 
+         type = "full", 
+         addCoef.col = "black",
+         tl.col = "black", tl.srt = 45,
+         col = colorRampPalette(c("#A23B72", "white", "#2E86AB"))(200),
+         title = "Trait-Microclimate Correlations",
+         mar = c(0,0,2,0))
+```
+
+### Mixed Effects Models: Microclimate Predictors of Petal Traits
+
+```{r mixed-models-setup, echo=FALSE, warning=FALSE, message=FALSE}
+# Prepare data for mixed models (use best temporal window - we'll use 7-day for now)
+model_data <- petal_microclimate_7day %>%
+  filter(!is.na(wet_wgt), !is.na(dry_wgt),
+         !is.na(vpd_midday_mean), !is.na(temp_max_mean),
+         !is.na(par_integrated_mean)) %>%
+  mutate(
+    # Log-transform size variables
+    log_fresh_wgt = log(wet_wgt),
+    log_dry_wgt = log(dry_wgt),
+    # Transform proportions for modeling
+    rwc_prop = relative_water_content / 100,
+    rwc_prop = pmax(pmin(rwc_prop, 0.999), 0.001),
+    dmc_adj = pmax(pmin(dry_matter_content, 0.999), 0.001),
+    # Standardize microclimate predictors for comparison
+    vpd_midday_z = scale(vpd_midday_mean)[,1],
+    temp_max_z = scale(temp_max_mean)[,1],
+    temp_range_z = scale(temp_range_mean)[,1],
+    par_z = scale(par_integrated_mean)[,1],
+    fog_z = scale(fog_hours_total)[,1]
+  )
+```
+
+#### Fresh Weight Models
+
+```{r model-fresh-weight, echo=FALSE, warning=FALSE, message=FALSE}
+# Fresh weight models
+# Null model (random intercept only)
+m_fw_null <- lmer(log_fresh_wgt ~ 1 + (1|population), 
+                  data = model_data, REML = FALSE)
+
+# Single predictor models
+m_fw_vpd <- lmer(log_fresh_wgt ~ vpd_midday_z + (1|population), 
+                 data = model_data, REML = FALSE)
+m_fw_temp <- lmer(log_fresh_wgt ~ temp_max_z + (1|population), 
+                  data = model_data, REML = FALSE)
+m_fw_par <- lmer(log_fresh_wgt ~ par_z + (1|population), 
+                 data = model_data, REML = FALSE)
+m_fw_fog <- lmer(log_fresh_wgt ~ fog_z + (1|population), 
+                 data = model_data, REML = FALSE)
+
+# Additive models
+m_fw_vpd_temp <- lmer(log_fresh_wgt ~ vpd_midday_z + temp_max_z + (1|population), 
+                      data = model_data, REML = FALSE)
+m_fw_full <- lmer(log_fresh_wgt ~ vpd_midday_z + temp_max_z + par_z + fog_z + (1|population), 
+                  data = model_data, REML = FALSE)
+
+# With temporal block
+m_fw_full_block <- lmer(log_fresh_wgt ~ vpd_midday_z + temp_max_z + par_z + fog_z + block + (1|population), 
+                        data = model_data, REML = FALSE)
+
+# Model comparison
+aic_fw <- AIC(m_fw_null, m_fw_vpd, m_fw_temp, m_fw_par, m_fw_fog,
+              m_fw_vpd_temp, m_fw_full, m_fw_full_block)
+aic_fw$model <- rownames(aic_fw)
+aic_fw$delta_AIC <- aic_fw$AIC - min(aic_fw$AIC)
+aic_fw <- aic_fw %>% arrange(AIC)
+
+# Best model summary
+best_fw_model <- m_fw_full_block
+```
+
+```{r}
+#| label: tbl-fresh-weight-models
+#| tbl-cap: "Model selection for fresh weight (log-transformed). Models include population as random effect."
+#| echo: false
+
+kable(aic_fw %>% select(model, df, AIC, delta_AIC), 
+      digits = c(0, 0, 1, 1),
+      col.names = c("Model", "df", "AIC", "ΔAIC")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+```{r}
+#| label: tbl-fresh-weight-best
+#| tbl-cap: "Best model for fresh weight: fixed effects"
+#| echo: false
+
+summary_fw <- summary(best_fw_model)
+coef_fw <- as.data.frame(summary_fw$coefficients)
+coef_fw$term <- rownames(coef_fw)
+coef_fw <- coef_fw %>% select(term, Estimate, `Std. Error`, df, `t value`, `Pr(>|t|)`)
+
+kable(coef_fw, digits = c(0, 3, 3, 1, 2, 4),
+      col.names = c("Term", "Estimate", "SE", "df", "t", "P")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+#### Dry Matter Content Models
+```{r model-dmc, echo=FALSE, warning=FALSE, message=FALSE}
+# DMC models using glmer with binomial family
+# Using simpler optimizer and increasing iterations to help convergence
+
+m_dmc_null <- glmer(dmc_adj ~ 1 + (1|population), 
+                    data = model_data, 
+                    family = binomial(link = "logit"),
+                    control = glmerControl(optimizer = "bobyqa",
+                                          optCtrl = list(maxfun = 100000)))
+
+m_dmc_vpd <- glmer(dmc_adj ~ vpd_midday_z + (1|population), 
+                   data = model_data, 
+                   family = binomial(link = "logit"),
+                   control = glmerControl(optimizer = "bobyqa",
+                                         optCtrl = list(maxfun = 100000)))
+
+m_dmc_temp <- glmer(dmc_adj ~ temp_max_z + (1|population), 
+                    data = model_data, 
+                    family = binomial(link = "logit"),
+                    control = glmerControl(optimizer = "bobyqa",
+                                          optCtrl = list(maxfun = 100000)))
+
+# PAR model - try with different optimizer since it's having convergence issues
+m_dmc_par <- tryCatch({
+  glmer(dmc_adj ~ par_z + (1|population), 
+        data = model_data, 
+        family = binomial(link = "logit"),
+        control = glmerControl(optimizer = "Nelder_Mead",
+                              optCtrl = list(maxfun = 100000)))
+}, error = function(e) NULL)
+
+m_dmc_full <- glmer(dmc_adj ~ vpd_midday_z + temp_max_z + (1|population), 
+                    data = model_data, 
+                    family = binomial(link = "logit"),
+                    control = glmerControl(optimizer = "bobyqa",
+                                          optCtrl = list(maxfun = 100000)))
+
+m_dmc_full_block <- glmer(dmc_adj ~ vpd_midday_z + temp_max_z + block + (1|population), 
+                          data = model_data, 
+                          family = binomial(link = "logit"),
+                          control = glmerControl(optimizer = "bobyqa",
+                                                optCtrl = list(maxfun = 100000)))
+
+# Compare models using AIC - skip PAR if it didn't converge
+if (!is.null(m_dmc_par)) {
+  aic_dmc <- AIC(m_dmc_null, m_dmc_vpd, m_dmc_temp, m_dmc_par,
+                 m_dmc_full, m_dmc_full_block)
+} else {
+  aic_dmc <- AIC(m_dmc_null, m_dmc_vpd, m_dmc_temp,
+                 m_dmc_full, m_dmc_full_block)
+}
+
+aic_dmc$model <- rownames(aic_dmc)
+aic_dmc$delta_AIC <- aic_dmc$AIC - min(aic_dmc$AIC)
+aic_dmc <- aic_dmc %>% arrange(AIC)
+
+best_dmc_model <- m_dmc_full_block
+```
+```{r}
+#| label: tbl-dmc-models
+#| tbl-cap: "Model selection for dry matter content"
+#| echo: false
+
+kable(aic_dmc %>% select(model, df, AIC, delta_AIC), 
+      digits = c(0, 0, 1, 1),
+      col.names = c("Model", "df", "AIC", "ΔAIC")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+```{r}
+#| label: tbl-dmc-best
+#| tbl-cap: "Best model for dry matter content: fixed effects"
+#| echo: false
+
+summary_dmc <- summary(best_dmc_model)
+coef_dmc <- as.data.frame(summary_dmc$coefficients)
+coef_dmc$term <- rownames(coef_dmc)
+coef_dmc <- coef_dmc %>% select(term, Estimate, `Std. Error`, `z value`, `Pr(>|z|)`)
+
+kable(coef_dmc, digits = c(0, 3, 3, 2, 4),
+      col.names = c("Term", "Estimate", "SE", "z", "P")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+
+```{r}
+#| label: tbl-dry-weight-models
+#| tbl-cap: "Model selection for dry weight (log-transformed)"
+#| echo: false
+
+kable(aic_dw %>% select(model, df, AIC, delta_AIC), 
+      digits = c(0, 0, 1, 1),
+      col.names = c("Model", "df", "AIC", "ΔAIC")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+#### Dry Matter Content Models
+
+```{r model-dmc, echo=FALSE, warning=FALSE, message=FALSE}
+# DMC models using glmer with binomial family
+# Using simpler optimizer and increasing iterations to help convergence
+
+m_dmc_null <- glmer(dmc_adj ~ 1 + (1|population), 
+                    data = model_data, 
+                    family = binomial(link = "logit"),
+                    control = glmerControl(optimizer = "bobyqa",
+                                          optCtrl = list(maxfun = 100000)))
+
+m_dmc_vpd <- glmer(dmc_adj ~ vpd_midday_z + (1|population), 
+                   data = model_data, 
+                   family = binomial(link = "logit"),
+                   control = glmerControl(optimizer = "bobyqa",
+                                         optCtrl = list(maxfun = 100000)))
+
+m_dmc_temp <- glmer(dmc_adj ~ temp_max_z + (1|population), 
+                    data = model_data, 
+                    family = binomial(link = "logit"),
+                    control = glmerControl(optimizer = "bobyqa",
+                                          optCtrl = list(maxfun = 100000)))
+
+# PAR model - try with different optimizer since it's having convergence issues
+m_dmc_par <- tryCatch({
+  glmer(dmc_adj ~ par_z + (1|population), 
+        data = model_data, 
+        family = binomial(link = "logit"),
+        control = glmerControl(optimizer = "Nelder_Mead",
+                              optCtrl = list(maxfun = 100000)))
+}, error = function(e) NULL)
+
+m_dmc_full <- glmer(dmc_adj ~ vpd_midday_z + temp_max_z + (1|population), 
+                    data = model_data, 
+                    family = binomial(link = "logit"),
+                    control = glmerControl(optimizer = "bobyqa",
+                                          optCtrl = list(maxfun = 100000)))
+
+m_dmc_full_block <- glmer(dmc_adj ~ vpd_midday_z + temp_max_z + block + (1|population), 
+                          data = model_data, 
+                          family = binomial(link = "logit"),
+                          control = glmerControl(optimizer = "bobyqa",
+                                                optCtrl = list(maxfun = 100000)))
+
+# Build AIC table manually to handle NULL models
+aic_list <- list()
+if (!is.null(m_dmc_null)) aic_list <- c(aic_list, list(m_dmc_null = m_dmc_null))
+if (!is.null(m_dmc_vpd)) aic_list <- c(aic_list, list(m_dmc_vpd = m_dmc_vpd))
+if (!is.null(m_dmc_temp)) aic_list <- c(aic_list, list(m_dmc_temp = m_dmc_temp))
+if (!is.null(m_dmc_par)) aic_list <- c(aic_list, list(m_dmc_par = m_dmc_par))
+if (!is.null(m_dmc_full)) aic_list <- c(aic_list, list(m_dmc_full = m_dmc_full))
+if (!is.null(m_dmc_full_block)) aic_list <- c(aic_list, list(m_dmc_full_block = m_dmc_full_block))
+
+aic_dmc <- do.call(AIC, aic_list)
+aic_dmc$model <- rownames(aic_dmc)
+aic_dmc$delta_AIC <- aic_dmc$AIC - min(aic_dmc$AIC)
+aic_dmc <- aic_dmc %>% arrange(AIC)
+
+best_dmc_model <- aic_list[[aic_dmc$model[1]]]
+#| label: tbl-dmc-models
+#| tbl-cap: "Model selection for dry matter content"
+#| echo: false
+
+kable(aic_dmc %>% select(model, df, AIC, delta_AIC), 
+      digits = c(0, 0, 1, 1),
+      col.names = c("Model", "df", "AIC", "ΔAIC")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+#| label: tbl-dmc-best
+#| tbl-cap: "Best model for dry matter content: fixed effects"
+#| echo: false
+
+summary_dmc <- summary(best_dmc_model)
+coef_dmc <- as.data.frame(summary_dmc$coefficients)
+coef_dmc$term <- rownames(coef_dmc)
+coef_dmc <- coef_dmc %>% select(term, Estimate, `Std. Error`, `z value`, `Pr(>|z|)`)
+
+kable(coef_dmc, digits = c(0, 3, 3, 2, 4),
+      col.names = c("Term", "Estimate", "SE", "z", "P")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+```{r}
+#| label: tbl-dmc-models
+#| tbl-cap: "Model selection for dry matter content"
+#| echo: false
+
+kable(aic_dmc %>% select(model, df, AIC, delta_AIC), 
+      digits = c(0, 0, 1, 1),
+      col.names = c("Model", "df", "AIC", "ΔAIC")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+```{r}
+#| label: tbl-dmc-best
+#| tbl-cap: "Best model for dry matter content: fixed effects"
+#| echo: false
+
+summary_dmc <- summary(best_dmc_model)
+coef_dmc <- as.data.frame(summary_dmc$coefficients)
+coef_dmc$term <- rownames(coef_dmc)
+coef_dmc <- coef_dmc %>% select(term, Estimate, `Std. Error`, `z value`, `Pr(>|z|)`)
+
+kable(coef_dmc, digits = c(0, 3, 3, 2, 4),
+      col.names = c("Term", "Estimate", "SE", "z", "P")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+#### Relative Water Content Models
+
+```{r model-rwc, echo=FALSE, warning=FALSE, message=FALSE}
+# RWC models
+m_rwc_null <- glmer(rwc_prop ~ 1 + (1|population), 
+                    data = model_data, 
+                    family = binomial(link = "logit"),
+                    control = glmerControl(optimizer = "bobyqa"))
+
+m_rwc_vpd <- glmer(rwc_prop ~ vpd_midday_z + (1|population), 
+                   data = model_data, 
+                   family = binomial(link = "logit"),
+                   control = glmerControl(optimizer = "bobyqa"))
+
+m_rwc_temp <- glmer(rwc_prop ~ temp_max_z + (1|population), 
+                    data = model_data, 
+                    family = binomial(link = "logit"),
+                    control = glmerControl(optimizer = "bobyqa"))
+
+m_rwc_full <- glmer(rwc_prop ~ vpd_midday_z + temp_max_z + par_z + fog_z + (1|population), 
+                    data = model_data, 
+                    family = binomial(link = "logit"),
+                    control = glmerControl(optimizer = "bobyqa"))
+
+m_rwc_full_block <- glmer(rwc_prop ~ vpd_midday_z + temp_max_z + par_z + fog_z + block + (1|population), 
+                          data = model_data, 
+                          family = binomial(link = "logit"),
+                          control = glmerControl(optimizer = "bobyqa"))
+
+aic_rwc <- AIC(m_rwc_null, m_rwc_vpd, m_rwc_temp,
+               m_rwc_full, m_rwc_full_block)
+aic_rwc$model <- rownames(aic_rwc)
+aic_rwc$delta_AIC <- aic_rwc$AIC - min(aic_rwc$AIC)
+aic_rwc <- aic_rwc %>% arrange(AIC)
+
+best_rwc_model <- m_rwc_full_block
+```
+
+```{r}
+#| label: tbl-rwc-models
+#| tbl-cap: "Model selection for relative water content"
+#| echo: false
+
+kable(aic_rwc %>% select(model, df, AIC, delta_AIC), 
+      digits = c(0, 0, 1, 1),
+      col.names = c("Model", "df", "AIC", "ΔAIC")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+### Model Summary and Interpretation
+
+```{r model-summary-table, echo=FALSE}
+# Create summary table of key predictors from best models
+model_summary <- data.frame(
+  Response = c("Log Fresh Weight", "Log Dry Weight", "Dry Matter Content", "Rel. Water Content"),
+  VPD_effect = c(
+    coef(summary(best_fw_model))["vpd_midday_z", "Estimate"],
+    coef(summary(best_dw_model))["vpd_midday_z", "Estimate"],
+    coef(summary(best_dmc_model))["vpd_midday_z", "Estimate"],
+    coef(summary(best_rwc_model))["vpd_midday_z", "Estimate"]
+  ),
+  VPD_p = c(
+    coef(summary(best_fw_model))["vpd_midday_z", "Pr(>|t|)"],
+    coef(summary(best_dw_model))["vpd_midday_z", "Pr(>|t|)"],
+    coef(summary(best_dmc_model))["vpd_midday_z", "Pr(>|z|)"],
+    coef(summary(best_rwc_model))["vpd_midday_z", "Pr(>|z|)"]
+  ),
+  Temp_effect = c(
+    coef(summary(best_fw_model))["temp_max_z", "Estimate"],
+    coef(summary(best_dw_model))["temp_max_z", "Estimate"],
+    coef(summary(best_dmc_model))["temp_max_z", "Estimate"],
+    coef(summary(best_rwc_model))["temp_max_z", "Estimate"]
+  ),
+  Temp_p = c(
+    coef(summary(best_fw_model))["temp_max_z", "Pr(>|t|)"],
+    coef(summary(best_dw_model))["temp_max_z", "Pr(>|t|)"],
+    coef(summary(best_dmc_model))["temp_max_z", "Pr(>|z|)"],
+    coef(summary(best_rwc_model))["temp_max_z", "Pr(>|z|)"]
+  )
+)
+```
+
+```{r}
+#| label: tbl-model-summary
+#| tbl-cap: "Summary of microclimate effects on petal traits from best models. Effects are standardized coefficients."
+#| echo: false
+
+model_summary_display <- model_summary %>%
+  mutate(
+    VPD = paste0(round(VPD_effect, 3), 
+                 ifelse(VPD_p < 0.001, "***",
+                        ifelse(VPD_p < 0.01, "**",
+                               ifelse(VPD_p < 0.05, "*", "ns")))),
+    Temp = paste0(round(Temp_effect, 3),
+                  ifelse(Temp_p < 0.001, "***",
+                         ifelse(Temp_p < 0.01, "**",
+                                ifelse(Temp_p < 0.05, "*", "ns"))))
+  ) %>%
+  select(Response, VPD, Temp)
+
+kable(model_summary_display,
+      col.names = c("Response Variable", "VPD Effect", "Temperature Effect")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  add_footnote(c("*** P < 0.001, ** P < 0.01, * P < 0.05, ns = not significant",
+                 "Effects are standardized (z-scored) coefficients"))
+```
+
+**Key Findings from Mixed Models:**
+
+1.  **Petal Size (Fresh and Dry Weight):**
+    -   \[Interpretation based on model results\]
+    -   VPD shows \[positive/negative/no\] effect on petal size
+    -   Temperature shows \[positive/negative/no\] effect
+    -   Block effects indicate \[strong/moderate/weak\] seasonal trends
+2.  **Dry Matter Content:**
+    -   \[Interpretation based on model results\]
+    -   Higher VPD associated with \[higher/lower\] DMC
+    -   Consistent with \[economical/expensive\] tissue construction under stress
+3.  **Relative Water Content:**
+    -   \[Interpretation based on model results\]
+    -   VPD and temperature effects on tissue hydration
+4.  **Population Random Effects:**
+    -   Populations show \[high/moderate/low\] variation around fixed effects
+    -   Suggests \[strong/weak\] local adaptation independent of measured microclimate
+
+```{r fig-correlation-matrix, echo=FALSE, fig.width=8, fig.height=6, fig.cap="Correlation matrix between petal traits and microclimate variables. Values shown are Pearson correlation coefficients."}
+# Extract trait-climate correlations
+trait_climate_cors <- cor_matrix[trait_vars, climate_vars]
+
+# Plot
+corrplot(trait_climate_cors, method = "color", 
+         type = "full", 
+         addCoef.col = "black",
+         tl.col = "black", tl.srt = 45,
+         col = colorRampPalette(c("#A23B72", "white", "#2E86AB"))(200),
+         title = "Trait-Microclimate Correlations",
+         mar = c(0,0,2,0))
+```
+
+```{r fig-vpd-dmc-relationship, echo=FALSE, fig.width=8, fig.height=6, fig.cap="Relationship between midday VPD and dry matter content across populations and blocks. Points are population-block means."}
+ggplot(pop_means, aes(x = vpd_midday, y = dmc, color = population, shape = block)) +
+  geom_point(size = 4, alpha = 0.8) +
+  geom_smooth(aes(group = 1), method = "lm", se = TRUE, color = "black", linetype = "dashed") +
+  scale_color_manual(values = c("Cojo" = "#F18F01", "Perry" = "#C73E1D",
+                                "Percos" = "#2E86AB", "Pt. Conception" = "#A23B72")) +
+  labs(x = "Midday VPD (kPa)", 
+       y = "Dry Matter Content",
+       title = "VPD-DMC Relationship",
+       color = "Population", shape = "Block") +
+  theme_minimal() +
+  theme(legend.position = "right")
+```
+
+# Discussion
+
+## Key Findings Summary
+
+Our analysis of four *Eschscholzia californica* populations within a 2 km radius at the Dangermond Preserve reveals:
+
+1.  **Significant microclimate differentiation** among populations despite close geographic proximity
+2.  **Strong relationships between microclimate variables and petal tissue economics traits**, particularly VPD and dry matter content
+3.  **Percos population exhibits unique microclimate and trait patterns**, challenging simple coastal/inland classifications
+
+\[To be expanded with detailed interpretation...\]
+
+## Microclimate as Mechanistic Driver
+
+\[To be written - discuss how VPD, temperature, and light explain trait variation better than geographic labels...\]
+
+## The Percos Anomaly Explained
+
+\[To be written - discuss how Percos microclimate data helps explain why it differs from Pt. Conception despite both being "coastal"...\]
+
+## Implications for Coastal Plant Ecophysiology
+
+\[To be written...\]
+
+# Conclusions
+
+\[To be written - emphasize importance of direct microclimate measurement over geographic proxies...\]
+
+# Appendix: R Code
+
+```{r appendix-code, eval=FALSE, echo=TRUE}
+# Key functions for microclimate analysis
+calculate_vpd <- function(temp, rh) {
+  vp_sat <- 0.611 * exp((17.27 * temp) / (temp + 237.3))
+  vp_actual <- vp_sat * (rh / 100)
+  vpd <- vp_sat - vp_actual
+  return(vpd)
+}
+
+# Example: Calculate daily microclimate metrics
+daily_metrics <- rhtemp_data %>%
+  group_by(site, date) %>%
+  summarise(
+    temp_max = max(temp, na.rm = TRUE),
+    temp_min = min(temp, na.rm = TRUE),
+    vpd_mean = mean(vpd, na.rm = TRUE),
+    vpd_max = max(vpd, na.rm = TRUE),
+    .groups = "drop"
+  )
+```

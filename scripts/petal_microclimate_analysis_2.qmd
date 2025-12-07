@@ -1,0 +1,1624 @@
+---
+title: "Microgeographic variation in petal water content traits and microclimate in *Eschscholzia californica*"
+author: "Gretchen LeBuhn and Kevin Simonin"
+date: today
+format: pdf
+bibliography: references.bib
+---
+
+Questions
+
+Review PAR data quality after filtering?
+
+Intraspecific, microgeographic plasticity in response to microclimate.
+
+# Abstract
+
+We examined microgeographic variation in petal water content traits across four populations of *Eschscholzia californica* at the Dangermond Preserve to understand how tissue economics and water relations vary among closely spaced populations experiencing distinct microclimate conditions. Using continuous microclimate monitoring (temperature, humidity, PAR) at sub-hourly intervals combined with fresh and dry weight measurements from populations spanning coastal dune and inland shale hillside environments within a 2 km radius, we tested whether microclimate variables explain population-level variation in petal physiology. We calculated key tissue economics metrics including relative water content (RWC), dry matter content (DMC), and vapor pressure deficit (VPD) experienced by flowers.
+
+We found strong microclimate differentiation among populations despite short geographic distances, and significant relationships between microclimate variables (especially midday VPD and maximum temperature) and petal tissue economics traits. These results suggest that petal tissue economics can vary substantially at microgeographic scales, reflecting fine-scale adaptation to local microclimate driven by substrate type, proximity to ocean, and topographic variation.
+
+**Keywords:** petal ecophysiology, tissue economics, microgeographic variation, coastal ecology, microclimate, VPD, *Eschscholzia californica*, Dangermond Preserve
+
+# Introduction
+
+Plant tissue economics theory provides a framework for understanding how organisms allocate resources to different tissues and the functional consequences of these allocation patterns. While extensively studied in leaves, the application of tissue economics principles to reproductive structures like petals remains relatively unexplored. Petals must balance structural integrity and visual display with low construction costs and sufficient physiological function under variable environmental conditions.
+
+Reproductive tissues face different selective pressures than leaves, but they still must balance construction costs against functional benefits. Unlike leaves (carbon gain), petals are primarily about pollinator attraction and protection of reproductive organs. So the "return on investment" is measured in pollination success, not photosynthesis. This means the economics might be driven by different selective pressures - visual conspicuousness, scent production, structural support, or longevity.
+
+Microclimate variation at fine spatial scales can drive physiological divergence among plant populations, particularly in heterogeneous landscapes. Coastal California environments are characterized by steep environmental gradients over small spatial scales, including substrate composition, salt exposure, moisture availability, fog dynamics, and solar radiation. Understanding how plants respond physiologically to this fine-scale environmental heterogeneity requires direct measurement of the microclimate conditions experienced by individuals rather than relying on coarse geographic proxies.
+
+*Eschscholzia californica* (California poppy) provides an excellent system for examining petal tissue economics across microgeographic gradients. At the Dangermond Preserve, populations occur within a 2 km radius but experience distinct microhabitat conditions, from exposed coastal dunes to protected inland shale hillsides. These contrasting environments likely impose different physiological constraints on petal construction and maintenance strategies.
+
+We asked whether microclimate variables—particularly vapor pressure deficit (VPD), temperature extremes, and light availability—explain population-level variation in petal tissue economics strategies. We predicted that populations experiencing higher VPD and temperature stress would exhibit higher dry matter content (more economical, stress-tolerant tissues) and lower water storage capacity compared to populations in more benign microclimate conditions.
+
+# Methods
+
+## Study system and sampling design
+
+Petals of *E. californica* were sampled from four populations within \~2 km at the Dangermond Preserve:
+
+-   **Coastal:** Pt. Conception (dune), Percos (coastal shale slope)
+-   **Inland:** Perry (inland shale), Cojo (inland shale)
+
+Three temporal blocks:
+
+-   Block 1: Mar 26–Apr 17, 2025
+-   Block 2: May 20–23, 2025
+-   Block 3: Jul 2–5, 2025
+
+For each population × block, petals from \~15 plants were collected. Fresh weights were recorded immediately; dry weights after 48 h at 80°C.
+
+## Microclimate monitoring
+
+EL-USB-2 RH / Temp data loggers recorded temperature (°C) and RH (%) at 30-min intervals; Apogee sensors recorded PAR (µmol m⁻² s⁻¹) at 5-min intervals at flower height (\~30 cm). Monitoring spanned March–October 2025.
+
+For each collection date, we calculated microclimate metrics for the **4-day period preceding collection (days –4 to –1)**, approximating the developmental period of sampled petals.
+
+### Data quality notes
+
+-   Pt. Conception temp/RH sensor failed prior to Block 3 → Pt. Conception Block 3 excluded from trait–microclimate analyses (PAR still available).
+-   Percos temp/RH deployment began March 22 (missing early March).
+-   PAR: negative values set to 0; values \> 3000 µmol m⁻² s⁻¹ at Cojo treated as sensor error and removed.
+
+## **Statistical analyses (overview)**
+
+**Microclimate analyses.**\
+
+We quantified microclimate variation among populations at multiple temporal scales. First, we generated **full-season summaries** of temperature, RH, VPD, fog hours, and PAR to characterize persistent environmental differences across the flowering season. Second, we calculated a **truncated-season dataset** restricted to dates when **all four sites had complete RH and temperature records**, thereby enabling climate comparisons free from missing-data bias; we summarized these data and conducted a PCA to test whether multivariate climatic separation among sites was robust to temporal subsampling. Finally, we computed **4-day microclimate windows** preceding each petal sampling date to capture the short-term developmental environment experienced by flowers. Across these analyses, we tested whether sites differ consistently in microclimate at long and short temporal scales.
+
+To do: **time-series dynamics** of VPD, temperature, and RH to evaluate temporal structure and identify seasonal transitions.
+
+**Petal trait analyses.**\
+
+We summarized petal fresh weight, dry weight, relative water content (RWC), dry matter content (DMC), and water-per-dry-mass by population and sampling block. A **PCA of trait variables** was used to identify multivariate axes of petal tissue economics and evaluate whether populations (or seasonal blocks) differ in overall physiological strategies. These analyses test how petal morphology and water relations vary spatially and seasonally.
+
+## Trait metrics
+
+Petal fresh weight
+
+Petal dry weight
+
+From fresh (FW) and dry (DW) weights:
+
+-   **Relative water content (RWC)**
+
+    $$\mathrm{RWC} = \frac{FW - DW}{FW} \times 100$$
+
+-   **Dry matter content (DMC)**
+
+    $$\mathrm{DMC} = \frac{DW}{FW}$$
+
+-   **Water per unit dry mass**
+
+    $$\frac{FW - DW}{DW}$$
+
+**Relative Water content**: This is a measure of tissue construction - high water content suggests less structural investment.
+
+**Dry matter content**
+
+**Water per unit dry mass**
+
+**Petal mass per area (PMA)**: Directly analogous to LMA. This is a fundamental measure of construction investment.
+
+**Microclimate–trait relationships.**\
+
+We assessed the association between microclimate and petal traits at two biologically relevant scales. First, **correlations between population–block means of traits and 4-day microclimate metrics** tested whether flowers developing under hotter, drier, or foggier conditions exhibit systematic differences in tissue economics. Second, we fitted **linear mixed models**, with population as a random intercept, to evaluate climatic predictors of (1) log(fresh weight), (2) log(dry weight), (3) DMC (logit scale), and (4) RWC (logit scale). These models were run using both **4-day developmental microclimate metrics** (testing short-term physiological drivers) and **common-period site-level climate means derived from the truncated-season dataset** (testing whether persistent site-level climatic differences explain trait variation independent of missing data in Block 3). Comparing the two model sets allowed us to determine whether petal traits are more strongly shaped by acute microclimatic conditions during development or by longer-term, site-level environmental context.
+
+------------------------------------------------------------------------
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+#| label: setup-packages
+#| echo: false
+
+# Load necessary packages
+library(readr)
+library(dplyr)
+library(tidyr)
+library(lubridate)
+library(ggplot2)
+library(vegan)
+library(lme4)
+library(lmerTest)
+library(knitr)
+library(kableExtra)
+library(gridExtra)
+library(corrplot)
+```
+
+In the next chunk, we read in the raw petal weight data, remove a flagged outlier, and restrict the dataset to primary petals only. We convert dates and factors, ensure weights are numeric, and compute three petal tissue economics metrics—relative water content (RWC), dry matter content (DMC), and water per unit dry mass. We also assign each population to a coastal vs inland location type. Two versions of the dataset are created: one that retains all populations and blocks (`petal_data_all`), and a second that excludes Pt. Conception Block 3 (`petal_data`) for analyses that require complete 4-day microclimate records. Finally, we extract the earliest collection date for each population × block combination to anchor the microclimate windows used later.
+
+```{r load-petal-data, echo=FALSE, message=FALSE, warning=FALSE}
+# Load petal data
+petal_raw <- read_csv("../data/raw/plant/petal_weight.csv")
+
+# Clean once, WITHOUT excluding Pt. Conception Block 3
+petal_data_all <- petal_raw %>%
+  # Remove problematic observation noted in data
+  filter(!(population == "Cojo" & plant == 1 & block == "1")) %>%
+  # Keep only primary petals
+  filter(petal_flower == "petal") %>%
+  # Convert types, compute traits, etc. (same as before)
+  mutate(
+    date       = mdy(date),
+    block      = as.factor(block),
+    population = as.factor(population),
+    wet_wgt    = as.numeric(wet_wgt),
+    dry_wgt    = as.numeric(dry_wgt),
+    relative_water_content = ((wet_wgt - dry_wgt) / wet_wgt) * 100,
+    water_per_dry_mass     = (wet_wgt - dry_wgt) / dry_wgt,
+    dry_matter_content     = dry_wgt / wet_wgt,
+    location_type = case_when(
+      population %in% c("Percos", "Pt. Conception") ~ "Coastal",
+      population %in% c("Cojo", "Perry")            ~ "Inland",
+      TRUE                                          ~ NA_character_
+    )
+  ) %>%
+  filter(!is.na(wet_wgt), !is.na(dry_wgt), wet_wgt > 0, dry_wgt > 0)
+
+# 4-DAY MICROCLIMATE ANALYSES: drop Pt. Conception Block 3
+petal_data <- petal_data_all %>%
+  filter(!(population == "Pt. Conception" & block == "3"))
+
+# Collection dates for 4-day windows
+collection_dates <- petal_data %>%
+  group_by(population, block) %>%
+  summarise(collection_date = min(date), .groups = "drop")
+
+```
+
+## **2.2 Microclimate data and metrics functions**
+
+**load_rhtemp:** Reads a site-specific RH/temperature CSV file, automatically identifies the time, temperature, and humidity columns, and returns a tidy table with one row per observation and the columns: `site`, `datetime`, `temp` (°C), and `rh` (%). Timestamps are parsed to POSIXct and nonnumeric or missing values are removed.
+
+**load_par:** Reads a site-specific PAR CSV file, selects the first two columns as timestamp and PAR, strips commas from PAR values, converts them to numeric, and returns a tidy table with `site`, `datetime`, and `par` (µmol m⁻² s⁻¹). Invalid or missing records are dropped.
+
+**calculate_vpd:** Uses the Tetens equation to compute saturation vapor pressure and then vapor pressure deficit (VPD) from air temperature and relative humidity.\
+
+```{r load-microclimate-function, echo=FALSE, message=FALSE, warning=FALSE}
+#| label: load-microclimate-functions
+#| echo: false
+
+# RH/Temp (rh sensor) loader
+load_rhtemp <- function(site_name, file_path) {
+  data <- read_csv(file_path, show_col_types = FALSE)
+  
+  cols     <- names(data)
+  time_col <- cols[grepl("Time|time", cols)][1]
+  temp_col <- cols[grepl("Celsius|Temp|temp", cols, ignore.case = TRUE)][1]
+  rh_col   <- cols[grepl("Humidity|RH|rh", cols, ignore.case = TRUE)][1]
+  
+  data %>%
+    select(time = all_of(time_col),
+           temp = all_of(temp_col),
+           rh   = all_of(rh_col)) %>%
+    mutate(
+      datetime = mdy_hm(time),
+      site     = site_name,
+      temp     = as.numeric(temp),
+      rh       = as.numeric(rh)
+    ) %>%
+    filter(!is.na(datetime), !is.na(temp), !is.na(rh)) %>%
+    select(site, datetime, temp, rh)
+}
+
+# PAR loader
+load_par <- function(site_name, file_path) {
+  data <- read_csv(file_path, show_col_types = FALSE)
+  
+  data %>%
+    select(date = 1, par = 2) %>%
+    mutate(
+      datetime = mdy_hms(date),
+      site     = site_name,
+      par      = as.numeric(gsub(",", "", par))
+    ) %>%
+    filter(!is.na(datetime), !is.na(par)) %>%
+    select(site, datetime, par)
+}
+
+# VPD calculator
+calculate_vpd <- function(temp, rh) {
+  vp_sat    <- 0.611 * exp((17.27 * temp) / (temp + 237.3))  # kPa
+  vp_actual <- vp_sat * (rh / 100)
+  vp_sat - vp_actual
+}
+```
+
+This chunk loads all site-level microclimate data, applies quality control, and restricts the time series to a common monitoring window used throughout the analysis. RH/temperature data for Cojo, Perry, Percos, and Pt. Conception are read, an obviously erroneous Pt. Conception record is removed, and each record is annotated with calendar date, hour of day, and calculated VPD. PAR data from all four Apogee sensors are also read and cleaned: negative PAR values are reset to 0 at all sites, and unrealistically high values (\> 3000 µmol m⁻² s⁻¹) at Cojo are discarded.
+
+The code then determines, for each site, the first date on which both RH/temperature and PAR data are available, and defines a **global start date** as the latest of these four site-specific start dates. Both `rhtemp_all` and `par_all` are truncated to this shared start date and to an end date of 1 October 2025, ensuring that subsequent summaries are based on a common, quality-screened monitoring period across all sites.
+
+```{r load-all-microclimate, echo=FALSE, message=FALSE, warning=FALSE}
+#| label: load-all-microclimate
+#| echo: false
+# =============================================================================
+# DATA QUALITY NOTES - READ BEFORE ANALYSIS
+# =============================================================================
+# 1. Pt. Conception RH/Temp sensor failed before Block 3 (June 25-July 5)
+#    - Have PAR data but NO temp/RH for this critical period
+#    - **ACTION NEEDED**: Get backup sensor data and replace Pt_Con_rhtemp_2025.csv
+#    - Currently excluding Pt. Conception from Block 3 trait analysis
+#
+# 2. Percos RH/Temp started March 22 
+#    - Still have data for all three collection blocks
+#
+# 3. PAR sensor issues (common with field deployments):
+#    - Negative values (physically impossible) - filtering to 0
+#    - Cojo had extreme outliers >3000 µmol/m²/s - filtering out
+#    - Pt. Conception had many negative values - filtering to 0
+# =============================================================================
+
+# RH/Temp
+rhtemp_cojo   <- load_rhtemp("Cojo", "../data/raw/rh_temp/Cojo_rhtemp_2025.csv")
+rhtemp_perry  <- load_rhtemp("Perry", "../data/raw/rh_temp/Perry_rhtemp_2025.csv")
+rhtemp_percos <- load_rhtemp("Percos", "../data/raw/rh_temp/Percos_rhtemp_2025.csv")
+rhtemp_pt     <- load_rhtemp("Pt. Conception", "../data/raw/rh_temp/Pt_Con_rhtemp_2025.csv")
+
+# Remove clearly bad Pt. Conception point
+rhtemp_pt <- rhtemp_pt %>%
+  filter(!(datetime == ymd_hms("2025-07-08 17:23:00")))
+
+rhtemp_all <- bind_rows(rhtemp_cojo, rhtemp_perry, rhtemp_percos, rhtemp_pt) %>%
+  mutate(
+    date = as_date(datetime),
+    hour = hour(datetime),
+    vpd  = calculate_vpd(temp, rh)
+  )
+
+# PAR
+par_cojo   <- load_par("Cojo", "../data/raw/Apogee_PAR/Cojo_PAR_2025.csv")
+par_perry  <- load_par("Perry", "../data/raw/Apogee_PAR/Perry_PAR_2025.csv")
+par_percos <- load_par("Percos", "../data/raw/Apogee_PAR/Percos_PAR_2025.csv")
+par_pt     <- load_par("Pt. Conception", "../data/raw/Apogee_PAR/Pt_con_PAR_2025.csv")
+
+# QC PAR: negatives to 0; >3000 at Cojo to NA
+par_cojo   <- par_cojo  %>% mutate(par = ifelse(par < 0, 0, ifelse(par > 3000, NA, par)))
+par_perry  <- par_perry %>% mutate(par = ifelse(par < 0, 0, par))
+par_percos <- par_percos %>% mutate(par = ifelse(par < 0, 0, par))
+par_pt     <- par_pt    %>% mutate(par = ifelse(par < 0, 0, par))
+
+par_all <- bind_rows(par_cojo, par_perry, par_percos, par_pt) %>%
+  mutate(
+    date = as_date(datetime),
+    hour = hour(datetime)
+  )
+
+# ============================================================================
+# NEW: Set global start date = first day ALL FOUR SITES have BOTH RH/Temp + PAR
+# ============================================================================
+
+# First day each site has RH/Temp data
+first_rh_dates <- rhtemp_all %>%
+  group_by(site) %>%
+  summarise(first_date = min(date, na.rm = TRUE), .groups = "drop")
+
+# First day each site has PAR data
+first_par_dates <- par_all %>%
+  group_by(site) %>%
+  summarise(first_date = min(date, na.rm = TRUE), .groups = "drop")
+
+# For each site, take the later of its RH and PAR start dates
+first_all_dates <- first_rh_dates %>%
+  rename(first_rh = first_date) %>%
+  left_join(first_par_dates %>% rename(first_par = first_date),
+            by = "site") %>%
+  mutate(first_both = pmax(first_rh, first_par, na.rm = TRUE))
+
+# Global start date = first day when all sites have both types of data
+global_start_date <- max(first_all_dates$first_both, na.rm = TRUE)
+
+# Apply common date window to both datasets
+rhtemp_all <- rhtemp_all %>%
+  filter(date >= global_start_date,
+         date <= as_date("2025-10-01"))
+
+par_all <- par_all %>%
+  filter(date >= global_start_date,
+         date <= as_date("2025-10-01"))
+
+```
+
+This code isolates the subset of days for which all four sites have valid RH and temperature data and summarizes microclimate for that **common-date period**. It first identifies dates on which every site has non-missing temperature and RH, then filters the RH/temperature dataset to those dates (`rhtemp_all_common`). For these common dates, it computes daily metrics (maximum, minimum, and mean temperature and RH, mean and maximum VPD, fog hours, and temperature range) and derives two additional summaries: midday VPD (11:00–15:00) and nighttime RH (20:00–06:00).
+
+These components are merged into a single table (`daily_common`), which is then aggregated by site to produce `site_summary_common`, a site-level description of microclimate based exclusively on days when all sensors were operating simultaneously. This provides a baseline for climate comparisons that is free from biases due to unequal data coverage.
+
+```{r climate_common_periods, echo=FALSE, message=FALSE, warning=FALSE}
+
+#| label: climate-common-periods
+#| echo: false
+
+# ============================================================================
+# Restrict to dates when ALL FOUR SITES have temp & RH
+# ============================================================================
+
+all_sites_rh <- sort(unique(rhtemp_all$site))
+
+common_rhtemp_dates <- rhtemp_all %>%
+  group_by(date) %>%
+  summarise(
+    n_sites = n_distinct(site[!is.na(temp) & !is.na(rh)]),
+    .groups = "drop"
+  ) %>%
+  filter(n_sites == length(all_sites_rh)) %>%
+  pull(date)
+
+# RH/Temp subset on common dates
+rhtemp_all_common <- rhtemp_all %>%
+  filter(date %in% common_rhtemp_dates)
+
+# PAR subset on those same dates
+par_common <- par_all %>%
+  filter(date %in% common_rhtemp_dates)
+
+# --------------------------------------------------------------------------
+# Daily RH/Temp metrics on common dates (matches full-season structure)
+# --------------------------------------------------------------------------
+daily_metrics_common <- rhtemp_all_common %>%
+  group_by(site, date) %>%
+  summarise(
+    temp_max  = max(temp, na.rm = TRUE),
+    temp_min  = min(temp, na.rm = TRUE),
+    temp_mean = mean(temp, na.rm = TRUE),
+    rh_min    = min(rh,   na.rm = TRUE),
+    rh_max    = max(rh,   na.rm = TRUE),
+    rh_mean   = mean(rh,  na.rm = TRUE),
+    vpd_mean  = mean(vpd, na.rm = TRUE),
+    vpd_max   = max(vpd,  na.rm = TRUE),
+    fog_hours = sum(rh > 95, na.rm = TRUE) * 0.5,
+    .groups   = "drop"
+  ) %>%
+  mutate(
+    temp_range = temp_max - temp_min,
+    month      = month(date, label = TRUE)
+  )
+
+# Midday VPD (11–15 h)
+midday_vpd_common <- rhtemp_all_common %>%
+  filter(hour >= 11 & hour <= 15) %>%
+  group_by(site, date) %>%
+  summarise(vpd_midday = mean(vpd, na.rm = TRUE), .groups = "drop")
+
+# Nighttime RH (20–6 h)
+night_rh_common <- rhtemp_all_common %>%
+  filter(hour >= 20 | hour <= 6) %>%
+  group_by(site, date) %>%
+  summarise(rh_night = mean(rh, na.rm = TRUE), .groups = "drop")
+
+# PAR metrics on common dates (matches full-season structure)
+daily_par_common <- par_common %>%
+  group_by(site, date) %>%
+  summarise(
+    par_max          = max(par, na.rm = TRUE),
+    par_mean         = mean(par, na.rm = TRUE),
+    par_integrated   = sum(par, na.rm = TRUE) * (5/60) * (1/1e6),
+    high_light_hours = sum(par > 1000, na.rm = TRUE) * (5/60),
+    .groups          = "drop"
+  ) %>%
+  mutate(month = month(date, label = TRUE))
+
+# Combine – daily_common has the same climate variables as daily_full
+daily_common <- daily_metrics_common %>%
+  left_join(midday_vpd_common, by = c("site", "date")) %>%
+  left_join(night_rh_common,   by = c("site", "date")) %>%
+  left_join(daily_par_common %>% select(-month), by = c("site", "date"))
+
+# Site-level summary over common period – same columns as full-season site_summary
+site_summary_common <- daily_common %>%
+  group_by(site) %>%
+  summarise(
+    n_days                = n(),
+    temp_max_mean         = mean(temp_max,     na.rm = TRUE),
+    temp_max_sd           = sd(temp_max,       na.rm = TRUE),
+    temp_min_mean         = mean(temp_min,     na.rm = TRUE),
+    temp_min_sd           = sd(temp_min,       na.rm = TRUE),
+    temp_range_mean       = mean(temp_range,   na.rm = TRUE),
+    temp_range_sd         = sd(temp_range,     na.rm = TRUE),
+    temp_variability      = sd(temp_mean,      na.rm = TRUE),
+    rh_min_mean           = mean(rh_min,       na.rm = TRUE),
+    rh_min_sd             = sd(rh_min,         na.rm = TRUE),
+    rh_mean               = mean(rh_mean,      na.rm = TRUE),
+    rh_night_mean         = mean(rh_night,     na.rm = TRUE),
+    vpd_mean              = mean(vpd_mean,     na.rm = TRUE),
+    vpd_max_mean          = mean(vpd_max,      na.rm = TRUE),
+    vpd_midday_mean       = mean(vpd_midday,   na.rm = TRUE),
+    vpd_midday_sd         = sd(vpd_midday,     na.rm = TRUE),
+    fog_hours_total       = sum(fog_hours,     na.rm = TRUE),
+    fog_days              = sum(fog_hours > 0, na.rm = TRUE),
+    par_integrated_mean   = mean(par_integrated,   na.rm = TRUE),
+    par_integrated_sd     = sd(par_integrated,     na.rm = TRUE),
+    par_max_mean          = mean(par_max,          na.rm = TRUE),
+    high_light_hours_mean = mean(high_light_hours, na.rm = TRUE),
+    .groups               = "drop"
+  )
+
+```
+
+This function calculates site-level microclimate summaries for an specified date range, given RH/temperature and PAR data. For the specified `start_date`–`end_date` window, it:
+
+-   Subsets RH/temperature and PAR records to the requested period.
+
+-   Computes daily temperature and humidity metrics (daily maxima, minima, and means of temperature and RH, mean and maximum VPD).
+
+-   Derives daily midday VPD (11:00–15:00), nighttime RH (20:00–06:00), and fog hours (time with RH \> 95%).
+
+-   Summarizes PAR into daily maxima, means, integrated daily PAR (mol m⁻² d⁻¹, using the 5-min logging interval), and hours above a high-light threshold (PAR \> 1000 µmol m⁻² s⁻¹).
+
+All daily metrics are then averaged (or summed, in the case of fog hours) across the date range to produce `period_means`, a compact table of climate descriptors for each site over that period, including the number of days contributing to the summary. This function underpins both the full-season and 4-day developmental-window microclimate analyses.
+
+## 
+
+```{r subset-microclimate-metrics, echo=FALSE, message=FALSE, warning=FALSE}
+
+#| label: calc-microclimate-metrics
+#| echo: false
+
+calc_microclimate_metrics <- function(rhtemp_data, par_data, start_date, end_date) {
+  
+  rh_subset  <- rhtemp_data %>% filter(date >= start_date & date <= end_date)
+  par_subset <- par_data    %>% filter(date >= start_date & date <= end_date)
+  
+  # Daily RH/Temp
+  daily_metrics <- rh_subset %>%
+    group_by(site, date) %>%
+    summarise(
+      temp_max  = max(temp, na.rm = TRUE),
+      temp_min  = min(temp, na.rm = TRUE),
+      temp_mean = mean(temp, na.rm = TRUE),
+      rh_min    = min(rh,   na.rm = TRUE),
+      rh_max    = max(rh,   na.rm = TRUE),
+      vpd_mean  = mean(vpd, na.rm = TRUE),
+      vpd_max   = max(vpd,  na.rm = TRUE),
+      .groups   = "drop"
+    ) %>%
+    mutate(
+      temp_range = temp_max - temp_min    # ← ADD THIS
+    )
+  
+  # Midday VPD (11–15 h)
+  midday_vpd <- rh_subset %>%
+    filter(hour >= 11 & hour <= 15) %>%
+    group_by(site, date) %>%
+    summarise(vpd_midday = mean(vpd, na.rm = TRUE), .groups = "drop")
+  
+  # Nighttime RH (20–6 h)
+  night_rh <- rh_subset %>%
+    filter(hour >= 20 | hour <= 6) %>%
+    group_by(site, date) %>%
+    summarise(rh_night = mean(rh, na.rm = TRUE), .groups = "drop")
+  
+  # Fog hours (RH > 95%)
+  fog_hours <- rh_subset %>%
+    group_by(site, date) %>%
+    summarise(fog_hours = sum(rh > 95, na.rm = TRUE) * 0.5, .groups = "drop")
+  
+  # PAR
+  daily_par <- par_subset %>%
+    group_by(site, date) %>%
+    summarise(
+      par_max          = max(par, na.rm = TRUE),
+      par_mean         = mean(par, na.rm = TRUE),
+      par_integrated   = sum(par, na.rm = TRUE) * (5/60) * (1/1e6),   # mol/m2/day
+      high_light_hours = sum(par > 1000, na.rm = TRUE) * (5/60),
+      .groups          = "drop"
+    )
+  
+  daily_combined <- daily_metrics %>%
+    left_join(midday_vpd, by = c("site", "date")) %>%
+    left_join(night_rh,   by = c("site", "date")) %>%
+    left_join(fog_hours,  by = c("site", "date")) %>%
+    left_join(daily_par,  by = c("site", "date"))
+  
+  period_means <- daily_combined %>%
+    group_by(site) %>%
+    summarise(
+      n_days               = n(),
+      temp_max_mean         = mean(temp_max,     na.rm = TRUE),
+      temp_max_sd           = sd(temp_max,       na.rm = TRUE),
+      temp_min_mean         = mean(temp_min,     na.rm = TRUE),
+      temp_min_sd           = sd(temp_min,       na.rm = TRUE),
+      temp_range_mean       = mean(temp_range,   na.rm = TRUE),
+      temp_range_sd         = sd(temp_range,     na.rm = TRUE),
+      temp_variability      = sd(temp_mean,      na.rm = TRUE),
+      rh_min_mean          = mean(rh_min,        na.rm = TRUE),
+      rh_min_sd            = sd(rh_min,          na.rm = TRUE),
+      rh_night_mean        = mean(rh_night,      na.rm = TRUE),
+      vpd_mean             = mean(vpd_mean,      na.rm = TRUE),
+      vpd_max_mean         = mean(vpd_max,       na.rm = TRUE),
+      vpd_midday_mean      = mean(vpd_midday,    na.rm = TRUE),
+      vpd_midday_sd        = sd(vpd_midday,      na.rm = TRUE),
+      fog_hours_total      = sum(fog_hours,      na.rm = TRUE),
+      fog_days             = sum(fog_hours > 0,  na.rm = TRUE),
+      par_integrated_mean  = mean(par_integrated,   na.rm = TRUE),
+      par_integrated_sd    = sd(par_integrated,     na.rm = TRUE),
+      par_max_mean         = mean(par_max,          na.rm = TRUE),
+      high_light_hours_mean = mean(high_light_hours, na.rm = TRUE),
+      .groups              = "drop"
+    )
+  
+  period_means
+}
+
+```
+
+```{r fullseason-microclimate-metrics, echo=FALSE, message=FALSE, warning=FALSE}
+
+#| label: full-season-microclimate
+#| echo: false
+
+# Daily RH/Temp (full season)
+daily_metrics_full <- rhtemp_all %>%
+  group_by(site, date) %>%
+  summarise(
+    temp_max  = max(temp, na.rm = TRUE),
+    temp_min  = min(temp, na.rm = TRUE),
+    temp_mean = mean(temp, na.rm = TRUE),
+    rh_min    = min(rh,   na.rm = TRUE),
+    rh_max    = max(rh,   na.rm = TRUE),
+    rh_mean   = mean(rh,  na.rm = TRUE),
+    vpd_mean  = mean(vpd, na.rm = TRUE),
+    vpd_max   = max(vpd,  na.rm = TRUE),
+    fog_hours = sum(rh > 95, na.rm = TRUE) * 0.5,
+    .groups   = "drop"
+  ) %>%
+  mutate(
+    temp_range = temp_max - temp_min,
+    month      = month(date, label = TRUE)
+  )
+
+# Midday VPD (11–15 h)
+midday_vpd_full <- rhtemp_all %>%
+  filter(hour >= 11 & hour <= 15) %>%
+  group_by(site, date) %>%
+  summarise(vpd_midday = mean(vpd, na.rm = TRUE), .groups = "drop")
+
+# Nighttime RH (20–6 h)
+night_rh_full <- rhtemp_all %>%
+  filter(hour >= 20 | hour <= 6) %>%
+  group_by(site, date) %>%
+  summarise(rh_night = mean(rh, na.rm = TRUE), .groups = "drop")
+
+# PAR (full season)
+daily_par_full <- par_all %>%
+  group_by(site, date) %>%
+  summarise(
+    par_max          = max(par, na.rm = TRUE),
+    par_mean         = mean(par, na.rm = TRUE),
+    par_integrated   = sum(par, na.rm = TRUE) * (5/60) * (1/1e6),
+    high_light_hours = sum(par > 1000, na.rm = TRUE) * (5/60),
+    .groups          = "drop"
+  ) %>%
+  mutate(month = month(date, label = TRUE))
+
+# Combine – daily_full’s columns match daily_common
+daily_full <- daily_metrics_full %>%
+  left_join(midday_vpd_full, by = c("site", "date")) %>%
+  left_join(night_rh_full,   by = c("site", "date")) %>%
+  left_join(daily_par_full %>% select(-month), by = c("site", "date"))
+
+# Site-level summary – column set identical to site_summary_common
+site_summary <- daily_full %>%
+  group_by(site) %>%
+  summarise(
+    n_days                = n(),
+    temp_max_mean         = mean(temp_max,     na.rm = TRUE),
+    temp_max_sd           = sd(temp_max,       na.rm = TRUE),
+    temp_min_mean         = mean(temp_min,     na.rm = TRUE),
+    temp_min_sd           = sd(temp_min,       na.rm = TRUE),
+    temp_range_mean       = mean(temp_range,   na.rm = TRUE),
+    temp_range_sd         = sd(temp_range,     na.rm = TRUE),
+    temp_variability      = sd(temp_mean,      na.rm = TRUE),
+    rh_min_mean           = mean(rh_min,       na.rm = TRUE),
+    rh_min_sd             = sd(rh_min,         na.rm = TRUE),
+    rh_mean               = mean(rh_mean,      na.rm = TRUE),
+    rh_night_mean         = mean(rh_night,     na.rm = TRUE),
+    vpd_mean              = mean(vpd_mean,     na.rm = TRUE),
+    vpd_max_mean          = mean(vpd_max,      na.rm = TRUE),
+    vpd_midday_mean       = mean(vpd_midday,   na.rm = TRUE),
+    vpd_midday_sd         = sd(vpd_midday,     na.rm = TRUE),
+    fog_hours_total       = sum(fog_hours,     na.rm = TRUE),
+    fog_days              = sum(fog_hours > 0, na.rm = TRUE),
+    par_integrated_mean   = mean(par_integrated,   na.rm = TRUE),
+    par_integrated_sd     = sd(par_integrated,     na.rm = TRUE),
+    par_max_mean          = mean(par_max,          na.rm = TRUE),
+    high_light_hours_mean = mean(high_light_hours, na.rm = TRUE),
+    .groups               = "drop"
+  )
+
+```
+
+## Full season climate analysis
+
+```{r create_microclimate_summary_table, echo=FALSE}
+#| label: tbl-site-microclimate-full
+#| tbl-cap: "Full-season microclimate characteristics by site (March–October 2025). Values are means ± SD."
+#| echo: false
+
+site_summary_table <- site_summary %>%
+  mutate(
+    temp_max      = paste0(round(temp_max_mean, 1), " ± ", round(temp_max_sd, 1)),
+    temp_min      = paste0(round(temp_min_mean, 1), " ± ", round(temp_min_sd, 1)),
+    vpd_midday    = paste0(round(vpd_midday_mean, 2), " ± ", round(vpd_midday_sd, 2)),
+    rh_min        = paste0(round(rh_min_mean, 1), " ± ", round(rh_min_sd, 1)),
+    par_integrated = paste0(round(par_integrated_mean, 3), " ± ", round(par_integrated_sd, 3))
+  ) %>%
+  select(site, n_days, temp_max, temp_min, vpd_midday, rh_min,
+         fog_hours_total, par_integrated )
+
+kable(site_summary_table,
+      caption = "Full-season microclimate characteristics by site (March–October 2025). Values are means ± SD.)",
+      col.names = c("Site", "Days", "Max Temp (°C)", "Min Temp (°C)",
+                    "Midday VPD (kPa)", "Min RH (%)", "Fog Hours",
+                    "Daily PAR (mol/m²/d)")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+```{r climate_pca}
+#| label: climate-full-pca-run
+#| echo: false
+
+# PCA of daily microclimate (full season)
+pca_data_full <- daily_full %>%
+  filter(complete.cases(
+    temp_max,
+    temp_min,
+    temp_range,
+    vpd_midday,
+    rh_min,
+    rh_night,
+    fog_hours,
+    par_integrated
+  )) %>%
+  select(
+    site,
+    date,
+    temp_max,
+    temp_min,
+    temp_range,
+    vpd_midday,
+    rh_min,
+    rh_night,
+    fog_hours,
+    par_integrated
+  )
+
+pca_result_full <- prcomp(
+  pca_data_full %>% select(-site, -date),
+  scale. = TRUE,
+  center = TRUE
+)
+
+# Scores
+pca_scores_full <- as.data.frame(pca_result_full$x) %>%
+  bind_cols(pca_data_full %>% select(site, date, fog_hours))
+
+# Variance explained
+var_exp_full <- summary(pca_result_full)$importance[2, ] * 100
+
+# Loadings
+pca_loadings_full <- data.frame(
+  Variable = rownames(pca_result_full$rotation),
+  PC1      = pca_result_full$rotation[, 1],
+  PC2      = pca_result_full$rotation[, 2]
+)
+
+```
+
+```{r PCA_plot}
+#| label: fig-climate-full-pca
+#| fig-width: 10
+#| fig-height: 7
+#| fig-cap: "Principal components analysis of full-season daily microclimate data. Each point is a 
+#| day; ellipses show 68% site-level confidence regions."
+#| echo: false
+
+ggplot(
+  pca_scores_full,
+  aes(x = PC1, y = PC2, color = site, shape = site)
+) +
+  geom_point(aes(size = fog_hours), alpha = 0.5) +
+  stat_ellipse(
+    aes(group = site),
+    type  = "norm",
+    level = 0.68,
+    linewidth = 1
+  ) +
+  scale_size_continuous(range = c(0.5, 4), name = "Fog hours") +
+  labs(
+    x = paste0("PC1 (", round(var_exp_full[1], 1), "%)"),
+    y = paste0("PC2 (", round(var_exp_full[2], 1), "%)"),
+    title    = "Full-season microclimate differentiation",
+    subtitle = "Daily observations March–October; ellipses = 68% site envelopes",
+    color    = "Site",
+    shape    = "Site"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+```
+
+```{r climate_pca_loadings}
+#| label: tbl-climate-full-loadings
+#| tbl-cap: "PCA loadings for full-season daily microclimate. Higher absolute values indicate 
+#| stronger contributions to site differentiation."
+#| echo: false
+
+kable(
+  pca_loadings_full,
+  digits    = 3,
+  caption = "Full Season Climate Variables",
+  col.names = c("Variable", "PC1 loading", "PC2 loading")
+) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+```
+
+## Key microclimate findings
+
+**Strong multivariate separation among sites.**
+
+The full-season PCA reveals that **inland sites (Cojo and Perry) consistently occupy the hot, high-VPD, high-light region of climate space,** whereas the **coastal dune (Pt. Conception) and coastal shale (Percos) sites reside in the cool, humid, fog-associated** portion of the gradient. This pattern is even more pronounced when looking at the common-date PCA , which removes early-season data gaps and thus emphasizes the period when all sensors were functioning simultaneously. Although high-light becomes less of a factor which may reflect that the common date data set ends in early summer. The consistency of the separation across both analyses confirms that strong microclimate divergence persists even at microgeographic scales, and that this divergence occurs on axes directly relevant to petal water balance (temperature, RH, VPD, nighttime RH).
+
+PC1 captured the dominant gradient in the daily microclimate data and contrasted **hot, dry, high-VPD, high-light days** (strong negative loadings on midday VPD, maximum temperature, temperature range, and PAR) with **cool, humid, fog-influenced days** (strong positive loadings on minimum and nighttime RH). Thus, **low PC1 scores correspond to inland shale conditions**, whereas **high PC1 scores characterize the cool, moist marine environment at Pt. Conception**, with Percos intermediate between coastal and inland sites.
+
+PC2 represented a secondary gradient associated with **thermal regime and light exposure**. It loaded strongly and negatively on minimum temperature but positively on PAR and temperature range, separating **thermally buffered, fog-rich days with cool nights** (low PC2) from **high-light days with large diurnal temperature ranges** (high PC2). Inland sites tended to occupy the high-PC2 space, whereas the coastal dune site clustered at low PC2, again reflecting strong marine moderation.
+
+Overall, the PCA shows pronounced multivariate climate differentiation among populations across the flowering season, driven primarily by **heat and atmospheric demand (PC1)** and secondarily by **light availability and diurnal temperature structure (PC2)**.
+
+## Common period analysis
+
+```{r}
+#| label: tbl-site-microclimate-common
+#| tbl-cap: "Microclimate characteristics by site restricted to dates when all four sites have RH and temperature data. Values are means ± SD."
+#| echo: false
+
+site_summary_common_table <- site_summary_common %>%
+  mutate(
+    temp_max       = paste0(round(temp_max_mean,   1), " ± ", round(temp_max_sd,   1)),
+    temp_min       = paste0(round(temp_min_mean,   1), " ± ", round(temp_min_sd,   1)),
+    temp_range     = paste0(round(temp_range_mean, 1), " ± ", 0),  # no SD stored; drop if not needed
+    rh_min         = paste0(round(rh_min_mean,     1), " ± ", round(rh_min_sd,     1)),
+    rh_night       = paste0(round(rh_night_mean,   1), " ± ", 0),
+    vpd_mean_fmt   = paste0(round(vpd_mean,        2), " ± ", 0),
+    vpd_midday_fmt = paste0(round(vpd_midday_mean, 2), " ± ", round(vpd_midday_sd, 2)),
+    par_integrated = paste0(round(par_integrated_mean, 3), " ± ",
+                            round(par_integrated_sd,   3))
+  ) %>%
+  select(
+    site,
+    n_days,
+    temp_max,
+    temp_min,
+    vpd_midday_fmt,
+    rh_min,
+    fog_hours_total,
+    par_integrated
+  )
+
+kable(
+  site_summary_common_table,
+  caption = "Truncated-season microclimate characteristics by site (common RH/Temp dates). Values are means ± SD.",
+  col.names = c("Site", "Days",
+                "Max Temp (°C)", "Min Temp (°C)",
+                "Midday VPD (kPa)", "Min RH (%)",
+                "Fog Hours (total)",
+                "Daily PAR (mol/m²/d)")
+) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+```
+
+```{r climate_common_pca}
+#| label: climate-common-pca-run
+#| echo: false
+
+# PCA of daily microclimate restricted to common RH/temp (and PAR) dates
+
+pca_data_common <- daily_common %>%
+  filter(complete.cases(
+    temp_max,
+    temp_min,
+    temp_range,
+    vpd_midday,
+    rh_min,
+    rh_night,
+    fog_hours,
+    par_integrated
+  )) %>%
+  select(
+    site,
+    date,
+    temp_max,
+    temp_min,
+    temp_range,
+    vpd_midday,
+    rh_min,
+    rh_night,
+    fog_hours,
+    par_integrated
+  )
+
+pca_result_common <- prcomp(
+  pca_data_common %>% select(-site, -date),
+  scale. = TRUE,
+  center = TRUE
+)
+
+# Scores with site/date for plotting
+pca_scores_common <- as.data.frame(pca_result_common$x) %>%
+  bind_cols(pca_data_common %>% select(site, date, fog_hours))
+
+# Variance explained
+var_exp_common <- summary(pca_result_common)$importance[2, ] * 100
+
+# Loadings
+pca_loadings_common <- data.frame(
+  Variable = rownames(pca_result_common$rotation),
+  PC1      = pca_result_common$rotation[, 1],
+  PC2      = pca_result_common$rotation[, 2]
+)
+
+```
+
+##PCA plot (common period only)
+
+```{r pca_plot_common}
+#| label: fig-climate-common-pca
+#| fig-width: 10
+#| fig-height: 7
+#| fig-cap: "Principal components analysis of daily microclimate restricted to dates when all four 
+#| sites have RH and temperature data. Each point is a day; ellipses show 68% site-level confidence
+#| regions."
+#| echo: false
+
+ggplot(
+pca_scores_common,
+aes(x = PC1, y = PC2, color = site, shape = site, size = fog_hours)
+) +
+geom_point(alpha = 0.6) +
+stat_ellipse(aes(group = site),
+type  = "norm",
+level = 0.68,
+linewidth = 1) +
+scale_size_continuous(range = c(0.5, 4), name = "Fog hours") +
+labs(
+x = paste0("PC1 (", round(var_exp_common[1], 1), "%)"),
+y = paste0("PC2 (", round(var_exp_common[2], 1), "%)"),
+title    = "Microclimate differentiation on common RH/Temp dates",
+subtitle = "Daily observations restricted to dates when all four sites have RH and temperature
+data",
+color    = "Site",
+shape    = "Site"
+) +
+theme_minimal() +
+theme(legend.position = "right")
+
+```
+
+##PCA loadings (common period only)
+
+```{r climate_common_pca_loadings}
+#| label: tbl-climate-common-loadings
+#| tbl-cap: "PCA loadings for daily microclimate restricted to dates when all four sites have RH 
+#| and temperature data. Higher absolute values indicate stronger contributions to site 
+#| differentiation."
+#| echo: false
+
+kable(
+pca_loadings_common,
+digits    = 3,
+caption = "Truncated Season Climate Variables",
+col.names = c("Variable", "PC1 loading", "PC2 loading")
+) %>%
+kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+```
+
+PC1 captured the dominant gradient in the daily microclimate data and contrasted **hot, dry, high-VPD days** (strong negative loadings on midday VPD and maximum temperature, with additional negative contributions from temperature range and integrated PAR) with **cool, humid days** (strong positive loadings on minimum RH and nighttime RH, with a smaller positive loading of fog hours). Thus, **low PC1 scores correspond to inland shale conditions** characterized by high atmospheric demand and higher light, whereas **high PC1 scores characterize the cool, moist marine environment at Pt. Conception**, with Percos intermediate between coastal and inland sites.
+
+PC2 represented a secondary gradient associated mainly with **thermal regime and diurnal temperature structure**, rather than light per se. It loaded strongly and positively on minimum temperature and negatively on temperature range, nighttime RH, and fog hours, separating **thermally buffered days with relatively warm nights and muted diurnal variation** (high PC2) from **days with larger diurnal temperature ranges, cooler nights, and more frequent fog** (low PC2). PAR contributed only weakly to this axis, indicating that PC2 is primarily a temperature–fog gradient rather than a light gradient.
+
+Overall, the PCA shows pronounced multivariate climate differentiation among populations even when restricted to the common RH/temperature period, driven primarily by **heat and atmospheric moisture demand (PC1)** and secondarily by **nighttime thermal buffering and fog occurrence (PC2)**. This confirms that the coastal–inland contrast in microclimate is robust to temporal subsampling and remains aligned with variables directly relevant to petal water balance.
+
+Both the full-season and common-date results support the ecological interpretation that the coastal–inland contrast is not an artifact of uneven data coverage. The common-date analysis highlights tighter clustering and slightly different site distances in ordination space.
+
+## Procrustes comparison of full season vs common period climate PCAs
+
+```{r procrustes_comparison}
+#| label: climate-procrustes
+#| echo: false
+
+# Join full-season and common-period PCA scores by site + date
+
+climate_pca_join <- pca_scores_full %>%
+select(site, date, PC1_full = PC1, PC2_full = PC2) %>%
+inner_join(
+pca_scores_common %>%
+select(site, date, PC1_comm = PC1, PC2_comm = PC2),
+by = c("site", "date")
+)
+
+# Matrices of scores
+
+X_full  <- as.matrix(climate_pca_join[, c("PC1_full",  "PC2_full")])
+X_comm  <- as.matrix(climate_pca_join[, c("PC1_comm",  "PC2_comm")])
+
+# Procrustes rotation and protest test
+
+proc_climate   <- vegan::procrustes(X_full, X_comm, symmetric = TRUE)
+proc_test      <- vegan::protest(X_full, X_comm, permutations = 999)
+
+proc_climate
+proc_test
+
+```
+
+#### Results – Climate ordination robustness
+
+To evaluate whether microclimate differentiation among sites was influenced by unequal temporal coverage, we compared the full-season PCA to a second PCA restricted to the subset of days when all four sites had RH and temperature data. A Procrustes analysis showed very strong concordance between the full-season and common-period climate PCAs (r = 0.90, P = 0.001), indicating that the multivariate climatic structure separating coastal and inland sites is robust to differences in data coverage Thus, the climatic structure separating inland and coastal populations is robust to differences in data availability and is not driven by early- or late-season gaps. The same multivariate gradient—hot, high-VPD inland conditions versus cool, humid coastal conditions—emerges regardless of the temporal window considered.
+
+## 4-day microclimate windows for petal collections (can be modified)
+
+```{r calculate-4day-microclimate, echo=FALSE, message=FALSE, warning=FALSE}
+#| label: microclimate-4day
+#| echo: false
+
+# NOTE: collection_dates is based on petal_data,
+# which excludes Pt. Conception Block 3 (no RH/temp for that window).
+# Thus, all 4-day microclimate summaries and models omit that site-block combination.
+
+
+window_days <- 4. #set the number of days here
+
+microclimate_by_period <- collection_dates %>%
+  rowwise() %>%
+  mutate(
+    start_date = collection_date - days(window_days),
+    end_date   = collection_date - days(1)
+  ) %>%
+  mutate(
+    microclimate = list(calc_microclimate_metrics(
+      rhtemp_all %>% filter(site == population),
+      par_all    %>% filter(site == population),
+      start_date,
+      end_date
+    ))
+  ) %>%
+  unnest(microclimate) %>%
+  select(-site)    # population already present
+```
+
+Microclimate around petal sampling (4-day window)
+
+```{r microclimate_summary_4day}
+#| label: microclimate-summary
+#| echo: false
+
+microclimate_summary <- microclimate_by_period %>%
+  group_by(population) %>%
+  summarise(
+    n_periods     = n(),
+    temp_max      = round(mean(temp_max_mean,   na.rm = TRUE), 1),
+    temp_min      = round(mean(temp_min_mean,   na.rm = TRUE), 1),
+    vpd_mean      = round(mean(vpd_mean,        na.rm = TRUE), 2),
+    vpd_midday    = round(mean(vpd_midday_mean, na.rm = TRUE), 2),
+    fog_hours     = round(mean(fog_hours_total, na.rm = TRUE), 1),
+    par_integrated = round(mean(par_integrated_mean, na.rm = TRUE), 4),
+    .groups = "drop"
+  )
+
+kable(microclimate_summary,
+      col.names = c("Population", "n", "Max Temp (°C)", "Min Temp (°C)",
+                    "Mean VPD (kPa)", "Midday VPD (kPa)", "Fog Hours",
+                    "Daily PAR (mol/m²/d)")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+## Merge petal traits with microclimate (4-day window)
+
+```{r merge_traits}
+#| label: merge-petal-microclimate
+#| echo: false
+
+petal_microclimate <- petal_data %>%
+  left_join(
+    microclimate_by_period %>% select(population, block,
+                                      temp_max_mean, temp_min_mean,
+                                      temp_range_mean, temp_variability,
+                                      rh_min_mean, rh_night_mean,
+                                      vpd_mean, vpd_max_mean, vpd_midday_mean,
+                                      fog_hours_total, par_integrated_mean,
+                                      par_max_mean, high_light_hours_mean),
+    by = c("population", "block")
+  )
+```
+
+## Petal trait variation
+
+```{r petal_trait_variation}
+#| label: petal-summary
+#| echo: false
+
+petal_summary <- petal_data %>%
+  group_by(population, block) %>%
+  summarise(
+    n              = n(),
+    fresh_wgt_mean = round(mean(wet_wgt,               na.rm = TRUE), 4),
+    dry_wgt_mean   = round(mean(dry_wgt,               na.rm = TRUE), 4),
+    rwc_mean       = round(mean(relative_water_content, na.rm = TRUE), 1),
+    dmc_mean       = round(mean(dry_matter_content,     na.rm = TRUE), 3),
+    .groups = "drop"
+  )
+
+
+kable(petal_summary,
+      col.names = c("Population", "Block", "n", "Fresh Wgt (g)",
+                    "Dry Wgt (g)", "RWC (%)", "DMC")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+### Petal trait PCA
+
+```{r petal_pca}
+#| label: petal-trait-pca
+#| echo: false
+
+petal_pca_data <- petal_data %>%
+  select(population, block, wet_wgt, dry_wgt,
+         relative_water_content, dry_matter_content,
+         water_per_dry_mass) %>%
+  filter(complete.cases(.)) %>%
+  mutate(
+    log_fresh_wgt = log(wet_wgt),
+    log_dry_wgt   = log(dry_wgt)
+  )
+
+pca_traits <- prcomp(
+  petal_pca_data %>%
+    select(log_fresh_wgt, log_dry_wgt,
+           relative_water_content, dry_matter_content, water_per_dry_mass),
+  scale. = TRUE, center = TRUE
+)
+
+pca_trait_scores <- as.data.frame(pca_traits$x) %>%
+  bind_cols(petal_pca_data %>% select(population, block)) %>%
+  mutate(
+    location_type = case_when(
+      population %in% c("Percos", "Pt. Conception") ~ "Coastal",
+      population %in% c("Cojo", "Perry")            ~ "Inland",
+      TRUE                                          ~ NA_character_
+    )
+  )
+
+var_exp_traits <- summary(pca_traits)$importance[2,] * 100
+
+pca_trait_loadings <- data.frame(
+  Variable = c("Log Fresh Weight", "Log Dry Weight",
+               "Relative Water Content", "Dry Matter Content",
+               "Water per Dry Mass"),
+  PC1 = pca_traits$rotation[, 1],
+  PC2 = pca_traits$rotation[, 2],
+  PC3 = pca_traits$rotation[, 3]
+)
+```
+
+```{r plot-trait-pca}
+#| label: fig-trait-pca
+#| fig-width: 12
+#| fig-height: 5
+#| fig-cap: "PCA of petal traits showing physiological strategies. Left: individuals colored by population. Right: individuals colored by temporal block."
+#| echo: false
+
+p_pca1 <- ggplot(pca_trait_scores,
+                 aes(x = PC1, y = PC2, color = population, shape = block)) +
+  geom_point(size = 3, alpha = 0.7) +
+  stat_ellipse(aes(group = population), type = "norm",
+               level = 0.68, linewidth = 1) +
+  labs(x = paste0("PC1 (", round(var_exp_traits[1], 1), "%)"),
+       y = paste0("PC2 (", round(var_exp_traits[2], 1), "%)"),
+       title = "A. Trait PCA by Population",
+       color = "Population", shape = "Block") +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+p_pca2 <- ggplot(pca_trait_scores,
+                 aes(x = PC1, y = PC2, color = block, shape = population)) +
+  geom_point(size = 3, alpha = 0.7) +
+  stat_ellipse(aes(group = block), type = "norm",
+               level = 0.68, linewidth = 1) +
+  labs(x = paste0("PC1 (", round(var_exp_traits[1], 1), "%)"),
+       y = paste0("PC2 (", round(var_exp_traits[2], 1), "%)"),
+       title = "B. Trait PCA by Temporal Block",
+       color = "Block", shape = "Population") +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+grid.arrange(p_pca1, p_pca2, ncol = 2)
+```
+
+```{r petal_pca_loadings}
+#| label: tbl-trait-pca-loadings
+#| tbl-cap: "PCA loadings for petal traits. High absolute values indicate strong contribution to that PC."
+#| echo: false
+
+kable(pca_trait_loadings, digits = 3,
+      col.names = c("Trait Variable", "PC1", "PC2", "PC3")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+The petal trait PCA revealed a dominant axis (PC1) capturing **hydration state versus tissue density**, with strong positive loadings of relative water content and water per dry mass and an equally strong negative loading of dry matter content. High PC1 scores therefore indicate **water-rich petals with low dry-matter investment**, whereas low scores correspond to **drier, denser petals** with greater structural allocation. PC2 represented an independent **size/biomass axis**, driven by strong positive loadings of log(fresh weight) and log(dry weight); petals with high PC2 scores were simply larger overall. PC3 described finer variation in **water allocation relative to structural mass**, distinguishing petals with disproportionately high water per dry mass from those whose hydration more closely tracked dry-matter content.
+
+#### **Axes**
+
+-   **PC1 (56.3%)** = Hydration ↔ Tissue density
+
+    -   High PC1 = *hydrated, low-DMC petals*
+
+    -   Low PC1 = *dry, dense, high-DMC petals*
+
+    **PC2 (38.6%)** = Size (fresh + dry mass)
+
+Population differences in petal traits do not follow a simple inland–coastal contrast. Instead, the PCA reveals strong microhabitat effects: the coastal Percos population occupies the densest, lowest-hydration end of PC1, while inland Perry and Cojo populations cluster toward the hydrated end, producing petals with lower dry-matter content. Point Conception, the foggiest coastal site, spans a broad range but generally aligns with higher hydration. These patterns suggest that fine-scale environmental variation, rather than distance from the coast per se, governs petal water balance and tissue economics.
+
+Taken together, the PCA indicates that both microgeographic and seasonal variation in petal construction track a classic tissue-economics gradient: petals in cooler, more humid settings are hydrated and lightly built, whereas those exposed to warmer or drier conditions are denser and more water-efficient. This pattern highlights clear microclimate–trait relationships.
+
+### Correlations at the population–block level
+
+```{r trait-microclimate-correlations}
+#| label: trait-microclimate-correlations
+#| echo: false
+
+pop_means <- petal_microclimate %>%
+  group_by(population, block) %>%
+  summarise(
+    rwc       = mean(relative_water_content, na.rm = TRUE),
+    dmc       = mean(dry_matter_content,     na.rm = TRUE),
+    water_dry = mean(water_per_dry_mass,     na.rm = TRUE),
+    vpd_midday = mean(vpd_midday_mean,       na.rm = TRUE),
+    vpd_mean   = mean(vpd_mean,              na.rm = TRUE),
+    temp_max   = mean(temp_max_mean,         na.rm = TRUE),
+    temp_range = mean(temp_range_mean,       na.rm = TRUE),
+    fog_hours  = mean(fog_hours_total,       na.rm = TRUE),
+    par_int    = mean(par_integrated_mean,   na.rm = TRUE),
+    .groups = "drop"
+  )
+
+trait_vars  <- c("rwc", "dmc", "water_dry")
+climate_vars <- c("vpd_midday", "temp_max", "temp_range", "fog_hours", "par_int")
+
+cor_matrix <- cor(pop_means %>% select(all_of(c(trait_vars, climate_vars))),
+                  use = "complete.obs")
+
+trait_climate_cors <- cor_matrix[trait_vars, climate_vars]
+```
+
+```{r plot-trait-microclimate-corr}
+#| label: fig-trait-microclimate-corr
+#| fig-width: 8
+#| fig-height: 6
+#| fig-cap: "Correlation matrix between petal traits and microclimate variables. Values shown are Pearson correlation coefficients."
+#| echo: false
+
+corrplot(trait_climate_cors, method = "color",
+         type = "full",
+         addCoef.col = "black",
+         tl.col = "black", tl.srt = 45,
+         col = colorRampPalette(c("#A23B72", "white", "#2E86AB"))(200),
+         title = "Trait–Microclimate Correlations",
+         mar = c(0,0,2,0))
+```
+
+Correlations between population–block mean traits and 4-day developmental microclimate metrics were broadly consistent with expectations for water-limited petals. Populations and blocks that developed under higher midday VPD and higher maximum temperatures tended to show lower RWC and higher DMC, indicating that petals produced in hotter, drier air were both less hydrated and more structurally concentrated. Conversely, cooler, foggier periods with lower VPD were associated with larger, more hydrated petals (higher fresh weight, higher RWC, lower DMC). PAR-related variables showed weaker and more variable correlations, suggesting that atmospheric water demand, rather than light per se, is the dominant short-term driver of petal water-balance traits in this system.
+
+## Dual Model
+
+Because temperature and relative humidity data were unavailable for Pt. Conception during Block 3, we adopted a dual-model strategy to evaluate how microclimate influences petal traits while avoiding biases introduced by missing data. First, we modeled trait variation using 4-day developmental microclimate windows, which capture the specific atmospheric conditions experienced by petals during their formation and display period. This analysis necessarily excluded Pt. Conception Block 3, as the relevant climate data were missing, but it provides the most direct physiological link between short-term microclimate and petal tissue economics. Second, to retain the full trait dataset—including Pt. Conception Block 3—we fit parallel models using site-level microclimate means calculated only from dates when all four sites had complete RH and temperature records. These “common-period” predictors represent persistent climatic differences among populations rather than the acute conditions surrounding anthesis. Together, these two modeling scales allowed us to separate the influence of short-term developmental microclimate, to which petals are most physiologically sensitive, from long-term site identity, which reflects broader environmental context. The consistency in directional effects across both approaches strengthens inference, while differences in effect magnitude illuminate the degree to which petal traits respond primarily to immediate microclimate rather than seasonal site averages.
+
+### Mixed models: petal traits vs microclimate (4-day window)
+
+```{r mixed-models-setup}
+#| label: mixed-models-setup
+#| echo: false
+
+model_data <- petal_microclimate %>%
+  filter(!is.na(wet_wgt), !is.na(dry_wgt),
+         !is.na(vpd_midday_mean), !is.na(temp_max_mean),
+         !is.na(par_integrated_mean)) %>%
+  mutate(
+    log_fresh_wgt = log(wet_wgt),
+    log_dry_wgt   = log(dry_wgt),
+    rwc_prop      = pmax(pmin(relative_water_content / 100, 0.999), 0.001),
+    dmc_adj       = pmax(pmin(dry_matter_content,         0.999), 0.001),
+    vpd_midday_z  = scale(vpd_midday_mean)[,1],
+    temp_max_z    = scale(temp_max_mean)[,1],
+    par_z         = scale(par_integrated_mean)[,1],
+    fog_z         = scale(fog_hours_total)[,1]
+  )
+```
+
+##Builds petal_common with common-period climate
+
+```{r model-common-climate-variables, echo=FALSE, message=FALSE, warning=FALSE}
+#| label: model-common-climate-variables
+#| echo: false
+
+# Attach common-period climate to each petal via population/site
+site_common_clim <- site_summary_common %>%
+  rename(
+    population      = site,
+    temp_max_comm   = temp_max_mean,
+    temp_min_comm   = temp_min_mean,
+    temp_range_comm = temp_range_mean,
+    rh_min_comm     = rh_min_mean,
+    rh_mean_comm    = rh_mean,
+    rh_night_comm   = rh_night_mean,
+    vpd_mean_comm   = vpd_mean,
+    vpd_midday_comm = vpd_midday_mean
+  )
+
+# IMPORTANT: use petal_data_all so Pt. Conception Block 3 is included
+petal_common <- petal_data_all %>%
+  left_join(site_common_clim, by = "population") %>%
+  mutate(
+    log_fresh_wgt = log(wet_wgt),
+    log_dry_wgt   = log(dry_wgt),
+    rwc_prop      = pmax(pmin(relative_water_content / 100, 0.999), 0.001),
+    dmc_adj       = pmax(pmin(dry_matter_content,         0.999), 0.001),
+    # scaled common-period climate predictors
+    vpd_midday_comm_z = scale(vpd_midday_comm)[,1],
+    temp_max_comm_z   = scale(temp_max_comm)[,1]
+  )
+
+# Mixed model for log fresh weight with common-period climate
+m_fw_comm <- lmer(
+  log_fresh_wgt ~ vpd_midday_comm_z + temp_max_comm_z + block +
+    (1 | population),
+  data = petal_common,
+  REML = FALSE
+)
+
+summary(m_fw_comm)
+
+```
+
+#### Fresh weight
+
+```{r model-fresh-weight}
+#| label: model-fresh-weight
+#| echo: false
+
+m_fw_null <- lmer(log_fresh_wgt ~ 1 + (1|population),
+                  data = model_data, REML = FALSE)
+
+m_fw_vpd  <- lmer(log_fresh_wgt ~ vpd_midday_z + (1|population),
+                  data = model_data, REML = FALSE)
+
+m_fw_temp <- lmer(log_fresh_wgt ~ temp_max_z + (1|population),
+                  data = model_data, REML = FALSE)
+
+m_fw_par  <- lmer(log_fresh_wgt ~ par_z + (1|population),
+                  data = model_data, REML = FALSE)
+
+m_fw_full <- lmer(log_fresh_wgt ~ vpd_midday_z + temp_max_z + par_z + fog_z +
+                    block + (1|population),
+                  data = model_data, REML = FALSE)
+
+aic_fw <- AIC(m_fw_null, m_fw_vpd, m_fw_temp, m_fw_par, m_fw_full) %>%
+  as.data.frame() %>%
+  mutate(model = rownames(.)) %>%
+  arrange(AIC) %>%
+  mutate(delta_AIC = AIC - min(AIC))
+```
+
+```{r model-fresh-weight-table}
+#| label: tbl-fresh-weight-models
+#| tbl-cap: "Model selection for log(fresh weight). Population treated as random intercept."
+#| echo: false
+
+kable(aic_fw[, c("model", "df", "AIC", "delta_AIC")],
+      digits = c(0,0,1,1),
+      col.names = c("Model", "df", "AIC", "ΔAIC")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+```{r best-fresh-weight-model}
+#| label: tbl-fresh-weight-best
+#| tbl-cap: "Best fresh-weight model (among those considered): fixed effects."
+#| echo: false
+
+best_fw <- get(aic_fw$model[1])
+coef_fw <- summary(best_fw)$coefficients
+coef_fw <- as.data.frame(coef_fw) %>%
+  tibble::rownames_to_column("term") %>%
+  mutate(term = ifelse(term == "(Intercept)", "Intercept", term))
+# Check the actual number of columns
+ncol(coef_fw)  # This will show you how many columns you have
+
+# Adjust kable accordingly - likely you have 5 columns total (term + 4 from coefficients)
+kable(coef_fw,
+      digits = c(0, 3, 3, 1, 2, 4),
+      col.names = c("Term", "Estimate", "Std. Error", "df", "t value", "P")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+#### Dry matter content (DMC)
+
+```{r model-dmc}
+#| label: model-dmc
+#| echo: false
+
+# Use logit-transformed DMC and fit with LM (simpler, tends to converge well)
+model_data_dmc <- model_data %>%
+  mutate(
+    dmc_logit = qlogis(dmc_adj)
+  )
+
+m_dmc_null <- lm(dmc_logit ~ 1, data = model_data_dmc)
+m_dmc_vpd  <- lm(dmc_logit ~ vpd_midday_z, data = model_data_dmc)
+m_dmc_temp <- lm(dmc_logit ~ temp_max_z,   data = model_data_dmc)
+m_dmc_full <- lm(dmc_logit ~ vpd_midday_z + temp_max_z + par_z + fog_z + block,
+                 data = model_data_dmc)
+
+aic_dmc <- AIC(m_dmc_null, m_dmc_vpd, m_dmc_temp, m_dmc_full) %>%
+  as.data.frame() %>%
+  mutate(model = rownames(.)) %>%
+  arrange(AIC) %>%
+  mutate(delta_AIC = AIC - min(AIC))
+```
+
+```{r model-dmc-table}
+#| label: tbl-dmc-models
+#| tbl-cap: "Model selection for logit-transformed DMC."
+#| echo: false
+
+kable(aic_dmc[, c("model", "df", "AIC", "delta_AIC")],
+      digits = c(0,0,1,1),
+      col.names = c("Model", "df", "AIC", "ΔAIC")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+```{r best-dmc-model}
+#| label: tbl-dmc-best
+#| tbl-cap: "Best DMC model (logit scale): fixed effects."
+#| echo: false
+
+best_dmc <- get(aic_dmc$model[1])
+
+coef_dmc <- summary(best_dmc)$coefficients
+coef_dmc <- as.data.frame(coef_dmc) %>%
+  tibble::rownames_to_column("term") %>%
+  mutate(term = ifelse(term == "(Intercept)", "Intercept", term))
+  
+kable(coef_dmc,
+      digits = c(0,3,3,2,4),
+      col.names = c("Term", "Estimate", "SE", "t", "P")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+#### Relative water content (RWC)
+
+```{r model-rwc}
+#| label: model-rwc
+#| echo: false
+
+model_data_rwc <- model_data %>%
+  mutate(
+    rwc_logit = qlogis(rwc_prop)
+  )
+
+m_rwc_null <- lm(rwc_logit ~ 1, data = model_data_rwc)
+m_rwc_vpd  <- lm(rwc_logit ~ vpd_midday_z, data = model_data_rwc)
+m_rwc_temp <- lm(rwc_logit ~ temp_max_z,   data = model_data_rwc)
+m_rwc_full <- lm(rwc_logit ~ vpd_midday_z + temp_max_z + par_z + fog_z + block,
+                 data = model_data_rwc)
+
+aic_rwc <- AIC(m_rwc_null, m_rwc_vpd, m_rwc_temp, m_rwc_full) %>%
+  as.data.frame() %>%
+  mutate(model = rownames(.)) %>%
+  arrange(AIC) %>%
+  mutate(delta_AIC = AIC - min(AIC))
+```
+
+```{r model-rwc-table}
+#| label: tbl-rwc-models
+#| tbl-cap: "Model selection for logit-transformed relative water content (RWC)."
+#| echo: false
+
+kable(aic_rwc[, c("model", "df", "AIC", "delta_AIC")],
+      digits = c(0,0,1,1),
+      col.names = c("Model", "df", "AIC", "ΔAIC")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+```{r best-rwc-model}
+#| label: tbl-rwc-best
+#| tbl-cap: "Best RWC model (logit scale): fixed effects."
+#| echo: false
+
+best_rwc <- get(aic_rwc$model[1])
+
+coef_rwc <- summary(best_rwc)$coefficients
+coef_rwc <- as.data.frame(coef_rwc) %>%
+  tibble::rownames_to_column("term") %>%
+  mutate(term = ifelse(term == "(Intercept)", "Intercept", term))
+
+kable(coef_rwc,
+      digits = c(0,3,3,2,4),
+      col.names = c("Term", "Estimate", "SE", "t", "P")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+------------------------------------------------------------------------
+
+Across all three response variables, models using 4-day developmental microclimate consistently showed that atmospheric water demand during petal development is a strong predictor of petal tissue economics. Increases in midday VPD over this short window were associated with lighter petals, elevated DMC, and reduced RWC, whereas cooler periods with lower VPD produced heavier, more hydrated petals with lower investment in dry matter. These relationships remained after accounting for population-level differences via random intercepts, indicating that petals respond plastically to short-term microclimatic conditions superimposed on longer-term site identity. The strong block effects in all models further underscore that as the season progresses and conditions become drier and warmer, petals shift toward a more conservative, water-efficient construction strategy.
+
+## Common period/site level trait-climate models
+
+```{r model-common-climate-models, echo=FALSE, message=FALSE, warning=FALSE}
+#| label: model-common-climate
+#| echo: false
+
+# Attach common-period climate to each petal via population/site
+site_common_clim <- site_summary_common %>%
+  rename(
+    population      = site,
+    temp_max_comm   = temp_max_mean,
+    temp_min_comm   = temp_min_mean,
+    temp_range_comm = temp_range_mean,
+    rh_min_comm     = rh_min_mean,
+    rh_mean_comm    = rh_mean,
+    rh_night_comm   = rh_night_mean,
+    vpd_mean_comm   = vpd_mean,
+    vpd_midday_comm = vpd_midday_mean
+  )
+
+# IMPORTANT: use petal_data_all so Pt. Conception Block 3 is included
+petal_common <- petal_data_all %>%
+  left_join(site_common_clim, by = "population") %>%
+  mutate(
+    log_fresh_wgt = log(wet_wgt),
+    log_dry_wgt   = log(dry_wgt),
+    rwc_prop      = pmax(pmin(relative_water_content / 100, 0.999), 0.001),
+    dmc_adj       = pmax(pmin(dry_matter_content,         0.999), 0.001),
+    # scaled common-period climate predictors
+    vpd_midday_comm_z = scale(vpd_midday_comm)[,1],
+    temp_max_comm_z   = scale(temp_max_comm)[,1]
+  )
+
+# Mixed model for log fresh weight with common-period climate
+m_fw_comm <- lmer(
+  log_fresh_wgt ~ vpd_midday_comm_z + temp_max_comm_z + block +
+    (1 | population),
+  data = petal_common,
+  REML = FALSE
+)
+
+summary(m_fw_comm)
+```
+
+A linear mixed model using site-level common-period microclimate predictors (i.e., climate calculated only from dates where all sites had complete temperature and RH measurements) explained a substantial fraction of variation in log(fresh weight). Population remained an important random effect (SD = 0.199), confirming between-site differences not attributable solely to climate metrics.
+
+In contrast to the 4-day developmental-window analysis, neither common-period midday VPD nor maximum temperature showed significant fixed effects on fresh weight when averaged across the season (VPD: t = 1.84, P = 0.14; temp_max: t = –1.96, P = 0.12). However, the estimated coefficients from the common-period model were in the same directions as those from the 4-day analysis (positive for VPD, negative for temperature), and of similar magnitude. This indicates that the developmental-window climate predictors capture acute conditions experienced by petals, whereas the common-period predictors reflect persistent site differences that were weaker correlates of petal mass than the short-term microclimate preceding anthesis.
+
+Block effects remained strong and highly significant, consistent with seasonal declines in flower size across all populations (Block 2: –1.06; Block 3: –1.65 on log scale). These temporal changes were independent of site-level climate, reinforcing that flower mass varies both seasonally and spatially. The common-period model behaves exactly as expected biologically
+
+Unlike the 4-day window model—where fresh weight depended strongly on the exact VPD and temperature the petals developed under—this model uses long-term site-level climate means. So it answers a different question: Are typical site differences in climate sufficient to explain trait differences?
+
+VPD (site-level mean): positive effect but NS (p = 0.14) Temperature (site-level mean): negative effect but NS (p = 0.12)
+
+These effects are in the same direction and of very similar magnitude to the developmental-window model, which strongly supports:
+
+Site climate does influence petal traits, but these traits respond most strongly to the specific microclimate immediately preceding flower opening, not the long-term average conditions of the site.
+
+This is important ecophysiologically: petals are ephemeral tissues with short developmental windows, and short-term microclimate can deviate substantially from long-term means.
+
+Comparing the two modeling scales reveals a consistent but scale-dependent signal: long-term site climate means point in the same direction as the 4-day developmental metrics, but with attenuated and nonsignificant effects. This pattern suggests that persistent climatic differences among populations set a broad template for petal tissue economics (inland sites with generally higher VPD tending toward denser, less hydrated petals), but that the actual traits we observe on a given sampling date are most strongly tuned by the acute microclimatic conditions in the days immediately preceding anthesis. For ephemeral tissues like petals, this tight coupling to short-term conditions is ecophysiologically sensible: selection should favor petals that can adjust construction and hydration to the conditions they actually experience, rather than tracking only long-term site averages.
+
+```{r model-common-dmc-rwc, echo=FALSE, message=FALSE, warning=FALSE}
+#| label: model-common-dmc-rwc
+#| echo: false
+
+petal_common <- petal_common %>%
+  mutate(
+    dmc_logit = qlogis(dmc_adj),
+    rwc_logit = qlogis(rwc_prop)
+  )
+
+m_dmc_comm <- lm(
+  dmc_logit ~ vpd_midday_comm_z + temp_max_comm_z + block,
+  data = petal_common
+)
+
+m_rwc_comm <- lm(
+  rwc_logit ~ vpd_midday_comm_z + temp_max_comm_z + block,
+  data = petal_common
+)
+
+summary(m_dmc_comm)
+summary(m_rwc_comm)
+
+```
+
+## Results: DMC and RWC (common-period site climate)
+
+When petal traits were modeled using site-level microclimate means (calculated only from dates when all four sites had complete RH and temperature data), neither midday VPD nor maximum temperature emerged as significant predictors of DMC or RWC (VPD: p = 0.10; temperature: p = 0.09). Nonetheless, both coefficients showed the same directionality as in the 4-day developmental-window models: DMC increased with higher VPD and lower maximum temperature, whereas RWC showed the inverse pattern. These parallel trends suggest that persistent site-level differences in atmospheric demand contribute to trait differences, but that petal hydration and construction are more strongly governed by the short-term microclimatic conditions experienced during the 4-day developmental window.
+
+Taken together, the microclimate ordinations, trait PCA, and trait–climate models all tell a coherent story. Coastal populations occupy a cool, humid, fog-influenced region of climate space and produce larger, more hydrated petals with lower dry matter content, whereas inland shale populations experience hotter, high-VPD, high-light conditions and produce smaller, denser, more water-efficient petals. Within sites, seasonal drying and short-term spikes in VPD drive shifts toward higher DMC and lower RWC through time. Thus, both spatial and temporal variation in microclimate translate directly into differences in petal tissue economics at microgeographic scales.
+
+## Discussion: how to interpret the two modeling scales
+
+Comparing the developmental-window models with the common-period models highlights the importance of temporal scale in plant physiological responses. Although long-term site differences in VPD and temperature predict the expected directional trends in DMC and RWC, these effects are weaker and nonsignificant compared to the models using climate measured during the actual developmental window of each flower. This indicates that petal traits are most tightly coupled to short-term atmospheric conditions, consistent with the rapid development and ephemeral nature of petals. The strong block effects further show that seasonal declines in tissue hydration and increases in dry matter content occur independently of persistent site-level climate. Together, the two model sets demonstrate that both site and season matter, but the immediate microclimate surrounding anthesis exerts the strongest influence on petal tissue economics.
+
+Comparing the two modeling scales reveals a consistent but scale-dependent signal: long-term site climate means point in the same direction as the 4-day developmental metrics, but with attenuated and nonsignificant effects. This pattern suggests that persistent climatic differences among populations set a broad template for petal tissue economics (inland sites with generally higher VPD tending toward denser, less hydrated petals), but that the actual traits we observe on a given sampling date are most strongly tuned by the acute microclimatic conditions in the days immediately preceding anthesis. For ephemeral tissues like petals, this tight coupling to short-term conditions is ecophysiologically sensible: selection should favor petals that can adjust construction and hydration to the conditions they actually experience, rather than tracking only long-term site averages.
+
+The observed microgeographic variation in petal water content and dry matter content has potential consequences for both petal longevity and pollinator interactions. Water-rich, low-DMC petals in cool, coastal microclimates are likely cheaper to produce and may maintain visual display for longer under benign atmospheric demand, potentially enhancing pollinator attraction. By contrast, the smaller, denser petals at inland sites may be more resistant to physical damage and desiccation, but at the cost of reduced display size and perhaps shorter functional lifespans under extreme VPD. These tradeoffs suggest that fine-scale environmental heterogeneity can shape not only leaf-level tissue economics, as widely documented, but also the structure and function of reproductive tissues, with implications for mating success and population persistence across sharp microclimatic gradients.
+
+selection might favor large displays for pollinator attraction, but large displays require more water, which is costly under high VPD. The coastal flowers can afford to be big and hydrated because water isn't limiting. Inland flowers can't sustain large size under high VPD, so they're smaller but denser. That's not just plasticity - that's an evolved response to a fundamental biophysical constraint that Roddy's work predicts.
+
+selection might favor large displays for pollinator attraction, but large displays require more water, which is costly under high VPD. The coastal flowers can afford to be big and hydrated because water isn't limiting. Inland flowers can't sustain large size under high VPD, so they're smaller but denser. That's not just plasticity - that's an evolved response to a fundamental biophysical constraint that Roddy's work predicts.
+
+petal mesophyll structure - the arrangement of cells, air spaces, pigment distribution - affects both hydraulic properties and optical properties. If your developmental window VPD is affecting cell expansion and tissue density, it's probably also affecting how light interacts with the petal. Are your high-DMC petals less reflective? Do they look different to pollinators? Because if they're less attractive despite being more stress-tolerant, that's a fitness trade-off right there.
+
+### Appendix: key VPD function
+
+{r} #\| label: appendix-code #\| eval: false #\| echo: true
+
+calculate_vpd \<- function(temp, rh) { vp_sat \<- 0.611 \* exp((17.27 \* temp) / (temp + 237.3)) vp_actual \<- vp_sat \* (rh / 100) vpd \<- vp_sat - vp_actual return(vpd) }
+
+**Next step for spring - Establish the spectrum**: Measure PMA, water content, toughness, display duration, and maybe phenolics across 10-20 California native species with different pollination syndromes and habitat preferences. Do multivariate analysis (PCA, correlation matrices) to see if traits coordinate. This would be your proof-of-concept paper: "Does a petal economics spectrum exist?"
+
+**Petal mass per area (PMA)**: Directly analogous to LMA. Punch or cut a known area of fresh petal, dry it, weigh it. This is your fundamental measure of construction investment. You'd want to standardize location (middle of petal, avoid major veins).
+
+**Tissue density**: Fresh volume (water displacement) divided by dry mass. Higher density means more structural material relative to airspace.
+
+**Water content**: (Fresh mass - dry mass)/fresh mass. Tells you about tissue construction - high water content suggests less structural investment.
+
+**Toughness/puncture resistance**: Use a penetrometer (even a simple one - you can rig something with fishing line and weights). Measure force needed to puncture the petal. This relates to structural investment and potentially resistance to herbivore damage.
+
+**Thickness**: Use calipers at standardized points. This plus area gives you volume estimates.
+
+**Total phenolics or flavonoids**: Spectrophotometric assays on petal extracts. These are defensive compounds and also pigments - they're costly to produce.
+
+**Display duration**: Track individual flowers from bud opening to petal drop. This is your "lifespan" measure. For poppies, this would be straightforward in the field.
+
+**Reflectance spectra**: If you have a spectrophotometer, measure petal reflectance across UV-visible range. Tells you about pigment investment and what pollinators see.
+
+**Drought tolerance approaches**:
+
+*Resistance to wilting*
+
+*Recovery from wilting*: After water stress, rehydrate and measure whether flowers recover function (remain attractive, produce viable pollen).
+
+*Field measures*: Compare petal traits between stressed and unstressed microhabitats. Do poppies in hotter, drier microsites have higher PMA, lower water content, different display durations? This connects to fitness if you can measure pollination success.
+
+Do poppies in stressful sites shift along the petal economics spectrum? Measure the same traits plus field performance (wilting resistance, display duration, seed set). This tests whether environmental stress drives petal economics like it does leaf economics.
+
+**"Fast" petal syndrome** (cheap, short-lived):
+
+Low petal mass per area (PMA - thin petals)
+
+High water content
+
+Low toughness/puncture resistance
+
+Low density of structural tissues
+
+Short display duration
+
+Potentially fewer secondary metabolites (defense compounds, UV pigments)
+
+**"Slow" petal syndrome** (expensive, long-lived):
+
+High PMA (thick petals)
+
+Lower water content (more structural material)
+
+High toughness
+
+Dense structural tissues
+
+Long display duration
+
+More investment in defense/pigments
+
+**Lifespan variation**: Petal longevity varies enormously - from hours (some morning glories) to months (some orchids). This suggests there might be similar fast-slow continua, but driven by pollination ecology rather than carbon balance. Short-lived flowers might invest less in defense compounds and structural tissues, while long-lived flowers might have tougher petals with more investment in longevity.

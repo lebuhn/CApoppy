@@ -1,0 +1,1148 @@
+---
+title: "Comparison of Old and New Sensor Data at Pt. Conception and Cojo"
+author: "Gretchen LeBuhn"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    theme: cosmo
+    fig-width: 10
+    fig-height: 6
+editor: visual
+---
+
+## Overview
+
+This analysis compares temperature and relative humidity data from two sets of sensors at Pt. Conception and Cojo locations to determine whether new sensor data (TNC sensors) can substitute for missing data from the original sensors.
+
+**Old sensors:** - Cojo: Weather 1 (Serial 065051692) - Pt. Conception: LeBuhn3 (Serial 65057165)
+
+**New sensors:** - Cojo: Dangermond_Cojo HQ - Pt. Conception: Dangermond_UCSB_North_Beach
+
+## Setup
+
+```{r setup, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(lubridate)
+library(patchwork)
+library(scales)
+library(corrplot)
+
+# Set theme for plots
+theme_set(theme_bw(base_size = 12))
+```
+
+## Data Import and Processing
+
+```{r import-data, message=FALSE, warning=FALSE}
+# Import old sensor data
+cojo_old <- read_csv("../data/raw/rh_temp/Cojo_rhtemp_2025.csv") %>%
+  mutate(
+    datetime = mdy_hm(Time),
+    temp_old = `Celsius(∞C)`,
+    rh_old = `Humidity(%rh)`,
+    location = "Cojo",
+    sensor_type = "Old"
+  ) %>%
+  select(datetime, temp_old, rh_old, location, sensor_type)
+
+ptcon_old <- read_csv("../data/raw/rh_temp/Pt_Con_rhtemp_2025.csv") %>%
+  mutate(
+    datetime = mdy_hm(Time),
+    temp_old = `Celsius(∞C)`,
+    rh_old = `Humidity(%rh)`,
+    location = "Pt_Conception",
+    sensor_type = "Old"
+  ) %>%
+  select(datetime, temp_old, rh_old, location, sensor_type)
+
+# Import new sensor data
+new_sensors <- read_csv("../data/raw/rh_temp/Cojo_Pt_Con_rhtemp_2025_tncsensor.csv") %>%
+  mutate(
+    datetime = mdy_hm(Time),
+    # Cojo new sensor data
+    cojo_temp_new = `Dangermond_Cojo HQ Air Temp Avg degC`,
+    cojo_rh_max = `Dangermond_Cojo HQ Relative Humidity Max %`,
+    cojo_rh_min = `Dangermond_Cojo HQ Relative Humidity Min %`,
+    # Pt. Conception new sensor data
+    ptcon_temp_new = `Dangermond_UCSB_North_Beach Air Temperature Average degC`,
+    ptcon_rh_max = `Dangermond_UCSB_North_Beach Relative Humidity Maximum %`,
+    ptcon_rh_min = `Dangermond_UCSB_North_Beach Relative Humidity Minimum %`
+  ) %>%
+  select(datetime, starts_with("cojo_"), starts_with("ptcon_"))
+
+# Calculate average RH for new sensors
+new_sensors <- new_sensors %>%
+  mutate(
+    cojo_rh_new = (cojo_rh_max + cojo_rh_min) / 2,
+    ptcon_rh_new = (ptcon_rh_max + ptcon_rh_min) / 2
+  )
+
+# Prepare Cojo comparison data
+cojo_new_long <- new_sensors %>%
+  select(datetime, temp_new = cojo_temp_new, rh_new = cojo_rh_new) %>%
+  mutate(location = "Cojo", sensor_type = "New")
+
+# Prepare Pt. Conception comparison data
+ptcon_new_long <- new_sensors %>%
+  select(datetime, temp_new = ptcon_temp_new, rh_new = ptcon_rh_new) %>%
+  mutate(location = "Pt_Conception", sensor_type = "New")
+
+# Determine overlapping date range ending October 1
+end_date <- ymd("2025-10-01")
+
+# Find first date when all sensors are operational
+all_dates <- bind_rows(
+  cojo_old %>% select(datetime),
+  ptcon_old %>% select(datetime),
+  cojo_new_long %>% filter(!is.na(temp_new)) %>% select(datetime),
+  ptcon_new_long %>% filter(!is.na(temp_new)) %>% select(datetime)
+)
+
+start_date <- max(
+  min(cojo_old$datetime, na.rm = TRUE),
+  min(ptcon_old$datetime, na.rm = TRUE),
+  min(cojo_new_long$datetime[!is.na(cojo_new_long$temp_new)], na.rm = TRUE),
+  min(ptcon_new_long$datetime[!is.na(ptcon_new_long$temp_new)], na.rm = TRUE)
+)
+
+cat("Analysis period:", format(start_date, "%Y-%m-%d %H:%M"), "to", 
+    format(end_date, "%Y-%m-%d"), "\n")
+```
+
+## Data Aggregation
+
+Since the old and new sensors have different sampling intervals, we'll aggregate to hourly averages for comparison.
+
+```{r aggregate-data}
+# Aggregate old sensor data to hourly
+cojo_old_hourly <- cojo_old %>%
+  filter(datetime >= start_date & datetime < end_date) %>%
+  mutate(hour = floor_date(datetime, "hour")) %>%
+  group_by(hour) %>%
+  summarise(
+    temp_old = mean(temp_old, na.rm = TRUE),
+    rh_old = mean(rh_old, na.rm = TRUE),
+    n_obs = n(),
+    .groups = "drop"
+  ) %>%
+  filter(n_obs > 0)
+
+ptcon_old_hourly <- ptcon_old %>%
+  filter(datetime >= start_date & datetime < end_date) %>%
+  mutate(hour = floor_date(datetime, "hour")) %>%
+  group_by(hour) %>%
+  summarise(
+    temp_old = mean(temp_old, na.rm = TRUE),
+    rh_old = mean(rh_old, na.rm = TRUE),
+    n_obs = n(),
+    .groups = "drop"
+  ) %>%
+  filter(n_obs > 0)
+
+# Aggregate new sensor data to hourly
+cojo_new_hourly <- cojo_new_long %>%
+  filter(datetime >= start_date & datetime < end_date) %>%
+  mutate(hour = floor_date(datetime, "hour")) %>%
+  group_by(hour) %>%
+  summarise(
+    temp_new = mean(temp_new, na.rm = TRUE),
+    rh_new = mean(rh_new, na.rm = TRUE),
+    n_obs = n(),
+    .groups = "drop"
+  ) %>%
+  filter(n_obs > 0)
+
+ptcon_new_hourly <- ptcon_new_long %>%
+  filter(datetime >= start_date & datetime < end_date) %>%
+  mutate(hour = floor_date(datetime, "hour")) %>%
+  group_by(hour) %>%
+  summarise(
+    temp_new = mean(temp_new, na.rm = TRUE),
+    rh_new = mean(rh_new, na.rm = TRUE),
+    n_obs = n(),
+    .groups = "drop"
+  ) %>%
+  filter(n_obs > 0)
+
+# Merge old and new data for each location
+cojo_combined <- full_join(cojo_old_hourly, cojo_new_hourly, by = "hour") %>%
+  mutate(location = "Cojo")
+
+ptcon_combined <- full_join(ptcon_old_hourly, ptcon_new_hourly, by = "hour") %>%
+  mutate(location = "Pt_Conception")
+
+# Summary statistics
+cat("\nData availability summary:\n")
+cat("Cojo - Old sensor hours:", nrow(cojo_old_hourly), "\n")
+cat("Cojo - New sensor hours:", nrow(cojo_new_hourly), "\n")
+cat("Cojo - Overlapping hours:", sum(!is.na(cojo_combined$temp_old) & !is.na(cojo_combined$temp_new)), "\n\n")
+
+cat("Pt. Conception - Old sensor hours:", nrow(ptcon_old_hourly), "\n")
+cat("Pt. Conception - New sensor hours:", nrow(ptcon_new_hourly), "\n")
+cat("Pt. Conception - Overlapping hours:", sum(!is.na(ptcon_combined$temp_old) & !is.na(ptcon_combined$temp_new)), "\n")
+```
+
+## Visual Comparison: Time Series
+
+### Temperature
+
+```{r temp-timeseries, fig.height=8}
+# Cojo temperature
+p1 <- cojo_combined %>%
+  select(hour, temp_old, temp_new) %>%
+  pivot_longer(cols = c(temp_old, temp_new), 
+               names_to = "sensor", 
+               values_to = "temperature") %>%
+  mutate(sensor = recode(sensor, 
+                         temp_old = "Old Sensor",
+                         temp_new = "New Sensor (TNC)")) %>%
+  ggplot(aes(x = hour, y = temperature, color = sensor)) +
+  geom_line(alpha = 0.6) +
+  scale_color_manual(values = c("Old Sensor" = "#D55E00", 
+                                 "New Sensor (TNC)" = "#0072B2")) +
+  labs(title = "Cojo: Temperature Comparison",
+       x = "Date",
+       y = "Temperature (°C)",
+       color = "Sensor") +
+  theme(legend.position = "bottom")
+
+# Pt. Conception temperature
+p2 <- ptcon_combined %>%
+  select(hour, temp_old, temp_new) %>%
+  pivot_longer(cols = c(temp_old, temp_new), 
+               names_to = "sensor", 
+               values_to = "temperature") %>%
+  mutate(sensor = recode(sensor, 
+                         temp_old = "Old Sensor",
+                         temp_new = "New Sensor (TNC)")) %>%
+  ggplot(aes(x = hour, y = temperature, color = sensor)) +
+  geom_line(alpha = 0.6) +
+  scale_color_manual(values = c("Old Sensor" = "#D55E00", 
+                                 "New Sensor (TNC)" = "#0072B2")) +
+  labs(title = "Pt. Conception: Temperature Comparison",
+       x = "Date",
+       y = "Temperature (°C)",
+       color = "Sensor") +
+  theme(legend.position = "bottom")
+
+p1 / p2
+```
+
+### Relative Humidity
+
+```{r rh-timeseries, fig.height=8}
+# Cojo RH
+p3 <- cojo_combined %>%
+  select(hour, rh_old, rh_new) %>%
+  pivot_longer(cols = c(rh_old, rh_new), 
+               names_to = "sensor", 
+               values_to = "rh") %>%
+  mutate(sensor = recode(sensor, 
+                         rh_old = "Old Sensor",
+                         rh_new = "New Sensor (TNC)")) %>%
+  ggplot(aes(x = hour, y = rh, color = sensor)) +
+  geom_line(alpha = 0.6) +
+  scale_color_manual(values = c("Old Sensor" = "#D55E00", 
+                                 "New Sensor (TNC)" = "#0072B2")) +
+  labs(title = "Cojo: Relative Humidity Comparison",
+       x = "Date",
+       y = "Relative Humidity (%)",
+       color = "Sensor") +
+  theme(legend.position = "bottom")
+
+# Pt. Conception RH
+p4 <- ptcon_combined %>%
+  select(hour, rh_old, rh_new) %>%
+  pivot_longer(cols = c(rh_old, rh_new), 
+               names_to = "sensor", 
+               values_to = "rh") %>%
+  mutate(sensor = recode(sensor, 
+                         rh_old = "Old Sensor",
+                         rh_new = "New Sensor (TNC)")) %>%
+  ggplot(aes(x = hour, y = rh, color = sensor)) +
+  geom_line(alpha = 0.6) +
+  scale_color_manual(values = c("Old Sensor" = "#D55E00", 
+                                 "New Sensor (TNC)" = "#0072B2")) +
+  labs(title = "Pt. Conception: Relative Humidity Comparison",
+       x = "Date",
+       y = "Relative Humidity (%)",
+       color = "Sensor") +
+  theme(legend.position = "bottom")
+
+p3 / p4
+```
+
+## Scatter Plots: Old vs New Sensors
+
+### Temperature
+
+```{r temp-scatter, fig.height=4}
+# Cojo temperature scatter
+p5 <- cojo_combined %>%
+  filter(!is.na(temp_old) & !is.na(temp_new)) %>%
+  ggplot(aes(x = temp_old, y = temp_new)) +
+  geom_point(alpha = 0.3, color = "#0072B2") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = TRUE, color = "darkblue") +
+  labs(title = "Cojo: Temperature",
+       x = "Old Sensor (°C)",
+       y = "New Sensor (°C)") +
+  coord_fixed()
+
+# Pt. Conception temperature scatter
+p6 <- ptcon_combined %>%
+  filter(!is.na(temp_old) & !is.na(temp_new)) %>%
+  ggplot(aes(x = temp_old, y = temp_new)) +
+  geom_point(alpha = 0.3, color = "#0072B2") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = TRUE, color = "darkblue") +
+  labs(title = "Pt. Conception: Temperature",
+       x = "Old Sensor (°C)",
+       y = "New Sensor (°C)") +
+  coord_fixed()
+
+p5 | p6
+```
+
+### Relative Humidity
+
+```{r rh-scatter, fig.height=4}
+# Cojo RH scatter
+p7 <- cojo_combined %>%
+  filter(!is.na(rh_old) & !is.na(rh_new)) %>%
+  ggplot(aes(x = rh_old, y = rh_new)) +
+  geom_point(alpha = 0.3, color = "#009E73") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = TRUE, color = "darkgreen") +
+  labs(title = "Cojo: Relative Humidity",
+       x = "Old Sensor (%)",
+       y = "New Sensor (%)") +
+  coord_fixed()
+
+# Pt. Conception RH scatter
+p8 <- ptcon_combined %>%
+  filter(!is.na(rh_old) & !is.na(rh_new)) %>%
+  ggplot(aes(x = rh_old, y = rh_new)) +
+  geom_point(alpha = 0.3, color = "#009E73") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = TRUE, color = "darkgreen") +
+  labs(title = "Pt. Conception: Relative Humidity",
+       x = "Old Sensor (%)",
+       y = "New Sensor (%)") +
+  coord_fixed()
+
+p7 | p8
+```
+
+## Statistical Comparisons
+
+### Correlation Analysis
+
+```{r correlation}
+# Cojo correlations
+cojo_cor <- cojo_combined %>%
+  filter(!is.na(temp_old) & !is.na(temp_new) & !is.na(rh_old) & !is.na(rh_new)) %>%
+  select(temp_old, temp_new, rh_old, rh_new)
+
+cat("COJO CORRELATIONS\n")
+cat("-----------------\n")
+cat("Temperature: r =", round(cor(cojo_cor$temp_old, cojo_cor$temp_new), 3), "\n")
+cat("Relative Humidity: r =", round(cor(cojo_cor$rh_old, cojo_cor$rh_new), 3), "\n\n")
+
+# Pt. Conception correlations
+ptcon_cor <- ptcon_combined %>%
+  filter(!is.na(temp_old) & !is.na(temp_new) & !is.na(rh_old) & !is.na(rh_new)) %>%
+  select(temp_old, temp_new, rh_old, rh_new)
+
+cat("PT. CONCEPTION CORRELATIONS\n")
+cat("---------------------------\n")
+cat("Temperature: r =", round(cor(ptcon_cor$temp_old, ptcon_cor$temp_new), 3), "\n")
+cat("Relative Humidity: r =", round(cor(ptcon_cor$rh_old, ptcon_cor$rh_new), 3), "\n")
+```
+
+### Linear Regression Models
+
+```{r regression}
+# Cojo temperature model
+cojo_temp_lm <- lm(temp_new ~ temp_old, data = cojo_combined)
+cat("\nCOJO TEMPERATURE MODEL\n")
+cat("======================\n")
+summary(cojo_temp_lm)
+
+# Cojo RH model
+cojo_rh_lm <- lm(rh_new ~ rh_old, data = cojo_combined)
+cat("\nCOJO RELATIVE HUMIDITY MODEL\n")
+cat("=============================\n")
+summary(cojo_rh_lm)
+
+# Pt. Conception temperature model
+ptcon_temp_lm <- lm(temp_new ~ temp_old, data = ptcon_combined)
+cat("\nPT. CONCEPTION TEMPERATURE MODEL\n")
+cat("=================================\n")
+summary(ptcon_temp_lm)
+
+# Pt. Conception RH model
+ptcon_rh_lm <- lm(rh_new ~ rh_old, data = ptcon_combined)
+cat("\nPT. CONCEPTION RELATIVE HUMIDITY MODEL\n")
+cat("=======================================\n")
+summary(ptcon_rh_lm)
+```
+
+### Bias and Error Metrics
+
+```{r error-metrics}
+# Function to calculate error metrics
+calc_errors <- function(df, old_col, new_col) {
+  df_clean <- df %>%
+    filter(!is.na(!!sym(old_col)) & !is.na(!!sym(new_col)))
+  
+  old_vals <- pull(df_clean, !!sym(old_col))
+  new_vals <- pull(df_clean, !!sym(new_col))
+  
+  diff <- new_vals - old_vals
+  
+  tibble(
+    n = length(diff),
+    mean_bias = mean(diff),
+    median_bias = median(diff),
+    mae = mean(abs(diff)),
+    rmse = sqrt(mean(diff^2)),
+    sd_diff = sd(diff)
+  )
+}
+
+# Calculate metrics
+cojo_temp_errors <- calc_errors(cojo_combined, "temp_old", "temp_new")
+cojo_rh_errors <- calc_errors(cojo_combined, "rh_old", "rh_new")
+ptcon_temp_errors <- calc_errors(ptcon_combined, "temp_old", "temp_new")
+ptcon_rh_errors <- calc_errors(ptcon_combined, "rh_old", "rh_new")
+
+# Combine into table
+error_summary <- bind_rows(
+  cojo_temp_errors %>% mutate(Location = "Cojo", Variable = "Temperature (°C)"),
+  cojo_rh_errors %>% mutate(Location = "Cojo", Variable = "Relative Humidity (%)"),
+  ptcon_temp_errors %>% mutate(Location = "Pt. Conception", Variable = "Temperature (°C)"),
+  ptcon_rh_errors %>% mutate(Location = "Pt. Conception", Variable = "Relative Humidity (%)")
+) %>%
+  select(Location, Variable, n, mean_bias, median_bias, mae, rmse, sd_diff)
+
+knitr::kable(error_summary, digits = 2, 
+             caption = "Error Metrics (New Sensor - Old Sensor)",
+             col.names = c("Location", "Variable", "N", "Mean Bias", 
+                          "Median Bias", "MAE", "RMSE", "SD"))
+```
+
+### Bland-Altman Plots
+
+```{r bland-altman, fig.height=8}
+# Cojo temperature Bland-Altman
+cojo_temp_ba <- cojo_combined %>%
+  filter(!is.na(temp_old) & !is.na(temp_new)) %>%
+  mutate(
+    mean_temp = (temp_old + temp_new) / 2,
+    diff_temp = temp_new - temp_old
+  )
+
+mean_diff <- mean(cojo_temp_ba$diff_temp)
+sd_diff <- sd(cojo_temp_ba$diff_temp)
+
+p9 <- ggplot(cojo_temp_ba, aes(x = mean_temp, y = diff_temp)) +
+  geom_point(alpha = 0.3, color = "#0072B2") +
+  geom_hline(yintercept = mean_diff, color = "blue", linetype = "dashed") +
+  geom_hline(yintercept = mean_diff + 1.96 * sd_diff, color = "red", linetype = "dashed") +
+  geom_hline(yintercept = mean_diff - 1.96 * sd_diff, color = "red", linetype = "dashed") +
+  labs(title = "Cojo: Temperature Bland-Altman Plot",
+       x = "Mean Temperature (°C)",
+       y = "Difference (New - Old) (°C)") +
+  annotate("text", x = Inf, y = mean_diff, 
+           label = paste0("Mean: ", round(mean_diff, 2)), 
+           hjust = 1.1, vjust = -0.5, size = 3)
+
+# Pt. Conception temperature Bland-Altman
+ptcon_temp_ba <- ptcon_combined %>%
+  filter(!is.na(temp_old) & !is.na(temp_new)) %>%
+  mutate(
+    mean_temp = (temp_old + temp_new) / 2,
+    diff_temp = temp_new - temp_old
+  )
+
+mean_diff2 <- mean(ptcon_temp_ba$diff_temp)
+sd_diff2 <- sd(ptcon_temp_ba$diff_temp)
+
+p10 <- ggplot(ptcon_temp_ba, aes(x = mean_temp, y = diff_temp)) +
+  geom_point(alpha = 0.3, color = "#0072B2") +
+  geom_hline(yintercept = mean_diff2, color = "blue", linetype = "dashed") +
+  geom_hline(yintercept = mean_diff2 + 1.96 * sd_diff2, color = "red", linetype = "dashed") +
+  geom_hline(yintercept = mean_diff2 - 1.96 * sd_diff2, color = "red", linetype = "dashed") +
+  labs(title = "Pt. Conception: Temperature Bland-Altman Plot",
+       x = "Mean Temperature (°C)",
+       y = "Difference (New - Old) (°C)") +
+  annotate("text", x = Inf, y = mean_diff2, 
+           label = paste0("Mean: ", round(mean_diff2, 2)), 
+           hjust = 1.1, vjust = -0.5, size = 3)
+
+# Cojo RH Bland-Altman
+cojo_rh_ba <- cojo_combined %>%
+  filter(!is.na(rh_old) & !is.na(rh_new)) %>%
+  mutate(
+    mean_rh = (rh_old + rh_new) / 2,
+    diff_rh = rh_new - rh_old
+  )
+
+mean_diff3 <- mean(cojo_rh_ba$diff_rh)
+sd_diff3 <- sd(cojo_rh_ba$diff_rh)
+
+p11 <- ggplot(cojo_rh_ba, aes(x = mean_rh, y = diff_rh)) +
+  geom_point(alpha = 0.3, color = "#009E73") +
+  geom_hline(yintercept = mean_diff3, color = "blue", linetype = "dashed") +
+  geom_hline(yintercept = mean_diff3 + 1.96 * sd_diff3, color = "red", linetype = "dashed") +
+  geom_hline(yintercept = mean_diff3 - 1.96 * sd_diff3, color = "red", linetype = "dashed") +
+  labs(title = "Cojo: RH Bland-Altman Plot",
+       x = "Mean Relative Humidity (%)",
+       y = "Difference (New - Old) (%)") +
+  annotate("text", x = Inf, y = mean_diff3, 
+           label = paste0("Mean: ", round(mean_diff3, 2)), 
+           hjust = 1.1, vjust = -0.5, size = 3)
+
+# Pt. Conception RH Bland-Altman
+ptcon_rh_ba <- ptcon_combined %>%
+  filter(!is.na(rh_old) & !is.na(rh_new)) %>%
+  mutate(
+    mean_rh = (rh_old + rh_new) / 2,
+    diff_rh = rh_new - rh_old
+  )
+
+mean_diff4 <- mean(ptcon_rh_ba$diff_rh)
+sd_diff4 <- sd(ptcon_rh_ba$diff_rh)
+
+p12 <- ggplot(ptcon_rh_ba, aes(x = mean_rh, y = diff_rh)) +
+  geom_point(alpha = 0.3, color = "#009E73") +
+  geom_hline(yintercept = mean_diff4, color = "blue", linetype = "dashed") +
+  geom_hline(yintercept = mean_diff4 + 1.96 * sd_diff4, color = "red", linetype = "dashed") +
+  geom_hline(yintercept = mean_diff4 - 1.96 * sd_diff4, color = "red", linetype = "dashed") +
+  labs(title = "Pt. Conception: RH Bland-Altman Plot",
+       x = "Mean Relative Humidity (%)",
+       y = "Difference (New - Old) (%)") +
+  annotate("text", x = Inf, y = mean_diff4, 
+           label = paste0("Mean: ", round(mean_diff4, 2)), 
+           hjust = 1.1, vjust = -0.5, size = 3)
+
+(p9 | p10) / (p11 | p12)
+```
+
+## Summary Statistics
+
+```{r summary-stats}
+# Summary statistics for each sensor
+summary_table <- bind_rows(
+  cojo_combined %>%
+    summarise(
+      Location = "Cojo",
+      Sensor = "Old",
+      Variable = "Temperature",
+      Mean = mean(temp_old, na.rm = TRUE),
+      SD = sd(temp_old, na.rm = TRUE),
+      Min = min(temp_old, na.rm = TRUE),
+      Max = max(temp_old, na.rm = TRUE),
+      N = sum(!is.na(temp_old))
+    ),
+  cojo_combined %>%
+    summarise(
+      Location = "Cojo",
+      Sensor = "New (TNC)",
+      Variable = "Temperature",
+      Mean = mean(temp_new, na.rm = TRUE),
+      SD = sd(temp_new, na.rm = TRUE),
+      Min = min(temp_new, na.rm = TRUE),
+      Max = max(temp_new, na.rm = TRUE),
+      N = sum(!is.na(temp_new))
+    ),
+  cojo_combined %>%
+    summarise(
+      Location = "Cojo",
+      Sensor = "Old",
+      Variable = "Rel. Humidity",
+      Mean = mean(rh_old, na.rm = TRUE),
+      SD = sd(rh_old, na.rm = TRUE),
+      Min = min(rh_old, na.rm = TRUE),
+      Max = max(rh_old, na.rm = TRUE),
+      N = sum(!is.na(rh_old))
+    ),
+  cojo_combined %>%
+    summarise(
+      Location = "Cojo",
+      Sensor = "New (TNC)",
+      Variable = "Rel. Humidity",
+      Mean = mean(rh_new, na.rm = TRUE),
+      SD = sd(rh_new, na.rm = TRUE),
+      Min = min(rh_new, na.rm = TRUE),
+      Max = max(rh_new, na.rm = TRUE),
+      N = sum(!is.na(rh_new))
+    ),
+  ptcon_combined %>%
+    summarise(
+      Location = "Pt. Conception",
+      Sensor = "Old",
+      Variable = "Temperature",
+      Mean = mean(temp_old, na.rm = TRUE),
+      SD = sd(temp_old, na.rm = TRUE),
+      Min = min(temp_old, na.rm = TRUE),
+      Max = max(temp_old, na.rm = TRUE),
+      N = sum(!is.na(temp_old))
+    ),
+  ptcon_combined %>%
+    summarise(
+      Location = "Pt. Conception",
+      Sensor = "New (TNC)",
+      Variable = "Temperature",
+      Mean = mean(temp_new, na.rm = TRUE),
+      SD = sd(temp_new, na.rm = TRUE),
+      Min = min(temp_new, na.rm = TRUE),
+      Max = max(temp_new, na.rm = TRUE),
+      N = sum(!is.na(temp_new))
+    ),
+  ptcon_combined %>%
+    summarise(
+      Location = "Pt. Conception",
+      Sensor = "Old",
+      Variable = "Rel. Humidity",
+      Mean = mean(rh_old, na.rm = TRUE),
+      SD = sd(rh_old, na.rm = TRUE),
+      Min = min(rh_old, na.rm = TRUE),
+      Max = max(rh_old, na.rm = TRUE),
+      N = sum(!is.na(rh_old))
+    ),
+  ptcon_combined %>%
+    summarise(
+      Location = "Pt. Conception",
+      Sensor = "New (TNC)",
+      Variable = "Rel. Humidity",
+      Mean = mean(rh_new, na.rm = TRUE),
+      SD = sd(rh_new, na.rm = TRUE),
+      Min = min(rh_new, na.rm = TRUE),
+      Max = max(rh_new, na.rm = TRUE),
+      N = sum(!is.na(rh_new))
+    )
+)
+
+knitr::kable(summary_table, digits = 2,
+             caption = "Summary Statistics by Location, Sensor, and Variable")
+```
+
+## Nearest Timestamp Matching Analysis
+
+As an alternative to hourly aggregation, this section matches each new sensor reading to the closest old sensor reading in time.
+
+```{r nearest-timestamp-matching}
+# Function to find nearest timestamp match
+find_nearest_matches <- function(new_data, old_data) {
+  # For each new timestamp, find the closest old timestamp
+  matches <- tibble()
+  
+  for (i in 1:nrow(new_data)) {
+    new_time <- new_data$datetime[i]
+    
+    # Calculate time differences
+    time_diffs <- abs(difftime(old_data$datetime, new_time, units = "mins"))
+    
+    # Find minimum time difference
+    min_idx <- which.min(time_diffs)
+    min_diff <- as.numeric(time_diffs[min_idx])
+    
+    # Only include if match is within 60 minutes (reasonable threshold)
+    if (min_diff <= 60) {
+      matches <- bind_rows(matches, tibble(
+        new_datetime = new_time,
+        old_datetime = old_data$datetime[min_idx],
+        time_diff_mins = min_diff,
+        temp_new = new_data$temp_new[i],
+        rh_new = new_data$rh_new[i],
+        temp_old = old_data$temp_old[min_idx],
+        rh_old = old_data$rh_old[min_idx]
+      ))
+    }
+  }
+  
+  return(matches)
+}
+
+# Prepare data for matching - filter to analysis period
+cojo_old_filtered <- cojo_old %>%
+  filter(datetime >= start_date & datetime < end_date)
+
+ptcon_old_filtered <- ptcon_old %>%
+  filter(datetime >= start_date & datetime < end_date)
+
+cojo_new_filtered <- cojo_new_long %>%
+  filter(datetime >= start_date & datetime < end_date) %>%
+  filter(!is.na(temp_new) | !is.na(rh_new))
+
+ptcon_new_filtered <- ptcon_new_long %>%
+  filter(datetime >= start_date & datetime < end_date) %>%
+  filter(!is.na(temp_new) | !is.na(rh_new))
+
+# Find matches
+cat("Finding nearest timestamp matches...\n")
+cojo_matched <- find_nearest_matches(cojo_new_filtered, cojo_old_filtered)
+ptcon_matched <- find_nearest_matches(ptcon_new_filtered, ptcon_old_filtered)
+
+cat("\nMatching summary:\n")
+cat("Cojo matched pairs:", nrow(cojo_matched), "\n")
+cat("Cojo mean time difference:", round(mean(cojo_matched$time_diff_mins), 2), "minutes\n")
+cat("Cojo median time difference:", round(median(cojo_matched$time_diff_mins), 2), "minutes\n\n")
+
+cat("Pt. Conception matched pairs:", nrow(ptcon_matched), "\n")
+cat("Pt. Conception mean time difference:", round(mean(ptcon_matched$time_diff_mins), 2), "minutes\n")
+cat("Pt. Conception median time difference:", round(median(ptcon_matched$time_diff_mins), 2), "minutes\n")
+
+# Analyze impact of different time thresholds
+cat("\n\nImpact of Time Threshold on Matching:\n")
+cat("=====================================\n")
+
+thresholds <- c(5, 10, 15, 30, 45, 60)
+
+threshold_analysis <- tibble()
+
+for (thresh in thresholds) {
+  # Cojo
+  cojo_n <- sum(cojo_matched$time_diff_mins <= thresh)
+  cojo_pct <- round(100 * cojo_n / nrow(cojo_matched), 1)
+  
+  # Pt. Conception
+  ptcon_n <- sum(ptcon_matched$time_diff_mins <= thresh)
+  ptcon_pct <- round(100 * ptcon_n / nrow(ptcon_matched), 1)
+  
+  threshold_analysis <- bind_rows(threshold_analysis, tibble(
+    Threshold_mins = thresh,
+    Cojo_matches = cojo_n,
+    Cojo_pct = cojo_pct,
+    PtCon_matches = ptcon_n,
+    PtCon_pct = ptcon_pct
+  ))
+}
+
+knitr::kable(threshold_analysis,
+             col.names = c("Threshold (min)", "Cojo Matches", "Cojo %", 
+                          "Pt.Con Matches", "Pt.Con %"),
+             caption = "Number and Percentage of Matches Within Different Time Thresholds")
+```
+
+### Time Threshold Sensitivity
+
+```{r time-threshold-plots, fig.height=6}
+# Distribution of time differences
+p_thresh1 <- ggplot(cojo_matched, aes(x = time_diff_mins)) +
+  geom_histogram(binwidth = 2, fill = "#0072B2", alpha = 0.7) +
+  geom_vline(xintercept = c(5, 10, 15, 30), linetype = "dashed", 
+             color = c("red", "orange", "yellow", "green")) +
+  labs(title = "Cojo: Distribution of Time Differences",
+       x = "Time Difference (minutes)",
+       y = "Count") +
+  annotate("text", x = 5, y = Inf, label = "5 min", vjust = 1.5, hjust = -0.1, size = 3, color = "red") +
+  annotate("text", x = 10, y = Inf, label = "10 min", vjust = 1.5, hjust = -0.1, size = 3, color = "orange") +
+  annotate("text", x = 15, y = Inf, label = "15 min", vjust = 1.5, hjust = -0.1, size = 3, color = "yellow4") +
+  annotate("text", x = 30, y = Inf, label = "30 min", vjust = 1.5, hjust = -0.1, size = 3, color = "green")
+
+p_thresh2 <- ggplot(ptcon_matched, aes(x = time_diff_mins)) +
+  geom_histogram(binwidth = 2, fill = "#0072B2", alpha = 0.7) +
+  geom_vline(xintercept = c(5, 10, 15, 30), linetype = "dashed", 
+             color = c("red", "orange", "yellow", "green")) +
+  labs(title = "Pt. Conception: Distribution of Time Differences",
+       x = "Time Difference (minutes)",
+       y = "Count") +
+  annotate("text", x = 5, y = Inf, label = "5 min", vjust = 1.5, hjust = -0.1, size = 3, color = "red") +
+  annotate("text", x = 10, y = Inf, label = "10 min", vjust = 1.5, hjust = -0.1, size = 3, color = "orange") +
+  annotate("text", x = 15, y = Inf, label = "15 min", vjust = 1.5, hjust = -0.1, size = 3, color = "yellow4") +
+  annotate("text", x = 30, y = Inf, label = "30 min", vjust = 1.5, hjust = -0.1, size = 3, color = "green")
+
+p_thresh1 / p_thresh2
+```
+
+### Matched Data: Scatter Plots
+
+```{r matched-scatter, fig.height=8}
+# Temperature scatter plots
+p_match1 <- cojo_matched %>%
+  filter(!is.na(temp_old) & !is.na(temp_new)) %>%
+  ggplot(aes(x = temp_old, y = temp_new)) +
+  geom_point(alpha = 0.3, color = "#0072B2") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = TRUE, color = "darkblue") +
+  labs(title = "Cojo: Temperature (Nearest Timestamp Match)",
+       x = "Old Sensor (°C)",
+       y = "New Sensor (°C)",
+       subtitle = paste0("n = ", sum(!is.na(cojo_matched$temp_old) & !is.na(cojo_matched$temp_new)))) +
+  coord_fixed()
+
+p_match2 <- ptcon_matched %>%
+  filter(!is.na(temp_old) & !is.na(temp_new)) %>%
+  ggplot(aes(x = temp_old, y = temp_new)) +
+  geom_point(alpha = 0.3, color = "#0072B2") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = TRUE, color = "darkblue") +
+  labs(title = "Pt. Conception: Temperature (Nearest Timestamp Match)",
+       x = "Old Sensor (°C)",
+       y = "New Sensor (°C)",
+       subtitle = paste0("n = ", sum(!is.na(ptcon_matched$temp_old) & !is.na(ptcon_matched$temp_new)))) +
+  coord_fixed()
+
+# RH scatter plots
+p_match3 <- cojo_matched %>%
+  filter(!is.na(rh_old) & !is.na(rh_new)) %>%
+  ggplot(aes(x = rh_old, y = rh_new)) +
+  geom_point(alpha = 0.3, color = "#009E73") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = TRUE, color = "darkgreen") +
+  labs(title = "Cojo: Relative Humidity (Nearest Timestamp Match)",
+       x = "Old Sensor (%)",
+       y = "New Sensor (%)",
+       subtitle = paste0("n = ", sum(!is.na(cojo_matched$rh_old) & !is.na(cojo_matched$rh_new)))) +
+  coord_fixed()
+
+p_match4 <- ptcon_matched %>%
+  filter(!is.na(rh_old) & !is.na(rh_new)) %>%
+  ggplot(aes(x = rh_old, y = rh_new)) +
+  geom_point(alpha = 0.3, color = "#009E73") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = TRUE, color = "darkgreen") +
+  labs(title = "Pt. Conception: Relative Humidity (Nearest Timestamp Match)",
+       x = "Old Sensor (%)",
+       y = "New Sensor (%)",
+       subtitle = paste0("n = ", sum(!is.na(ptcon_matched$rh_old) & !is.na(ptcon_matched$rh_new)))) +
+  coord_fixed()
+
+(p_match1 | p_match2) / (p_match3 | p_match4)
+```
+
+### Matched Data: Statistical Analysis
+
+```{r matched-statistics}
+# Correlation analysis for matched data
+cat("MATCHED DATA CORRELATIONS\n")
+cat("=========================\n\n")
+
+cojo_matched_complete <- cojo_matched %>%
+  filter(!is.na(temp_old) & !is.na(temp_new) & !is.na(rh_old) & !is.na(rh_new))
+
+if (nrow(cojo_matched_complete) > 0) {
+  cat("Cojo:\n")
+  cat("  Temperature: r =", round(cor(cojo_matched_complete$temp_old, 
+                                       cojo_matched_complete$temp_new), 3), "\n")
+  cat("  Relative Humidity: r =", round(cor(cojo_matched_complete$rh_old, 
+                                            cojo_matched_complete$rh_new), 3), "\n\n")
+}
+
+ptcon_matched_complete <- ptcon_matched %>%
+  filter(!is.na(temp_old) & !is.na(temp_new) & !is.na(rh_old) & !is.na(rh_new))
+
+if (nrow(ptcon_matched_complete) > 0) {
+  cat("Pt. Conception:\n")
+  cat("  Temperature: r =", round(cor(ptcon_matched_complete$temp_old, 
+                                       ptcon_matched_complete$temp_new), 3), "\n")
+  cat("  Relative Humidity: r =", round(cor(ptcon_matched_complete$rh_old, 
+                                            ptcon_matched_complete$rh_new), 3), "\n\n")
+}
+
+# Linear regression for matched data
+cat("\nMATCHED DATA REGRESSION MODELS\n")
+cat("===============================\n\n")
+
+# Cojo temperature
+cojo_matched_temp <- cojo_matched %>% 
+  filter(!is.na(temp_old) & !is.na(temp_new))
+if (nrow(cojo_matched_temp) > 0) {
+  cojo_temp_matched_lm <- lm(temp_new ~ temp_old, data = cojo_matched_temp)
+  cat("Cojo Temperature:\n")
+  print(summary(cojo_temp_matched_lm))
+  cat("\n")
+}
+
+# Cojo RH
+cojo_matched_rh <- cojo_matched %>% 
+  filter(!is.na(rh_old) & !is.na(rh_new))
+if (nrow(cojo_matched_rh) > 0) {
+  cojo_rh_matched_lm <- lm(rh_new ~ rh_old, data = cojo_matched_rh)
+  cat("Cojo Relative Humidity:\n")
+  print(summary(cojo_rh_matched_lm))
+  cat("\n")
+}
+
+# Pt. Conception temperature
+ptcon_matched_temp <- ptcon_matched %>% 
+  filter(!is.na(temp_old) & !is.na(temp_new))
+if (nrow(ptcon_matched_temp) > 0) {
+  ptcon_temp_matched_lm <- lm(temp_new ~ temp_old, data = ptcon_matched_temp)
+  cat("Pt. Conception Temperature:\n")
+  print(summary(ptcon_temp_matched_lm))
+  cat("\n")
+}
+
+# Pt. Conception RH
+ptcon_matched_rh <- ptcon_matched %>% 
+  filter(!is.na(rh_old) & !is.na(rh_new))
+if (nrow(ptcon_matched_rh) > 0) {
+  ptcon_rh_matched_lm <- lm(rh_new ~ rh_old, data = ptcon_matched_rh)
+  cat("Pt. Conception Relative Humidity:\n")
+  print(summary(ptcon_rh_matched_lm))
+  cat("\n")
+}
+```
+
+### Matched Data: Error Metrics
+
+```{r matched-error-metrics}
+# Calculate error metrics for matched data
+cojo_temp_matched_errors <- calc_errors(cojo_matched, "temp_old", "temp_new")
+cojo_rh_matched_errors <- calc_errors(cojo_matched, "rh_old", "rh_new")
+ptcon_temp_matched_errors <- calc_errors(ptcon_matched, "temp_old", "temp_new")
+ptcon_rh_matched_errors <- calc_errors(ptcon_matched, "rh_old", "rh_new")
+
+# Combine into table
+matched_error_summary <- bind_rows(
+  cojo_temp_matched_errors %>% mutate(Location = "Cojo", Variable = "Temperature (°C)"),
+  cojo_rh_matched_errors %>% mutate(Location = "Cojo", Variable = "Relative Humidity (%)"),
+  ptcon_temp_matched_errors %>% mutate(Location = "Pt. Conception", Variable = "Temperature (°C)"),
+  ptcon_rh_matched_errors %>% mutate(Location = "Pt. Conception", Variable = "Relative Humidity (%)")
+) %>%
+  select(Location, Variable, n, mean_bias, median_bias, mae, rmse, sd_diff)
+
+knitr::kable(matched_error_summary, digits = 2, 
+             caption = "Error Metrics for Nearest Timestamp Matches - 60 minute threshold (New Sensor - Old Sensor)",
+             col.names = c("Location", "Variable", "N", "Mean Bias", 
+                          "Median Bias", "MAE", "RMSE", "SD"))
+```
+
+### Comparison with 10-Minute Threshold
+
+For stricter temporal matching, we can also analyze data using only matches within 10 minutes.
+
+```{r ten-minute-threshold}
+# Filter to 10-minute matches
+cojo_matched_10min <- cojo_matched %>%
+  filter(time_diff_mins <= 10)
+
+ptcon_matched_10min <- ptcon_matched %>%
+  filter(time_diff_mins <= 10)
+
+cat("10-Minute Threshold Results:\n")
+cat("============================\n")
+cat("Cojo matches (60 min):", nrow(cojo_matched), "\n")
+cat("Cojo matches (10 min):", nrow(cojo_matched_10min), 
+    " (", round(100 * nrow(cojo_matched_10min) / nrow(cojo_matched), 1), "% retained)\n")
+cat("Loss:", nrow(cojo_matched) - nrow(cojo_matched_10min), "matches\n\n")
+
+cat("Pt. Conception matches (60 min):", nrow(ptcon_matched), "\n")
+cat("Pt. Conception matches (10 min):", nrow(ptcon_matched_10min), 
+    " (", round(100 * nrow(ptcon_matched_10min) / nrow(ptcon_matched), 1), "% retained)\n")
+cat("Loss:", nrow(ptcon_matched) - nrow(ptcon_matched_10min), "matches\n\n")
+
+# Calculate error metrics for 10-minute matches
+cojo_temp_10min_errors <- calc_errors(cojo_matched_10min, "temp_old", "temp_new")
+cojo_rh_10min_errors <- calc_errors(cojo_matched_10min, "rh_old", "rh_new")
+ptcon_temp_10min_errors <- calc_errors(ptcon_matched_10min, "temp_old", "temp_new")
+ptcon_rh_10min_errors <- calc_errors(ptcon_matched_10min, "rh_old", "rh_new")
+
+# Combine into table
+matched_10min_error_summary <- bind_rows(
+  cojo_temp_10min_errors %>% mutate(Location = "Cojo", Variable = "Temperature (°C)"),
+  cojo_rh_10min_errors %>% mutate(Location = "Cojo", Variable = "Relative Humidity (%)"),
+  ptcon_temp_10min_errors %>% mutate(Location = "Pt. Conception", Variable = "Temperature (°C)"),
+  ptcon_rh_10min_errors %>% mutate(Location = "Pt. Conception", Variable = "Relative Humidity (%)")
+) %>%
+  select(Location, Variable, n, mean_bias, median_bias, mae, rmse, sd_diff)
+
+knitr::kable(matched_10min_error_summary, digits = 2, 
+             caption = "Error Metrics for Nearest Timestamp Matches - 10 minute threshold (New Sensor - Old Sensor)",
+             col.names = c("Location", "Variable", "N", "Mean Bias", 
+                          "Median Bias", "MAE", "RMSE", "SD"))
+
+# Correlations for 10-minute matches
+cat("\nCorrelations with 10-minute threshold:\n")
+cat("======================================\n")
+
+cojo_10_complete <- cojo_matched_10min %>%
+  filter(!is.na(temp_old) & !is.na(temp_new) & !is.na(rh_old) & !is.na(rh_new))
+
+if (nrow(cojo_10_complete) > 0) {
+  cat("Cojo:\n")
+  cat("  Temperature: r =", round(cor(cojo_10_complete$temp_old, 
+                                       cojo_10_complete$temp_new), 3), "\n")
+  cat("  Relative Humidity: r =", round(cor(cojo_10_complete$rh_old, 
+                                            cojo_10_complete$rh_new), 3), "\n\n")
+}
+
+ptcon_10_complete <- ptcon_matched_10min %>%
+  filter(!is.na(temp_old) & !is.na(temp_new) & !is.na(rh_old) & !is.na(rh_new))
+
+if (nrow(ptcon_10_complete) > 0) {
+  cat("Pt. Conception:\n")
+  cat("  Temperature: r =", round(cor(ptcon_10_complete$temp_old, 
+                                       ptcon_10_complete$temp_new), 3), "\n")
+  cat("  Relative Humidity: r =", round(cor(ptcon_10_complete$rh_old, 
+                                            ptcon_10_complete$rh_new), 3), "\n")
+}
+```
+
+### Matched Data: Bland-Altman Plots
+
+```{r matched-bland-altman, fig.height=8}
+# Temperature Bland-Altman plots
+cojo_temp_ba_matched <- cojo_matched %>%
+  filter(!is.na(temp_old) & !is.na(temp_new)) %>%
+  mutate(
+    mean_temp = (temp_old + temp_new) / 2,
+    diff_temp = temp_new - temp_old
+  )
+
+mean_diff_m1 <- mean(cojo_temp_ba_matched$diff_temp)
+sd_diff_m1 <- sd(cojo_temp_ba_matched$diff_temp)
+
+p_ba_m1 <- ggplot(cojo_temp_ba_matched, aes(x = mean_temp, y = diff_temp)) +
+  geom_point(alpha = 0.3, color = "#0072B2") +
+  geom_hline(yintercept = mean_diff_m1, color = "blue", linetype = "dashed") +
+  geom_hline(yintercept = mean_diff_m1 + 1.96 * sd_diff_m1, color = "red", linetype = "dashed") +
+  geom_hline(yintercept = mean_diff_m1 - 1.96 * sd_diff_m1, color = "red", linetype = "dashed") +
+  labs(title = "Cojo: Temperature BA (Matched)",
+       x = "Mean Temperature (°C)",
+       y = "Difference (New - Old) (°C)") +
+  annotate("text", x = Inf, y = mean_diff_m1, 
+           label = paste0("Mean: ", round(mean_diff_m1, 2)), 
+           hjust = 1.1, vjust = -0.5, size = 3)
+
+ptcon_temp_ba_matched <- ptcon_matched %>%
+  filter(!is.na(temp_old) & !is.na(temp_new)) %>%
+  mutate(
+    mean_temp = (temp_old + temp_new) / 2,
+    diff_temp = temp_new - temp_old
+  )
+
+mean_diff_m2 <- mean(ptcon_temp_ba_matched$diff_temp)
+sd_diff_m2 <- sd(ptcon_temp_ba_matched$diff_temp)
+
+p_ba_m2 <- ggplot(ptcon_temp_ba_matched, aes(x = mean_temp, y = diff_temp)) +
+  geom_point(alpha = 0.3, color = "#0072B2") +
+  geom_hline(yintercept = mean_diff_m2, color = "blue", linetype = "dashed") +
+  geom_hline(yintercept = mean_diff_m2 + 1.96 * sd_diff_m2, color = "red", linetype = "dashed") +
+  geom_hline(yintercept = mean_diff_m2 - 1.96 * sd_diff_m2, color = "red", linetype = "dashed") +
+  labs(title = "Pt. Conception: Temperature BA (Matched)",
+       x = "Mean Temperature (°C)",
+       y = "Difference (New - Old) (°C)") +
+  annotate("text", x = Inf, y = mean_diff_m2, 
+           label = paste0("Mean: ", round(mean_diff_m2, 2)), 
+           hjust = 1.1, vjust = -0.5, size = 3)
+
+# RH Bland-Altman plots
+cojo_rh_ba_matched <- cojo_matched %>%
+  filter(!is.na(rh_old) & !is.na(rh_new)) %>%
+  mutate(
+    mean_rh = (rh_old + rh_new) / 2,
+    diff_rh = rh_new - rh_old
+  )
+
+mean_diff_m3 <- mean(cojo_rh_ba_matched$diff_rh)
+sd_diff_m3 <- sd(cojo_rh_ba_matched$diff_rh)
+
+p_ba_m3 <- ggplot(cojo_rh_ba_matched, aes(x = mean_rh, y = diff_rh)) +
+  geom_point(alpha = 0.3, color = "#009E73") +
+  geom_hline(yintercept = mean_diff_m3, color = "blue", linetype = "dashed") +
+  geom_hline(yintercept = mean_diff_m3 + 1.96 * sd_diff_m3, color = "red", linetype = "dashed") +
+  geom_hline(yintercept = mean_diff_m3 - 1.96 * sd_diff_m3, color = "red", linetype = "dashed") +
+  labs(title = "Cojo: RH BA (Matched)",
+       x = "Mean Relative Humidity (%)",
+       y = "Difference (New - Old) (%)") +
+  annotate("text", x = Inf, y = mean_diff_m3, 
+           label = paste0("Mean: ", round(mean_diff_m3, 2)), 
+           hjust = 1.1, vjust = -0.5, size = 3)
+
+ptcon_rh_ba_matched <- ptcon_matched %>%
+  filter(!is.na(rh_old) & !is.na(rh_new)) %>%
+  mutate(
+    mean_rh = (rh_old + rh_new) / 2,
+    diff_rh = rh_new - rh_old
+  )
+
+mean_diff_m4 <- mean(ptcon_rh_ba_matched$diff_rh)
+sd_diff_m4 <- sd(ptcon_rh_ba_matched$diff_rh)
+
+p_ba_m4 <- ggplot(ptcon_rh_ba_matched, aes(x = mean_rh, y = diff_rh)) +
+  geom_point(alpha = 0.3, color = "#009E73") +
+  geom_hline(yintercept = mean_diff_m4, color = "blue", linetype = "dashed") +
+  geom_hline(yintercept = mean_diff_m4 + 1.96 * sd_diff_m4, color = "red", linetype = "dashed") +
+  geom_hline(yintercept = mean_diff_m4 - 1.96 * sd_diff_m4, color = "red", linetype = "dashed") +
+  labs(title = "Pt. Conception: RH BA (Matched)",
+       x = "Mean Relative Humidity (%)",
+       y = "Difference (New - Old) (%)") +
+  annotate("text", x = Inf, y = mean_diff_m4, 
+           label = paste0("Mean: ", round(mean_diff_m4, 2)), 
+           hjust = 1.1, vjust = -0.5, size = 3)
+
+(p_ba_m1 | p_ba_m2) / (p_ba_m3 | p_ba_m4)
+```
+
+### Comparison of Methods
+
+```{r method-comparison}
+# Compare hourly aggregation vs nearest timestamp matching
+comparison_table <- bind_rows(
+  # Hourly aggregation results
+  bind_rows(
+    cojo_temp_errors %>% mutate(Location = "Cojo", Variable = "Temperature", Method = "Hourly Aggregation"),
+    cojo_rh_errors %>% mutate(Location = "Cojo", Variable = "Rel. Humidity", Method = "Hourly Aggregation"),
+    ptcon_temp_errors %>% mutate(Location = "Pt. Conception", Variable = "Temperature", Method = "Hourly Aggregation"),
+    ptcon_rh_errors %>% mutate(Location = "Pt. Conception", Variable = "Rel. Humidity", Method = "Hourly Aggregation")
+  ),
+  # Matched timestamp results
+  bind_rows(
+    cojo_temp_matched_errors %>% mutate(Location = "Cojo", Variable = "Temperature", Method = "Nearest Match"),
+    cojo_rh_matched_errors %>% mutate(Location = "Cojo", Variable = "Rel. Humidity", Method = "Nearest Match"),
+    ptcon_temp_matched_errors %>% mutate(Location = "Pt. Conception", Variable = "Temperature", Method = "Nearest Match"),
+    ptcon_rh_matched_errors %>% mutate(Location = "Pt. Conception", Variable = "Rel. Humidity", Method = "Nearest Match")
+  )
+) %>%
+  select(Location, Variable, Method, n, mean_bias, mae, rmse, sd_diff) %>%
+  arrange(Location, Variable, Method)
+
+knitr::kable(comparison_table, digits = 2,
+             caption = "Comparison of Aggregation vs Nearest Timestamp Matching Methods",
+             col.names = c("Location", "Variable", "Method", "N", "Mean Bias", "MAE", "RMSE", "SD"))
+```
+
+## Conclusions
+
+### Key Findings:
+
+1.  **Correlation Strength**: The correlations between old and new sensors indicate the degree of agreement between measurements. Both hourly aggregation and nearest timestamp matching provide similar correlation values.
+
+2.  **Systematic Bias**: The mean bias (from error metrics tables) shows whether new sensors consistently read higher or lower than old sensors. This appears consistent across both analytical methods.
+
+3.  **Measurement Precision**: RMSE and MAE values quantify the typical magnitude of differences between sensor pairs. The comparison table shows how these metrics differ between aggregation and matching approaches.
+
+4.  **Bland-Altman Analysis**: These plots reveal whether differences between sensors are consistent across the measurement range or if there are patterns (e.g., greater differences at higher/lower values). Both methods show similar patterns.
+
+5.  **Method Comparison**:
+
+    -   **Hourly Aggregation**: Smooths out short-term fluctuations and provides more robust estimates when sampling times differ
+    -   **Nearest Timestamp Matching**: Preserves original measurement characteristics but may include temporal mismatches (see mean/median time differences)
+    -   The comparison table shows which method yields lower error metrics for each location/variable combination
+
+### Recommendations:
+
+Based on the statistical metrics from both methods:
+
+-   **High correlation (r \> 0.9)** and **low RMSE** suggest new sensors can substitute for old ones
+-   **Systematic bias** can be corrected using the regression equations if needed
+-   **Large scatter** or **low correlation** would indicate caution in substitution
+-   Consider the **temporal resolution** of your research questions when choosing between methods:
+    -   Use hourly aggregation for analyses requiring consistent time intervals
+    -   Use nearest timestamp matching when preserving original measurement timing is critical
+
+The regression models from both methods provide conversion equations if you need to adjust new sensor values to match the old sensor scale. The coefficients should be similar between methods if sensors track well.
+
+## Session Information
+
+```{r session-info}
+sessionInfo()
+```

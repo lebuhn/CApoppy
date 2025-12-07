@@ -116,15 +116,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspect first few rows</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(petal_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Rows: 228
+<pre><code>Rows: 186
 Columns: 12
-$ date         &lt;chr&gt; "2025-03-26", "2025-03-26", "2025-03-26", "2025-03-26", "…
+$ date         &lt;chr&gt; "3/26/25", "3/26/25", "3/26/25", "3/26/25", "3/26/25", "3…
 $ block        &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
 $ population   &lt;chr&gt; "Percos", "Percos", "Percos", "Percos", "Percos", "Percos…
 $ plant        &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 2, …
 $ wet_wgt      &lt;dbl&gt; 0.15917, 0.11010, 0.20482, 0.17572, 0.18694, 0.16784, 0.1…
 $ petal_flower &lt;chr&gt; "petal", "petal", "petal", "petal", "petal", "petal", "pe…
-$ length       &lt;chr&gt; "4", "3.6", "5", "4.1", "4.6", "3.2", "4.5", "4", "4", "4…
+$ length       &lt;dbl&gt; 4.0, 3.6, 5.0, 4.1, 4.6, 3.2, 4.5, 4.0, 4.0, 4.0, 4.5, 5.…
 $ area         &lt;dbl&gt; 9.957, 13.921, 13.527, NA, NA, NA, NA, NA, NA, NA, NA, NA…
 $ dry_wgt      &lt;dbl&gt; 0.01760, 0.01117, 0.02123, 0.01782, 0.01998, 0.01825, 0.0…
 $ water_mg     &lt;dbl&gt; 0.14157, 0.09893, 0.18359, 0.15790, 0.16696, 0.14959, 0.1…
@@ -364,11 +364,11 @@ $ gsw        &lt;dbl&gt; 1.950072e-03, 2.471293e-03, 4.742870e-06, 6.559651e-03,
 <span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of our data</span></span>
 <span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Total rows in final merged dataset:"</span>, <span class="fu">nrow</span>(matched_data), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Total rows in final merged dataset: 228 </code></pre>
+<pre><code>Total rows in final merged dataset: 185 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Rows in matched dataset:"</span>, <span class="fu">nrow</span>(matched_data), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Rows in matched dataset: 228 </code></pre>
+<pre><code>Rows in matched dataset: 185 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Rows in unmatched dataset:"</span>, <span class="fu">nrow</span>(unmatched_data), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -378,14 +378,14 @@ $ gsw        &lt;dbl&gt; 1.950072e-03, 2.471293e-03, 4.742870e-06, 6.559651e-03,
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(matched_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 23
-  date.x     block population plant wet_wgt petal_flower length  area dry_wgt
-  &lt;date&gt;     &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;  &lt;dbl&gt;   &lt;dbl&gt;
-1 2025-03-26     1 Percos         1   0.159 petal        4       9.96  0.0176
-2 2025-03-26     1 Percos         2   0.110 petal        3.6    13.9   0.0112
-3 2025-03-26     1 Percos         3   0.205 petal        5      13.5   0.0212
-4 2025-03-26     1 Percos         4   0.176 petal        4.1    NA     0.0178
-5 2025-03-26     1 Percos         5   0.187 petal        4.6    NA     0.0200
-6 2025-03-26     1 Percos         6   0.168 petal        3.2    NA     0.0182
+  date.x block population plant wet_wgt petal_flower length  area dry_wgt
+  &lt;date&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+1 NA         1 Percos         1   0.159 petal           4    9.96  0.0176
+2 NA         1 Percos         2   0.110 petal           3.6 13.9   0.0112
+3 NA         1 Percos         3   0.205 petal           5   13.5   0.0212
+4 NA         1 Percos         4   0.176 petal           4.1 NA     0.0178
+5 NA         1 Percos         5   0.187 petal           4.6 NA     0.0200
+6 NA         1 Percos         6   0.168 petal           3.2 NA     0.0182
 # ℹ 14 more variables: water_mg &lt;dbl&gt;, `water_%` &lt;chr&gt;, ...12 &lt;chr&gt;,
 #   date.y &lt;date&gt;, leaves &lt;dbl&gt;, flowers &lt;dbl&gt;, buds &lt;dbl&gt;, fruit &lt;dbl&gt;,
 #   leaf_length &lt;dbl&gt;, flower_length &lt;dbl&gt;, fruit_length &lt;dbl&gt;,
@@ -473,18 +473,18 @@ $ gsw        &lt;dbl&gt; 1.950072e-03, 2.471293e-03, 4.742870e-06, 6.559651e-03,
 
 |population    |  Mean|    SD| Min| Max|  N|
 |:-------------|-----:|-----:|---:|---:|--:|
-|Cojo          | 0.467| 0.503|   0|   1| 60|
-|Percos        | 0.862| 0.826|   0|   2| 58|
+|Cojo          | 0.457| 0.504|   0|   1| 46|
+|Percos        | 0.864| 0.824|   0|   2| 44|
 |Perry         | 2.560| 1.971|   1|   8| 50|
-|Pt_Conception | 0.733| 0.778|   0|   2| 60|
+|Pt_Conception | 0.733| 0.780|   0|   2| 45|
 
 ANOVA Results:
 
 
 |term       |  df|   sumsq| meansq| statistic| p.value|
 |:----------|---:|-------:|------:|---------:|-------:|
-|population |   3| 141.994| 47.331|    37.881|       0|
-|Residuals  | 224| 279.883|  1.249|        NA|      NA|</code></pre>
+|population |   3| 132.664| 44.221|    31.058|       0|
+|Residuals  | 181| 257.715|  1.424|        NA|      NA|</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
@@ -501,18 +501,18 @@ ANOVA Results:
 
 |population    |  Mean|    SD| Min| Max|  N|
 |:-------------|-----:|-----:|---:|---:|--:|
-|Cojo          | 2.267| 1.999|   0|   6| 60|
-|Percos        | 2.931| 3.494|   0|  13| 58|
+|Cojo          | 2.239| 1.991|   0|   6| 46|
+|Percos        | 2.955| 3.491|   0|  13| 44|
 |Perry         | 3.680| 4.556|   0|  15| 50|
-|Pt_Conception | 0.667| 0.795|   0|   2| 60|
+|Pt_Conception | 0.667| 0.798|   0|   2| 45|
 
 ANOVA Results:
 
 
 |term       |  df|    sumsq| meansq| statistic| p.value|
 |:----------|---:|--------:|------:|---------:|-------:|
-|population |   3|  278.312| 92.771|    10.465|       0|
-|Residuals  | 224| 1985.671|  8.865|        NA|      NA|</code></pre>
+|population |   3|  231.793| 77.264|     8.004|       0|
+|Residuals  | 181| 1747.159|  9.653|        NA|      NA|</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
@@ -529,18 +529,18 @@ ANOVA Results:
 
 |population    |  Mean|    SD| Min| Max|  N|
 |:-------------|-----:|-----:|---:|---:|--:|
-|Cojo          | 0.267| 0.578|   0|   2| 60|
-|Percos        | 0.276| 0.586|   0|   2| 58|
+|Cojo          | 0.261| 0.575|   0|   2| 46|
+|Percos        | 0.273| 0.585|   0|   2| 44|
 |Perry         | 2.760| 2.789|   0|  10| 50|
-|Pt_Conception | 0.200| 0.403|   0|   1| 60|
+|Pt_Conception | 0.200| 0.405|   0|   1| 45|
 
 ANOVA Results:
 
 
-|term       |  df|  sumsq| meansq| statistic| p.value|
-|:----------|---:|------:|------:|---------:|-------:|
-|population |   3| 246.68| 82.227|     42.83|       0|
-|Residuals  | 224| 430.04|  1.920|        NA|      NA|</code></pre>
+|term       |  df|   sumsq| meansq| statistic| p.value|
+|:----------|---:|-------:|------:|---------:|-------:|
+|population |   3| 231.024| 77.008|    33.352|       0|
+|Residuals  | 181| 417.917|  2.309|        NA|      NA|</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
@@ -557,18 +557,18 @@ ANOVA Results:
 
 |population    |   Mean|     SD|  Min|   Max|  N|
 |:-------------|------:|------:|----:|-----:|--:|
-|Cojo          | 99.673| 50.716| 32.3| 203.6| 60|
-|Percos        | 24.452| 25.490| 14.8| 116.5| 58|
+|Cojo          | 98.404| 51.022| 32.3| 203.6| 46|
+|Percos        | 24.475| 25.417| 14.8| 116.5| 44|
 |Perry         | 10.190|  4.673|  4.0|  20.2| 50|
-|Pt_Conception | 96.660| 48.435| 43.2| 192.6| 60|
+|Pt_Conception | 96.660| 48.573| 43.2| 192.6| 45|
 
 ANOVA Results:
 
 
 |term       |  df|    sumsq|     meansq| statistic| p.value|
 |:----------|---:|--------:|----------:|---------:|-------:|
-|population |   3| 372417.6| 124139.205|    84.708|       0|
-|Residuals  | 224| 328271.6|   1465.498|        NA|      NA|</code></pre>
+|population |   3| 305708.6| 101902.881|    73.835|       0|
+|Residuals  | 181| 249806.6|   1380.147|        NA|      NA|</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
@@ -585,18 +585,18 @@ ANOVA Results:
 
 |population    |  Mean|    SD|   Min|   Max|  N|
 |:-------------|-----:|-----:|-----:|-----:|--:|
-|Cojo          | 0.050| 0.038| 0.008| 0.137| 60|
-|Percos        | 0.092| 0.069| 0.009| 0.246| 58|
+|Cojo          | 0.035| 0.026| 0.008| 0.106| 46|
+|Percos        | 0.076| 0.069| 0.009| 0.246| 44|
 |Perry         | 0.035| 0.033| 0.004| 0.145| 50|
-|Pt_Conception | 0.068| 0.055| 0.012| 0.256| 60|
+|Pt_Conception | 0.046| 0.029| 0.012| 0.131| 45|
 
 ANOVA Results:
 
 
 |term       |  df| sumsq| meansq| statistic| p.value|
 |:----------|---:|-----:|------:|---------:|-------:|
-|population |   3| 0.101|  0.034|    12.817|       0|
-|Residuals  | 224| 0.589|  0.003|        NA|      NA|</code></pre>
+|population |   3| 0.052|  0.017|     9.613|       0|
+|Residuals  | 181| 0.325|  0.002|        NA|      NA|</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
@@ -613,18 +613,18 @@ ANOVA Results:
 
 |population    |  Mean|    SD|   Min|   Max|  N|
 |:-------------|-----:|-----:|-----:|-----:|--:|
-|Cojo          | 0.005| 0.003| 0.000| 0.012| 30|
-|Percos        | 0.014| 0.006| 0.003| 0.026| 29|
-|Perry         | 0.006| 0.003| 0.001| 0.013| 32|
-|Pt_Conception | 0.008| 0.004| 0.002| 0.018| 30|
+|Cojo          | 0.004| 0.003| 0.000| 0.012| 45|
+|Percos        | 0.010| 0.007| 0.001| 0.026| 44|
+|Perry         | 0.004| 0.004| 0.000| 0.013| 47|
+|Pt_Conception | 0.006| 0.004| 0.001| 0.018| 45|
 
 ANOVA Results:
 
 
 |term       |  df| sumsq| meansq| statistic| p.value|
 |:----------|---:|-----:|------:|---------:|-------:|
-|population |   3| 0.001|      0|    23.035|       0|
-|Residuals  | 117| 0.002|      0|        NA|      NA|</code></pre>
+|population |   3| 0.001|      0|     16.37|       0|
+|Residuals  | 177| 0.004|      0|        NA|      NA|</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
@@ -641,18 +641,18 @@ ANOVA Results:
 
 |population    |  Mean|    SD|   Min|   Max|  N|
 |:-------------|-----:|-----:|-----:|-----:|--:|
-|Cojo          | 0.038| 0.023| 0.009| 0.095| 30|
-|Percos        | 0.089| 0.066| 0.016| 0.219| 29|
-|Perry         | 0.043| 0.032| 0.007| 0.131| 32|
-|Pt_Conception | 0.049| 0.028| 0.010| 0.116| 30|
+|Cojo          | 0.030| 0.023| 0.007| 0.095| 45|
+|Percos        | 0.066| 0.063| 0.007| 0.219| 44|
+|Perry         | 0.032| 0.031| 0.004| 0.131| 47|
+|Pt_Conception | 0.040| 0.026| 0.010| 0.116| 45|
 
 ANOVA Results:
 
 
 |term       |  df| sumsq| meansq| statistic| p.value|
 |:----------|---:|-----:|------:|---------:|-------:|
-|population |   3| 0.049|  0.016|    10.086|       0|
-|Residuals  | 117| 0.189|  0.002|        NA|      NA|</code></pre>
+|population |   3| 0.037|  0.012|     8.321|       0|
+|Residuals  | 177| 0.264|  0.001|        NA|      NA|</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
@@ -669,18 +669,18 @@ ANOVA Results:
 
 |population    |  Mean|    SD|    Min|   Max|  N|
 |:-------------|-----:|-----:|------:|-----:|--:|
-|Cojo          | 0.026| 0.123| -0.157| 0.279| 60|
-|Percos        | 0.033| 0.040| -0.013| 0.124| 58|
+|Cojo          | 0.026| 0.122| -0.157| 0.279| 46|
+|Percos        | 0.034| 0.040| -0.013| 0.124| 44|
 |Perry         | 0.004| 0.121| -0.223| 0.222| 50|
-|Pt_Conception | 0.031| 0.016|  0.011| 0.064| 60|
+|Pt_Conception | 0.031| 0.017|  0.011| 0.064| 45|
 
 ANOVA Results:
 
 
 |term       |  df| sumsq| meansq| statistic| p.value|
 |:----------|---:|-----:|------:|---------:|-------:|
-|population |   3| 0.029|  0.010|     1.272|   0.285|
-|Residuals  | 224| 1.720|  0.008|        NA|      NA|</code></pre>
+|population |   3| 0.027|  0.009|     1.115|   0.344|
+|Residuals  | 181| 1.470|  0.008|        NA|      NA|</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
@@ -852,7 +852,7 @@ ANOVA Results:
 </tr>
 <tr class="even">
 <td style="text-align: left;">gsw</td>
-<td style="text-align: right;">0.2846</td>
+<td style="text-align: right;">0.3444</td>
 <td style="text-align: left;">No</td>
 </tr>
 </tbody>

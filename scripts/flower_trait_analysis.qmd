@@ -4,6 +4,8 @@ format: html
 editor: visual
 ---
 
+This script analyzes the porometer and flower length data from a single point in time (25 march 2025) at Percos.
+
 ```{r setup}
 # Load necessary packages
 library(readxl)
@@ -12,7 +14,7 @@ library(dplyr)
 
 # Load the data
 getwd()
-data <- read_excel("../data/raw/Flower_traits.xlsx")
+data <- read_excel("../data/raw/plant/Flower_traits.xlsx")
 data_2 <- read_excel("../data/raw/porometer/Petal_2025_low 4/2025-03-28/Petal_2025_low_glb and ks_2025_03_28_17_16_23_1.xlsx") #perry and Pt. Conception porometer data from 28Mar2025
 
 data <- data[-1, ] # removes 1st line of data which has the units for the variables
