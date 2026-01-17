@@ -296,6 +296,10 @@ microclimate_by_period <- collection_dates %>%
 
 ## 1.5 Merge traits and microclimate, construct analysis variables
 
+log transform weights and water per dry mass
+
+calculate proportions for rwc and dmc and then logit proportions
+
 ```{r}
 #| label: build-analysis-data
 
@@ -410,7 +414,7 @@ cor(-petal_microclimate$dmc_logit,
 library(ggplot2)
 library(dplyr)
 
-# Recreate your ICC table (replace with your actual object name if you prefer)
+# Recreate your ICC table 
 icc_table <- tibble::tribble(
   ~trait_pretty,              ~icc_microsite,
   "Log Fresh Weight",          0.427,

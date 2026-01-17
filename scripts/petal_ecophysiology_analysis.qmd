@@ -71,7 +71,7 @@ library(gridExtra)
 library(kableExtra)
 
 # Load the correct data
-data_raw <- read_csv("../data/raw/plant/petal_weight.csv")
+data_raw <- read_csv("../data/raw/plant/petal_weight_2025.csv")
 
 # Filter out the specific Cojo plant 1 observation
 data_filtered <- data_raw %>%
