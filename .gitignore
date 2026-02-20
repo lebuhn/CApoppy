@@ -72,3 +72,8 @@ Petal_scans/
 
 data/raw/Apogee_PAR
 
+# rendered reports / figures / tables
+outputs/
+*.html
+*_files/
+*.pdf
