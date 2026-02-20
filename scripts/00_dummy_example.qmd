@@ -1,0 +1,113 @@
+---
+author: CApoppy Project
+execute:
+  echo: true
+  message: false
+  warning: false
+format:
+  html:
+    toc: true
+title: Dummy Analysis Example
+---
+
+``` {r}
+#| label: setup
+#| include: false
+
+# Load standardized project setup
+source(here::here("R", "project_setup.R"))
+```
+
+# Purpose
+
+This dummy file demonstrates:
+
+-   Reading raw data
+-   Performing a simple summary
+-   Saving a figure to `outputs/figures`
+-   Saving a table to `outputs/tables`
+-   Rendering report to `outputs/reports`
+
+# 1. Simulate or Read Data
+
+In real scripts, you would read data like this:
+
+``` r
+# df <- read_csv(file.path(paths$data_raw, "your_folder", "your_file.csv"))
+```
+
+Here we simulate data:
+
+``` {r}
+set.seed(123)
+
+df <- tibble(
+  population = rep(c("Cojo", "PtCon"), each = 50),
+  petal_area = rnorm(100, mean = 5, sd = 1),
+  gsw = rnorm(100, mean = 0.3, sd = 0.05)
+)
+
+head(df)
+```
+
+# 2. Simple Summary Table
+
+``` {r}
+summary_tbl <- df %>%
+  group_by(population) %>%
+  summarise(
+    mean_area = mean(petal_area),
+    mean_gsw = mean(gsw),
+    n = n(),
+    .groups = "drop"
+  )
+
+summary_tbl
+```
+
+Save the table:
+
+``` {r}
+save_table_csv(summary_tbl, "dummy_summary_table.csv")
+```
+
+# 3. Create and Save a Figure
+
+``` {r}
+p <- ggplot(df, aes(petal_area, gsw, color = population)) +
+  geom_point() +
+  labs(
+    x = "Petal Area",
+    y = "Stomatal Conductance (gsw)",
+    title = "Dummy Petal Area vs GSW"
+  )
+
+p
+```
+
+Save the figure:
+
+``` {r}
+save_fig(p, "dummy_petal_area_vs_gsw.png")
+```
+
+# 4. Save a Model Object
+
+``` {r}
+model <- lm(gsw ~ petal_area + population, data = df)
+summary(model)
+```
+
+Save model object:
+
+``` {r}
+save_rds(model, "dummy_linear_model.rds")
+```
+
+# 5. Rendering the Report
+
+From the project root, render this file with:
+
+``` bash
+quarto render scripts/00_dummy_example.qmd --output-dir outputs/reports
+```
