@@ -1,0 +1,677 @@
+---
+title: "Petal ecophysiology - XY relationships by population"
+subtitle: "*Eschscholzia californica*, Dangermond Preserve 2025"
+author: "Gretchen LeBuhn & Kevin Simonin"
+date: today
+format:
+  pdf:
+    fig-width: 6.5
+    fig-height: 4.5
+    fig-dpi: 300
+    toc: false
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(lubridate)
+library(ggplot2)
+```
+
+```{r load-and-clean}
+# ------------------------------------------------------------
+# DATA FILE
+# Decision: use "petal_weight_2025.csv" (most recent filename
+# found in petal_physiology.qmd). Adjust path if needed.
+# ------------------------------------------------------------
+petal_raw <- read_csv("../data/raw/plant/petal_weight_2025.csv",
+                      show_col_types = FALSE)
+
+# ------------------------------------------------------------
+# AREA COLUMN
+# Decision: assumed column name is "area_cm2". If your column
+# is named differently (e.g. "petal_area"), change it here.
+# All area-derived traits are computed only if this column
+# exists; plots that need it are skipped silently if absent.
+# ------------------------------------------------------------
+area_col <- "area_cm2"
+has_area <- area_col %in% names(petal_raw)
+
+petal_data <- petal_raw |>
+  # ----------------------------------------------------------
+  # OUTLIER REMOVAL
+  # Decision: retain the exclusion present in all three old
+  # scripts. Cojo plant 1 block 1 was flagged; reason not
+  # documented in scripts but consistent across all versions.
+  # ----------------------------------------------------------
+  filter(!(population == "Cojo" & plant == 1 & block == "1")) |>
+
+  # ----------------------------------------------------------
+  # RECORD TYPE FILTER
+  # Decision: keep petals only. The raw file contains both
+  # petal and whole-flower records; mixing them would corrupt
+  # weight-based trait calculations.
+  # ----------------------------------------------------------
+  filter(petal_flower == "petal") |>
+
+  # ----------------------------------------------------------
+  # TYPE COERCION
+  # Decision: coerce date, block, population, and weights
+  # explicitly rather than relying on read_csv inference.
+  # Block is a factor so ggplot shape mapping works cleanly.
+  # ----------------------------------------------------------
+  mutate(
+    date       = mdy(date),
+    block      = factor(block, levels = c("1", "2", "3"),
+                        labels = c("Block 1 (Mar)", "Block 2 (May)", "Block 3 (Jul)")),
+    population = factor(population,
+                        levels = c("Pt. Conception", "Percos", "Perry", "Cojo")),
+    wet_wgt    = as.numeric(wet_wgt),
+    dry_wgt    = as.numeric(dry_wgt)
+  ) |>
+
+  # ----------------------------------------------------------
+  # IMPOSSIBLE-VALUE FILTER
+  # Decision: remove rows where either weight is missing, zero,
+  # or negative. A dry weight exceeding wet weight is physically
+  # impossible and indicates a data entry or labelling error;
+  # those rows are also removed. All exclusions are counted
+  # below so you know how many rows were affected.
+  # ----------------------------------------------------------
+  filter(
+    !is.na(wet_wgt), !is.na(dry_wgt),
+    wet_wgt > 0, dry_wgt > 0,
+    dry_wgt < wet_wgt          # dry must be less than fresh
+  ) |>
+
+  # ----------------------------------------------------------
+  # CORE TRAIT CALCULATIONS
+  # Decision: compute on raw proportion scale (not logit).
+  # Logit is useful for modelling but obscures interpretation
+  # in exploratory XY plots. RWC and DMC sum to 1 by definition
+  # so only one needs to be plotted against the other -- both
+  # are retained for flexibility.
+  # ----------------------------------------------------------
+  mutate(
+    rwc              = (wet_wgt - dry_wgt) / wet_wgt,  # 0-1
+    dmc              = dry_wgt / wet_wgt,               # 0-1
+    water_per_dm     = (wet_wgt - dry_wgt) / dry_wgt,  # g water / g dry
+
+    # ----------------------------------------------------------
+    # AREA-DERIVED TRAITS
+    # Decision: compute only when area column is present.
+    # Units: weights in mg -> mass per area in mg cm^-2.
+    # If weights are in g, multiply by 1000 here.
+    # ----------------------------------------------------------
+    fresh_per_area   = if (has_area) wet_wgt / .data[[area_col]] else NA_real_,
+    dry_per_area     = if (has_area) dry_wgt / .data[[area_col]] else NA_real_,
+    water_per_area   = if (has_area) (wet_wgt - dry_wgt) / .data[[area_col]] else NA_real_,
+
+    # Coastal / inland grouping for optional faceting
+    location_type = case_when(
+      population %in% c("Percos", "Pt. Conception") ~ "Coastal",
+      population %in% c("Cojo",   "Perry")           ~ "Inland",
+      TRUE                                           ~ NA_character_
+    )
+  )
+
+# Report how many rows survived cleaning
+message(sprintf("Rows after cleaning: %d", nrow(petal_data)))
+```
+
+```{r plot-theme}
+# ------------------------------------------------------------
+# SHARED PLOT THEME AND PALETTE
+# Decision: Okabe-Ito palette — colorblind-safe, 4 colors for
+# 4 populations. Named so the mapping is explicit and identical
+# across every plot regardless of factor level order.
+# Decision: population = color (primary grouping),
+#           block      = point shape (secondary, 3 levels ->
+#                        circle / triangle / square).
+# Decision: geom_smooth per population with lm + se shading.
+#   This shows whether slopes differ across populations, which
+#   is the key biological question. A single pooled line would
+#   hide that variation.
+# ------------------------------------------------------------
+
+pop_colors <- c(
+  "Pt. Conception" = "#E69F00",
+  "Percos"         = "#56B4E9",
+  "Perry"          = "#009E73",
+  "Cojo"           = "#D55E00"
+)
+
+block_shapes <- c(
+  "Block 1 (Mar)" = 16,   # filled circle
+  "Block 2 (May)" = 17,   # filled triangle
+  "Block 3 (Jul)" = 15    # filled square
+)
+
+base_theme <- theme_classic(base_size = 11) +
+  theme(
+    legend.position   = "right",
+    legend.key.size   = unit(0.45, "cm"),
+    strip.background  = element_blank(),
+    strip.text        = element_text(face = "italic"),
+    axis.title        = element_text(size = 10),
+    plot.title        = element_text(size = 11, face = "bold"),
+    plot.subtitle     = element_text(size = 9, color = "grey40")
+  )
+
+# Convenience wrapper: adds color + shape scales to every plot
+pop_scales <- list(
+  scale_color_manual(values = pop_colors, name = "Population"),
+  scale_shape_manual(values = block_shapes, name = "Block"),
+  guides(
+    color = guide_legend(override.aes = list(size = 2.5, linetype = 0)),
+    shape = guide_legend(override.aes = list(size = 2.5))
+  )
+)
+```
+
+------------------------------------------------------------------------
+
+# Section A - Core petal water relations
+
+## A1. RWC vs. DMC
+
+**What it shows:** The fundamental water-structure trade-off. Because RWC + DMC = 1, the slope must be -1 for a pooled line through individual points. The ecologically interesting signal is whether populations occupy distinct positions along this axis and whether that position shifts across blocks.
+
+**Axes:** DMC on x (the "explanatory" structural investment axis); RWC on y. Both in proportions (0-1).
+
+```{r plot-rwc-dmc, fig.cap="RWC vs. DMC. Each point is one plant. Lines are per-population OLS fits with 95% CI shading. RWC + DMC = 1 exactly, so a pooled line is trivially −1; population-level fits reveal whether populations differ in mean position along this axis."}
+
+ggplot(petal_data, aes(x = dmc, y = rwc,
+                       color = population, shape = block)) +
+  geom_point(alpha = 0.6, size = 2.8) +
+  geom_smooth(aes(fill = population),
+              method = "lm", se = TRUE, linewidth = 0.7,
+              alpha = 0.15, show.legend = FALSE) +
+  facet_wrap(~ population, nrow = 2, ncol = 2) +
+  scale_color_manual(values = pop_colors, guide = "none") +
+  scale_fill_manual(values = pop_colors, guide = "none") +
+  scale_shape_manual(values = block_shapes, name = "Block") +
+  guides(shape = guide_legend(override.aes = list(size = 2.5))) +
+  coord_cartesian(xlim = c(0, 0.55), ylim = c(0.45, 1.0)) +
+  labs(
+    title    = "A1. Relative water content vs. dry matter content",
+    subtitle = "Core water-structure trade-off",
+    x        = "Dry matter content (proportion)",
+    y        = "Relative water content (proportion)"
+  ) +
+  base_theme +
+  theme(
+    strip.text = element_text(size = 10, face = "bold")
+  )
+```
+
+## A2. Water per dry mass vs. DMC
+
+**What it shows:** Separates the "cheap succulent" strategy (low DMC, high water/DM) from the "structural" strategy (high DMC, lower water loading per unit dry mass).
+
+```{r plot-waterDM-dmc, fig.cap="Water per dry mass vs. DMC. Axes are on natural scales; consider log-transforming the y-axis if the distribution is right-skewed. Per-population OLS fits shown."}
+
+ggplot(petal_data, aes(x = dmc, y = water_per_dm,
+                       color = population, shape = block)) +
+  geom_point(alpha = 0.6, size = 2.8) +
+  geom_smooth(aes(group = population, color = population),
+              method = "lm", se = TRUE, linewidth = 0.7,
+              alpha = 0.15, show.legend = FALSE) +
+  pop_scales +
+  labs(
+    title    = "A2. Water per dry mass vs. dry matter content",
+    subtitle = "Succulent vs. structural investment axis",
+    x        = "Dry matter content (proportion)",
+    y        = "Water per dry mass (g / g)"
+  ) +
+  base_theme
+```
+
+## A3. Fresh weight vs. dry weight (size scaling)
+
+**What it shows:** Whether larger petals maintain the same water fraction. On log-log axes, a slope of 1 = isometric (same RWC regardless of size); slope \> 1 = larger petals are proportionally wetter; slope \< 1 = larger petals are proportionally drier.
+
+```{r plot-fw-dw, fig.cap="Fresh weight vs. dry weight on log-log axes. A slope of 1 (dashed reference line) indicates isometric scaling — larger petals have the same water fraction as smaller ones."}
+
+ggplot(petal_data, aes(x = dry_wgt, y = wet_wgt,
+                       color = population, shape = block)) +
+  geom_point(alpha = 0.6, size = 1.8) +
+  geom_smooth(aes(group = population, color = population),
+              method = "lm", se = TRUE, linewidth = 0.7,
+              alpha = 0.15, show.legend = FALSE) +
+  geom_abline(slope = 1, intercept = 0,
+              linetype = "dashed", color = "grey50", linewidth = 0.5) +
+  scale_x_log10() +
+  scale_y_log10() +
+  annotation_logticks(sides = "bl", size = 0.3) +
+  pop_scales +
+  labs(
+    title    = "A3. Fresh weight vs. dry weight (size scaling)",
+    subtitle = "Log-log axes; dashed line = isometric slope (1:1)",
+    x        = "Dry weight (mg, log scale)",
+    y        = "Fresh weight (mg, log scale)"
+  ) +
+  base_theme
+
+slope_table <- petal_data |>
+  group_by(population) |>
+  summarise(
+    n      = n(),
+    slope  = lm(log10(wet_wgt) ~ log10(dry_wgt))$coefficients[2],
+    r2     = summary(lm(log10(wet_wgt) ~ log10(dry_wgt)))$r.squared,
+    .groups = "drop"
+  ) |>
+  mutate(
+    slope = round(slope, 3),
+    r2    = round(r2,    3)
+  )
+
+knitr::kable(
+  slope_table,
+  col.names = c("Population", "n", "Slope", "R²"),
+)
+```
+
+------------------------------------------------------------------------
+
+# Section B - Area-normalized traits
+
+*These plots require a petal area column. If `has_area` is FALSE they are skipped.*
+
+```{r area-check}
+# Soft skip: if no area column, print a note and set a flag
+# that suppresses the following chunks.
+if (!has_area) {
+  cat(sprintf(
+    "NOTE: column '%s' not found in data. Section B plots are skipped.\n",
+    area_col
+  ))
+}
+```
+
+## B1. Fresh mass per area vs. DMC
+
+**What it shows:** Petal mass per area (PMA) is the direct analog of leaf mass per area (LMA). This plot places populations on the PMA-DMC plane and tests whether coastal populations produce thin, low-DMC petals and inland populations produce denser, higher-DMC petals.
+
+```{r plot-pma-dmc, eval=has_area, fig.cap="Fresh mass per area vs. DMC. PMA is the petal analog of LMA. A positive relationship indicates that denser petals are also heavier per unit display area."}
+
+ggplot(petal_data, aes(x = dmc, y = fresh_per_area,
+                       color = population, shape = block)) +
+  geom_point(alpha = 0.6, size = 1.8) +
+  geom_smooth(aes(group = population, color = population),
+              method = "lm", se = TRUE, linewidth = 0.7,
+              alpha = 0.15, show.legend = FALSE) +
+  pop_scales +
+  labs(
+    title    = "B1. Petal mass per area vs. dry matter content",
+    subtitle = "Petal analog of LMA",
+    x        = "Dry matter content (proportion)",
+    y        = "Fresh mass per area (mg cm^-2)"
+  ) +
+  base_theme
+```
+
+## B2. Dry mass per area vs. DMC
+
+**What it shows:** Structural investment per unit display surface. Separates whether high-DMC petals are also genuinely thick/dense (high dry mass per area) or just dry relative to a small total mass.
+
+```{r plot-dryMA-dmc, eval=has_area, fig.cap="Dry mass per area vs. DMC. Points above the trend have unexpectedly high structural investment for their DMC — thicker or denser petals than expected."}
+
+ggplot(petal_data, aes(x = dmc, y = dry_per_area,
+                       color = population, shape = block)) +
+  geom_point(alpha = 0.6, size = 1.8) +
+  geom_smooth(aes(group = population, color = population),
+              method = "lm", se = TRUE, linewidth = 0.7,
+              alpha = 0.15, show.legend = FALSE) +
+  pop_scales +
+  labs(
+    title    = "B2. Dry mass per area vs. dry matter content",
+    subtitle = "Structural investment per unit display surface",
+    x        = "Dry matter content (proportion)",
+    y        = "Dry mass per area (mg cm^-2)"
+  ) +
+  base_theme
+```
+
+## B3. RWC vs. fresh mass per area
+
+**What it shows:** Whether larger-petaled (high PMA) plants maintain better hydration. If coastal petals are simultaneously large and wet, both PMA and RWC will be elevated together, appearing as a positive relationship within population.
+
+```{r plot-rwc-pma, eval=has_area, fig.cap="RWC vs. fresh mass per area. A positive slope suggests larger petals are better hydrated; a flat or negative slope indicates size and hydration are decoupled."}
+
+ggplot(petal_data, aes(x = fresh_per_area, y = rwc,
+                       color = population, shape = block)) +
+  geom_point(alpha = 0.6, size = 1.8) +
+  geom_smooth(aes(group = population, color = population),
+              method = "lm", se = TRUE, linewidth = 0.7,
+              alpha = 0.15, show.legend = FALSE) +
+  pop_scales +
+  labs(
+    title    = "B3. RWC vs. fresh mass per area",
+    subtitle = "Is greater display investment coupled to better hydration?",
+    x        = "Fresh mass per area (mg cm^-2)",
+    y        = "Relative water content (proportion)"
+  ) +
+  base_theme
+```
+
+## B4. Fresh weight vs. area (allometric scaling)
+
+**What it shows:** Whether larger petals are proportionally thicker (slope \> 1 on log-log) or thinner (slope \< 1). The residuals from this line can be used later to identify populations that produce unexpectedly heavy or light petals for their display size.
+
+```{r plot-fw-area, eval=has_area, fig.cap="Fresh weight vs. petal area on log-log axes. Dashed line = isometric slope (slope = 1). Populations above the line produce heavier petals per unit area than average."}
+
+ggplot(petal_data, aes(x = .data[[area_col]], y = wet_wgt,
+                       color = population, shape = block)) +
+  geom_point(alpha = 0.6, size = 1.8) +
+  geom_smooth(aes(group = population, color = population),
+              method = "lm", se = TRUE, linewidth = 0.7,
+              alpha = 0.15, show.legend = FALSE) +
+  scale_x_log10() +
+  scale_y_log10() +
+  annotation_logticks(sides = "bl", size = 0.3) +
+  pop_scales +
+  labs(
+    title    = "B4. Fresh weight vs. petal area (allometric scaling)",
+    subtitle = "Log-log axes; slope > 1 = larger petals are proportionally thicker",
+    x        = "Petal area (cm², log scale)",
+    y        = "Fresh weight (mg, log scale)"
+  ) +
+  base_theme
+```
+
+------------------------------------------------------------------------
+
+# Section C - Seasonal trajectories
+
+These plots put block on the x-axis to show directional change through the flowering season. Individual points are jittered slightly to reduce overplotting; population means are connected by lines.
+
+## C1. RWC across blocks
+
+```{r plot-rwc-block, fig.cap="RWC across phenological blocks. Points are individual plants (jittered); larger symbols are population means connected by lines. A decline from Block 1 to Block 3 indicates seasonal drying of petal tissue."}
+
+# Compute population x block means for connecting lines
+means_rwc <- petal_data |>
+  group_by(population, block) |>
+  summarise(rwc = mean(rwc, na.rm = TRUE), .groups = "drop")
+
+ggplot(petal_data, aes(x = block, y = rwc, color = population)) +
+  geom_jitter(aes(shape = block), width = 0.1, alpha = 0.4, size = 1.5) +
+  geom_line(data = means_rwc,
+            aes(group = population), linewidth = 0.8) +
+  geom_point(data = means_rwc,
+             aes(shape = block), size = 3.5, stroke = 0.8) +
+  pop_scales +
+  labs(
+    title    = "C1. Relative water content across phenological blocks",
+    subtitle = "Individual plants (small) and population means (large) connected by lines",
+    x        = "Sampling block",
+    y        = "Relative water content (proportion)"
+  ) +
+  base_theme
+```
+
+## C2. DMC across blocks
+
+```{r plot-dmc-block, fig.cap="DMC across phenological blocks. A rise from Block 1 to Block 3 indicates seasonal structural hardening."}
+
+means_dmc <- petal_data |>
+  group_by(population, block) |>
+  summarise(dmc = mean(dmc, na.rm = TRUE), .groups = "drop")
+
+ggplot(petal_data, aes(x = block, y = dmc, color = population)) +
+  geom_jitter(aes(shape = block), width = 0.1, alpha = 0.4, size = 1.5) +
+  geom_line(data = means_dmc,
+            aes(group = population), linewidth = 0.8) +
+  geom_point(data = means_dmc,
+             aes(shape = block), size = 3.5, stroke = 0.8) +
+  pop_scales +
+  labs(
+    title    = "C2. Dry matter content across phenological blocks",
+    subtitle = "Individual plants (small) and population means (large) connected by lines",
+    x        = "Sampling block",
+    y        = "Dry matter content (proportion)"
+  ) +
+  base_theme
+```
+
+## C3. Petal area across blocks
+
+*Skipped if no area column.*
+
+```{r plot-area-block, eval=has_area, fig.cap="Petal area across blocks. Tests whether flowers get smaller as the season progresses."}
+
+means_area <- petal_data |>
+  group_by(population, block) |>
+  summarise(area = mean(.data[[area_col]], na.rm = TRUE), .groups = "drop")
+
+ggplot(petal_data, aes(x = block, y = .data[[area_col]], color = population)) +
+  geom_jitter(aes(shape = block), width = 0.1, alpha = 0.4, size = 1.5) +
+  geom_line(data = means_area,
+            aes(y = area, group = population), linewidth = 0.8) +
+  geom_point(data = means_area,
+             aes(y = area, shape = block), size = 3.5, stroke = 0.8) +
+  pop_scales +
+  labs(
+    title    = "C3. Petal area across phenological blocks",
+    subtitle = "Do flowers get smaller as season progresses?",
+    x        = "Sampling block",
+    y        = "Petal area (cm²)"
+  ) +
+  base_theme
+```
+
+------------------------------------------------------------------------
+
+# Section D - Percos outlier diagnostics
+
+*These plots investigate the unusually wide spread of Percos points in A1, where several individuals reached DMC \> 0.35 — far beyond the other three populations. Three questions: (1) Do the extreme Percos points cluster on particular collection dates, suggesting a sampling-time confound? (2) Does the spread grow across blocks, suggesting genuine seasonal drying? (3) Are the most extreme records plausible, or do they look like data entry errors?*
+
+```{r percos-flag}
+# ------------------------------------------------------------------
+# FLAG EXTREME PERCOS RECORDS
+# Decision: define "extreme" as the top 5% of DMC values within
+# Percos only (rather than a fixed threshold). This adapts to
+# whatever the actual data range is, and avoids hard-coding a
+# number that might exclude too many or too few records.
+# ------------------------------------------------------------------
+percos_dmc_cutoff <- petal_data |>
+  filter(population == "Percos") |>
+  summarise(q95 = quantile(dmc, 0.95, na.rm = TRUE)) |>
+  pull(q95)
+
+petal_data <- petal_data |>
+  mutate(
+    percos_extreme = population == "Percos" & dmc >= percos_dmc_cutoff
+  )
+
+message(sprintf(
+  "Percos 95th-percentile DMC cutoff: %.3f  |  n extreme records: %d",
+  percos_dmc_cutoff,
+  sum(petal_data$percos_extreme, na.rm = TRUE)
+))
+```
+
+## D1. RWC vs. DMC - Percos coloured by collection date
+
+**What it shows:** Whether the low-RWC Percos points cluster on specific dates within a block. . Points from other populations are shown in grey for context.
+
+```{r plot-D1-percos-date, fig.width=7, fig.height=4.5,fig.cap="RWC vs. DMC for Percos only, points coloured by collection date within each block. Grey points = other three populations. If low-RWC individuals cluster on later dates within a block, sampling-time confound is likely."}
+
+# Percos subset with numeric date-within-block rank
+# (rank 1 = earliest date collected in that block)
+percos_dated <- petal_data |>
+  filter(population == "Percos") |>
+  group_by(block) |>
+  mutate(date_rank = dense_rank(date)) |>
+  ungroup()
+
+# Background: all other populations in grey
+other_pops <- petal_data |> filter(population != "Percos")
+
+ggplot() +
+  # Grey background points for context
+  geom_point(data = other_pops,
+             aes(x = dmc, y = rwc),
+             color = "grey80", size = 1.4, alpha = 0.5) +
+  # Percos points coloured by actual collection date
+  geom_point(data = percos_dated,
+             aes(x = dmc, y = rwc, color = date, shape = block),
+             size = 2.2, alpha = 0.85) +
+  # Mark the extreme records with an open circle border
+  geom_point(data = filter(percos_dated, percos_extreme),
+             aes(x = dmc, y = rwc),
+             shape = 1, size = 4, color = "black", stroke = 0.8) +
+  scale_color_date(
+    name   = "Collection date",
+    low    = "#c6dbef",
+    high   = "#08306b",
+    labels = scales::label_date("%b %d")
+  ) +
+  scale_shape_manual(values = block_shapes, name = "Block") +
+  labs(
+    title    = "D1. Percos: RWC vs. DMC coloured by collection date",
+    subtitle = paste0(
+      "Open circles = top 5% DMC within Percos (DMC >= ",
+      round(percos_dmc_cutoff, 3),
+      "). Grey = other populations. Date proxy: collection date within block."
+    ),
+    x = "Dry matter content (proportion)",
+    y = "Relative water content (proportion)"
+  ) +
+  facet_wrap(~ block, nrow = 1) +
+  base_theme +
+  theme(legend.position = "right")
+```
+
+## D2. RWC vs. DMC - faceted by block
+
+**What it shows:** Whether the Percos spread is present in all three blocks or emerges specifically in Block 2 or 3. Faceting removes block as a visual confound (shapes are hard to read when points overlap) and makes the within-block population separation clear.
+
+**Decision:** Use `scales = "fixed"` so axes are identical across panels — this makes it easy to see whether the range expands across blocks. If the spread is seasonal, the Percos cloud will visibly widen from left panel to right panel.
+
+```{r}
+
+# Population x block means for overlay
+pop_block_means <- petal_data |>
+  group_by(population, block) |>
+  summarise(
+    dmc_mean = mean(dmc, na.rm = TRUE),
+    rwc_mean = mean(rwc, na.rm = TRUE),
+    .groups  = "drop"
+  )
+
+ggplot(petal_data, aes(x = dmc, y = rwc,
+                       color = population, shape = population)) +
+  geom_point(alpha = 0.45, size = 1.6) +
+  # Population means as larger solid points
+  geom_point(data = pop_block_means,
+             aes(x = dmc_mean, y = rwc_mean,
+                 color = population, shape = population),
+             size = 4, stroke = 0.8) +
+  facet_wrap(~ block, nrow = 1, scales = "fixed") +
+  # Decision: use population for both color AND shape here
+  # (block is on the facet axis, so shape encodes population
+  # instead — makes within-panel population ID easier).
+  scale_color_manual(values = pop_colors, name = "Population") +
+  scale_shape_manual(
+    values = c(
+      "Pt. Conception" = 16,
+      "Percos"         = 17,
+      "Perry"          = 15,
+      "Cojo"           = 18
+    ),
+    name = "Population"
+  ) +
+  labs(
+    title    = "D2. RWC vs. DMC - faceted by block",
+    subtitle = "Large points = population means. Fixed axes across panels.",
+    x        = "Dry matter content (proportion)",
+    y        = "Relative water content (proportion)"
+  ) +
+  base_theme +
+  theme(
+    strip.text      = element_text(size = 9, face = "bold"),
+    legend.position = "right"
+  )
+```
+
+## D3. Extreme Percos records - verification table
+
+```{r table-D3-extreme-percos plot-D2-facet-blocks, fig.width=8, fig.height=3.5, fig.cap="RWC vs. DMC faceted by block. Each panel has the same axis limits to facilitate comparison. Large points = population means. If the Percos spread emerges in later blocks, the cloud of Percos points will visibly widen from left to right."}
+extreme_records <- petal_data |>
+  filter(percos_extreme) |>
+  arrange(desc(dmc)) |>
+  select(
+    population, block, plant, date,
+    wet_wgt, dry_wgt,
+    dmc, rwc, water_per_dm
+  ) |>
+  mutate(
+    dmc          = round(dmc,          3),
+    rwc          = round(rwc,          3),
+    water_per_dm = round(water_per_dm, 3),
+    wet_wgt      = round(wet_wgt,      3),
+    dry_wgt      = round(dry_wgt,      3)
+  )
+
+knitr::kable(
+  extreme_records,
+  col.names = c("Population", "Block", "Plant", "Date",
+                "Wet wgt (mg)", "Dry wgt (mg)",
+                "DMC", "RWC", "Water/DM"),
+  caption   = paste0(
+    "Top 5\\% DMC records within Percos (DMC \\geq ",
+    round(percos_dmc_cutoff, 3),
+    "). Verify these against field notebooks."
+  )
+)
+```
+
+## D4. DMC distribution by population x block (violin + jitter)
+
+```{r plot-D4-violin, fig.width=8, fig.height=4, fig.cap="DMC distributions by population and block. Violin width encodes density. Individual points overlaid. A long right tail in Percos but not in other populations confirms the spread seen in A1."}
+
+ggplot(petal_data,
+       aes(x = population, y = dmc, color = population, fill = population)) +
+  geom_violin(alpha = 0.15, linewidth = 0.5, trim = TRUE) +
+  geom_jitter(width = 0.12, alpha = 0.5, size = 1.2) +
+  stat_summary(fun = mean, geom = "crossbar",
+               width = 0.4, linewidth = 0.6,
+               color = "grey20", fatten = 1) +
+  facet_wrap(~ block, nrow = 1) +
+  scale_color_manual(values = pop_colors, guide = "none") +
+  scale_fill_manual(values  = pop_colors, guide = "none") +
+  labs(
+    title    = "D4. DMC distributions by population and block",
+    subtitle = "Horizontal bar = mean. Long right tail in Percos = high-DMC outliers.",
+    x        = NULL,
+    y        = "Dry matter content (proportion)"
+  ) +
+  base_theme +
+  theme(
+    axis.text.x  = element_text(angle = 30, hjust = 1, size = 8),
+    strip.text   = element_text(size = 9, face = "bold")
+  )
+```
+
+------------------------------------------------------------------------
+
+# Data summary
+
+```{r summary-table}
+# A simple count table so you know what n survived cleaning
+# per population x block.
+petal_data |>
+  count(population, block, location_type) |>
+  tidyr::pivot_wider(names_from = block, values_from = n,
+                     values_fill = 0) |>
+  knitr::kable(
+    caption = "Sample sizes after cleaning (n plants per population x block)"
+  )
+```

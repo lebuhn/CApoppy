@@ -1,0 +1,225 @@
+---
+title: "CApoppy Analysis Index"
+format:
+  html:
+    toc: true
+    number-sections: true
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+## How to use this index
+
+This project is organized as a set of *theme-based* analyses. Each theme below lists:
+
+- the **master** analysis file(s) to render,
+- the **main questions** being answered,
+- the **datasets** read by that file (as currently written in code),
+- the **outputs** generated (figures/tables inside the rendered document; and any files written to disk when present).
+
+
+---
+
+## Theme A — Microgeographic variation in petal physiology & microclimate
+
+### Master candidates
+- `petal_physiology.qmd`
+- `petal_microclimate_analysis.qmd`
+- `petal_microclimate_analysis_2.qmd`
+- `petal_ecophysiology_analysis.qmd`
+- `flower_traits_fixed_block.qmd`
+
+### Questions
+- Do petal water-content / tissue-economics traits vary among nearby populations (microsites)?
+- Which microclimate variables (temperature, RH, VPD, PAR/fog proxies) predict petal traits?
+- Do short-term developmental microclimate windows (e.g., 4-day windows) explain trait variation?
+
+### Data used (as referenced in code)
+- `data/raw/plant/petal_weight.csv` (or `petal_weight_2025.csv` depending on file)
+- `data/raw/rh_temp/*.csv` (site RH/temp logger files)
+- `data/raw/Apogee_PAR/*.csv` (site PAR files)
+
+### Outputs
+- Population × block trait summaries (tables)
+- Microclimate summaries, time series, and window metrics (plots/tables)
+- Trait–microclimate relationships (correlations / regressions / mixed models)
+- PCA-style multivariate summaries (when included)
+
+---
+
+## Theme B — Stomatal conductance (gsw) comparisons
+
+### Master
+- `Gsw_comparison_bypop.qmd`
+
+### Questions
+- Do gsw values differ among populations?
+- Do gsw values differ by measurement surface (top vs bottom), time, or other covariates (as implemented)?
+
+### Data used
+- `data/processed/porometer_4pops.csv` (note: some scripts currently reference an absolute `~/GitHub/...` path)
+
+### Outputs
+- Comparative plots of gsw by population (and any stratifications used)
+- Statistical tests / model summaries in the rendered report
+
+---
+
+## Theme C — Flowering timing / phenology
+
+### Master
+- `plant_flowering_analysis.qmd`
+
+### Questions
+- When do flowers open and close by population?
+- How long are flowers open / fully available, and does duration differ by population?
+
+### Data used
+- `data/raw/plant/opening_camera_2025.csv`
+
+### Outputs
+- Timing/duration plots (distributions and summaries)
+- Statistical comparisons (t-tests / models as implemented)
+
+---
+
+## Theme D — Flower shrinkage / water loss dynamics
+
+### Master
+- `Shrinkage2.qmd`
+
+### Questions
+- How do flower size/area and mass change over time (shrinkage)?
+- Are shrinkage trajectories consistent among individuals/conditions?
+
+### Data used
+- `data/raw/fl_shrinkage2.csv`
+
+### Outputs
+- Shrinkage time-series style plots and summaries
+- Trait relationship plots (area vs weight etc.)
+
+---
+
+## Theme E — Sensor QA/QC and substitution (microclimate infrastructure)
+
+### Masters
+- `sensor_comparison_analysis.qmd`
+- `rh_sensor_comparison.qmd`
+- `sensor_comparison_analysis.qmd` (new vs old sensors, plus matching)
+
+### Questions
+- Can new sensors substitute for old logger gaps at Pt. Conception and Cojo?
+- How do RH aggregation methods (min/max/avg) affect comparability?
+
+### Data used
+- `data/raw/rh_temp/Cojo_rhtemp_2025.csv`
+- `data/raw/rh_temp/Pt_Con_rhtemp_2025.csv`
+- `data/raw/rh_temp/Cojo_Pt_Con_rhtemp_2025_tncsensor.csv`
+- `data/raw/rh_temp/pt-conception-alternate.csv` (where applicable)
+
+### Outputs
+- Time series comparisons
+- Scatterplots (old vs new)
+- Bias/error metrics, regression/correlation summaries
+- (Often) Bland–Altman style diagnostics
+
+---
+
+## Theme F — Plant / flower trait comparisons and data integration
+
+### Masters
+- `plant_trait_analysis.qmd` (traits entered directly in the file)
+- `petal_trait_analysis.qmd` (merges petal weights + plant traits + porometer)
+- `flower_trait_analysis.qmd` (Excel-based exploratory flower trait analysis)
+
+### Questions
+- Do plant morphological traits differ among populations at a sampling date?
+- How do plant traits relate to petal traits and porometer measurements?
+- What relationships exist among flower traits (length, etc.) and physiology (as included)?
+
+### Data used
+- `data/raw/plant/plant_traits.csv`
+- `data/raw/plant/petal_weight.csv`
+- `data/processed/porometer_4pops.csv`
+- `data/raw/plant/Flower_traits.xlsx`
+- Porometer Excel exports under `data/raw/porometer/...` (as referenced)
+
+### Outputs
+- Comparative plots and statistical tests
+- Merged dataset summaries for downstream modeling
+
+---
+
+## Theme G — Theory / simulation (no field data)
+
+### Master
+- `Schoen and Ashman.qmd`
+
+### Questions
+- How does optimal floral longevity vary across parameter combinations in a Schoen & Ashman style framework?
+
+### Data used
+- None (simulation/parameter grids)
+
+### Outputs
+- Contour/isocline plots and derived summaries
+
+---
+
+## Theme H — Project planning / roadmap
+
+### Master
+- `research_plan.qmd`
+
+### Purpose
+- Organizes hypotheses, required datasets, and a staged analysis workflow.
+
+### Data referenced
+- `data/processed/Combined_3pops_march.csv`
+- `data/raw/plant/plant_traits.csv`
+- `data/processed/porometer_4pops.csv`
+- `data/raw/plant/petal_weight.csv`
+- `data/raw/fl_shrinkage2.csv`
+
+### Outputs
+- If the code chunks are enabled and objects exist, it includes `ggsave()` targets such as:
+  - `figures/Fig1_environment_WUE.pdf`
+  - `figures/Fig2_trait_syndrome.pdf`
+  - `figures/Fig3_mixed_model.pdf`
+
+---
+
+## Theme I — Older time-series prototypes (CR6 / ovary temperature)
+
+### Masters
+- `Time_series.Rmd`
+- `Time_series_CR6_fltime.Rmd`
+- `Temp_time_series_CR6_ovary.Rmd`
+
+### Questions
+- What do the air/flower/ovary temperature time series look like across nights/days?
+
+### Data used
+- CR6 logger CSVs (currently referenced with absolute paths in some files)
+
+### Outputs
+- Rendered time series plots in HTML
+
+---
+
+## Utility / QA
+
+### Master
+- `review_dataset.qmd`
+
+### Purpose
+- Dataset review (variable counts/categories, structure checks) for petal weight data.
+
+### Data used
+- `data/raw/plant/petal_weight.csv`
+
+### Outputs
+- Rendered summaries in HTML
