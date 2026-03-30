@@ -1,0 +1,128 @@
+---
+title: "CApoppy Path Audit and Fix Suggestions"
+format:
+  html:
+    toc: true
+    number-sections: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Goal
+
+This note identifies files that (based on the code) use **absolute paths** (e.g., `~/Dropbox/...`, `~/GitHub/...`, `~/Box/...`) and suggests how to convert them to **project-relative paths** so the project is portable and renders from the repo root.
+
+A simple traditional rule:
+
+- Prefer `here::here()` (R) or Quarto project root relative paths.
+- Keep all data under `data/raw` and `data/processed`.
+- Avoid `setwd()` and avoid paths that point outside the repository.
+
+---
+
+## Files likely to contain absolute paths (from the code you’re running)
+
+### `Petal_water_content.qmd`
+**Absolute path observed**
+- `~/GitHub/CApoppy/data/raw/Petal_water.csv`
+
+**Suggested update**
+- Move the file into `data/raw/plant/` (or `data/raw/petal/`) and read it as:
+  - `readr::read_csv("data/raw/plant/Petal_water.csv")`
+
+---
+
+### `Gsw_comparison_bypop.qmd`
+**Absolute path observed**
+- `~/GitHub/CApoppy/data/processed/porometer_4pops.csv`
+
+**Suggested update**
+- Use the repo path:
+  - `readr::read_csv("data/processed/porometer_4pops.csv", ...)`
+
+---
+
+### `Time_series.Rmd`
+**Absolute paths observed**
+- `~/Dropbox/CApoppy/data/air_temp/55000000492FED21_052422.csv`
+- `~/Dropbox/CApoppy/data/fl_temp/cr6_Ten_min.csv`
+
+**Suggested update**
+1) Copy these files into the repo:
+   - `data/raw/air_temp/55000000492FED21_052422.csv`
+   - `data/raw/fl_temp/cr6_Ten_min.csv`
+2) Update reads to:
+   - `readr::read_csv("data/raw/air_temp/55000000492FED21_052422.csv")`
+   - `readr::read_csv("data/raw/fl_temp/cr6_Ten_min.csv")`
+
+---
+
+### `Time_series_CR6_fltime.Rmd`
+**Absolute path observed**
+- `~/Dropbox/CApoppy/data/fl_temp/cr6_Temp.5.Jun.22.csv` (and similar commented alternatives)
+
+**Suggested update**
+- Store under `data/raw/fl_temp/` and read via:
+  - `readr::read_csv("data/raw/fl_temp/cr6_Temp.5.Jun.22.csv")`
+
+---
+
+### `Temp_time_series_CR6_ovary.Rmd`
+**Absolute paths observed**
+- Multiple CR6 CSVs such as `cr6_Temp.28.May.22.csv`, `cr6_Temp.31.May.22.csv`, `cr6_Temp.5.Jun.22.csv`
+- A knit root directory set to a local Box/Dropbox path (common in older Rmds)
+
+**Suggested update**
+1) Put all referenced CR6 files into:
+   - `data/raw/fl_temp/`
+2) Remove any `knitr::opts_knit$set(root.dir=...)` and use repo-relative reads:
+   - `readr::read_csv("data/raw/fl_temp/cr6_Temp.28.May.22.csv")`, etc.
+
+---
+
+### `CApoppy.wgt.Rmd`
+**Likely absolute path pattern**
+- Older scripts commonly use Box/Dropbox `setwd()` plus `CApoppy.weight.csv` without a project-relative path.
+
+**Suggested update**
+- Put the dataset at:
+  - `data/raw/plant/CApoppy.weight.csv`
+- Replace any `setwd()` usage with direct reads:
+  - `readr::read_csv("data/raw/plant/CApoppy.weight.csv")`
+
+---
+
+## Recommended “traditional” fix pattern for all scripts
+
+### Option 1 — Use plain relative paths (simplest)
+Assuming you render from the repo root:
+
+```r
+petal <- readr::read_csv("data/raw/plant/petal_weight.csv")
+```
+
+### Option 2 — Use `here::here()` (robust)
+Add `here` once and then:
+
+```r
+petal <- readr::read_csv(here::here("data", "raw", "plant", "petal_weight.csv"))
+```
+
+This avoids breakage if you render from a subfolder.
+
+---
+
+## One-time project setting that helps
+
+If you add a `_quarto.yml` at the repo root (or keep it there), Quarto treats that directory as the project root, which makes consistent relative paths much easier.
+
+---
+
+## Quick checklist before you commit the fixes
+
+- [ ] All `read_*()` calls use `"data/..."`
+- [ ] No `setwd()` remains in any script
+- [ ] Any file that lives outside the repo has been copied into `data/raw/...` (or documented as intentionally external)
+- [ ] Re-render each master QMD to confirm it runs end-to-end
