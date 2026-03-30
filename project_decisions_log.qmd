@@ -7,73 +7,84 @@ format:
     toc: true
     toc-depth: 3
     code-fold: true
+editor: 
+  markdown: 
+    wrap: 72
 ---
 
 # Project Overview
 
-**Study System:** Microgeographic variation in petal water content traits and microclimate in *Eschscholzia californica* at the Dangermond Preserve
+**Study System:** Microgeographic variation in petal water content
+traits and microclimate in *Eschscholzia californica* at the Dangermond
+Preserve
 
-**Goal:** Test whether microclimate variables (VPD, temperature, PAR) explain population-level variation in petal tissue economics strategies across four populations within a 2 km radius.
+**Goal:** Test whether microclimate variables (VPD, temperature, PAR)
+explain population-level variation in petal tissue economics strategies
+across four populations within a 2 km radius.
 
 **Target Journals:** *Oecologia*, *Oikos*
 
----
+------------------------------------------------------------------------
 
 # Key Research Questions
 
 ## Primary Question
-**Does microclimate variation (not just geographic location) drive petal tissue economics traits?**
 
-- Hypothesis: Microclimate variables (particularly VPD, temperature extremes, and light availability) explain population-level variation in tissue economics strategies better than simple coastal/inland classifications.
+**Does microclimate variation (not just geographic location) drive petal
+tissue economics traits?**
+
+-   Hypothesis: Microclimate variables (particularly VPD, temperature
+    extremes, and light availability) explain population-level variation
+    in tissue economics strategies better than simple coastal/inland
+    classifications.
 
 ## Secondary Questions
 
-1. **Temporal matching:** What time window of microclimate exposure best predicts petal traits? (3, 7, or 14 days before collection?)
+1.  **Temporal matching:** What time window of microclimate exposure
+    best predicts petal traits? (3, 7, or 14 days before collection?)
 
-2. **Petal size responses:** Do plants adjust flower size in addition to tissue water content in response to environmental stress?
+2.  **Petal size responses:** Do plants adjust flower size in addition
+    to tissue water content in response to environmental stress?
 
-3. **Population strategies:** Do populations exhibit distinct physiological strategies in multivariate trait space?
+3.  **Population strategies:** Do populations exhibit distinct
+    physiological strategies in multivariate trait space?
 
-4. **Stress gradients:** Which sites experience the most stressful microclimate conditions?
+4.  **Stress gradients:** Which sites experience the most stressful
+    microclimate conditions?
 
----
+------------------------------------------------------------------------
 
 # Study Design
 
 ## Populations (n=4)
 
-**Coastal:**
-1. **Pt. Conception** (34.454467°N, -120.46931°W): Coastal dune, sandy substrate, high exposure
-2. **Percos** (34.451157°N, -120.444829°W): Shale hillside very close to beach
+**Coastal:** 1. **Pt. Conception** (34.454467°N, -120.46931°W): Coastal
+dune, sandy substrate, high exposure 2. **Percos** (34.451157°N,
+-120.444829°W): Shale hillside very close to beach
 
-**Inland:**
-3. **Perry** (34.460931°N, -120.450441°W): Inland shale hillside
-4. **Cojo** (34.458803°N, -120.444922°W): Inland shale hillside
+**Inland:** 3. **Perry** (34.460931°N, -120.450441°W): Inland shale
+hillside 4. **Cojo** (34.458803°N, -120.444922°W): Inland shale hillside
 
 ## Sampling Design
 
-**Temporal blocks:**
-- Block 1: March 26-April 17, 2025 (early flowering)
-- Block 2: May 20-23, 2025 (peak flowering)
-- Block 3: July 2-5, 2025 (late flowering)
+**Temporal blocks:** - Block 1: March 26-April 17, 2025 (early
+flowering) - Block 2: May 20-23, 2025 (peak flowering) - Block 3: July
+2-5, 2025 (late flowering)
 
-**Sample sizes:** ~15 plants per population per block
+**Sample sizes:** \~15 plants per population per block
 
-**Petal measurements:**
-- Fresh weight (immediate)
-- Dry weight (after 48h at 80°C)
-- Calculated: RWC, DMC, water per dry mass
+**Petal measurements:** - Fresh weight (immediate) - Dry weight (after
+48h at 80°C) - Calculated: RWC, DMC, water per dry mass
 
 ## Microclimate Monitoring
 
-**Sensors:**
-- HOBO temperature/RH loggers (30-min intervals)
-- PAR sensors (5-min intervals)
-- Placed at flower height (~30 cm) in center of each population
+**Sensors:** - temperature/RH loggers (30-min intervals) - Apogee PAR
+sensors (5-min intervals) - Placed at flower height (\~30 cm) in center
+of each population
 
 **Monitoring period:** March 5 - October 1, 2025
 
----
+------------------------------------------------------------------------
 
 # Major Analytical Decisions
 
@@ -81,203 +92,205 @@ format:
 
 **Date:** Session 1-3
 
-**Decision:** Frame the study around microclimate variation as the mechanistic driver, rather than simple coastal/inland classifications.
+**Decision:** Frame the study around microclimate variation as the
+mechanistic driver, rather than simple coastal/inland classifications.
 
-**Rationale:**
-- Geographic labels (coastal/inland) are proxies for microclimate
-- Direct measurement of microclimate provides mechanistic understanding
-- Percos (coastal shale) showed different patterns than Pt. Conception (coastal dune), suggesting substrate/microclimate matters more than proximity to ocean
+**Rationale:** - Geographic labels (coastal/inland) are proxies for
+microclimate - Direct measurement of microclimate provides mechanistic
+understanding - Percos (coastal shale) showed different patterns than
+Pt. Conception (coastal dune), suggesting substrate/microclimate matters
+more than proximity to ocean
 
-**Implementation:**
-- Comprehensive microclimate characterization comes BEFORE petal trait analysis in manuscript structure
-- Mixed models test microclimate predictors directly
-- Variance partitioning to compare site labels vs. microclimate variables
+**Implementation:** - Comprehensive microclimate characterization comes
+BEFORE petal trait analysis in manuscript structure - Mixed models test
+microclimate predictors directly - Variance partitioning to compare site
+labels vs. microclimate variables
 
 ## Decision 2: Multiple Temporal Windows
 
 **Date:** Session 5-6
 
-**Decision:** Test 3, 7, and 14-day microclimate windows before petal collection to find optimal temporal matching.
+**Decision:** Test 3, 7, and 14-day microclimate windows before petal
+collection to find optimal temporal matching.
 
-**Rationale:**
-- Petal lifespan is ~4 days, but developmental programming may integrate longer periods
-- Different traits may respond to different temporal windows
-- Petal size might respond to longer windows (developmental), while RWC/DMC might respond to shorter windows (immediate physiological response)
+**Rationale:** - Petal lifespan is \~4 days, but developmental
+programming may integrate longer periods - Different traits may respond
+to different temporal windows - Petal size might respond to longer
+windows (developmental), while RWC/DMC might respond to shorter windows
+(immediate physiological response)
 
-**Implementation:**
-- Calculate microclimate metrics for all three windows
-- Use AIC comparison to identify best predictive window for each trait
-- Report temporal window results before trait-microclimate relationships
+**Implementation:** - Calculate microclimate metrics for all three
+windows - Use AIC comparison to identify best predictive window for each
+trait - Report temporal window results before trait-microclimate
+relationships
 
 ## Decision 3: Analyze All Three Size Measures
 
 **Date:** Session 6
 
-**Decision:** Analyze fresh weight, dry weight, AND size-independent traits (RWC, DMC) as separate response variables.
+**Decision:** Analyze fresh weight, dry weight, AND size-independent
+traits (Relative Water Content, Dry Matter Content) as separate response
+variables.
 
-**Rationale:**
-- Dramatic petal size decline across season (10-20 fold decrease from Block 1 to Block 3)
-- Size adjustment is itself a stress response strategy
-- Need to separate size effects from tissue economics effects
+**Rationale:** - Dramatic petal size decline across season (10-20 fold
+decrease from Block 1 to Block 3) - Size adjustment is itself a stress
+response strategy - Need to separate size effects from tissue economics
+effects
 
-**Response variables:**
-1. Fresh weight (log-transformed)
-2. Dry weight (log-transformed)
-3. Dry matter content (proportion, logit-linked)
-4. Relative water content (proportion, logit-linked)
-5. Water per dry mass
+**Response variables:** 1. Fresh weight (log-transformed) 2. Dry weight
+(log-transformed) 3. Dry matter content (proportion, logit-linked) 4.
+Relative water content (proportion, logit-linked) 5. Water per dry mass
 
 ## Decision 4: Mixed Effects Models with Population Random Effects
 
 **Date:** Session 7-8
 
-**Decision:** Use mixed effects models with population as random effect to test microclimate-trait relationships.
+**Decision:** Use mixed effects models with population as random effect
+to test microclimate-trait relationships.
 
-**Rationale:**
-- Accounts for non-independence within populations
-- Allows quantification of population-level variation beyond measured microclimate
-- Can test for genotype × environment interactions
+**Rationale:** - Accounts for non-independence within populations -
+Allows quantification of population-level variation beyond measured
+microclimate - Can test for genotype × environment interactions
 
-**Model structure:**
-- Fixed effects: Standardized microclimate variables (VPD, temp, PAR, fog), temporal block
-- Random effect: Population intercepts
-- Model selection via AIC
-- Separate models for each response variable
+**Model structure:** - Fixed effects: Standardized microclimate
+variables (VPD, temp, PAR, fog), temporal block - Random effect:
+Population intercepts - Model selection via AIC - Separate models for
+each response variable
 
 ## Decision 5: Stress Prediction - Inland Sites Most Stressful
 
 **Date:** Session 8
 
-**Prediction:** Inland sites (Cojo, Perry) will show higher stress than coastal sites.
+**Prediction:** Inland sites (Cojo, Perry) will show higher stress than
+coastal sites.
 
-**Reasoning:**
-- Coastal sites benefit from fog buffering and ocean temperature moderation
-- Inland sites likely experience higher VPD, higher maximum temperatures, lower humidity
-- Challenges simple "coastal = stressful (salt/wind)" assumption
+**Reasoning:** - Coastal sites benefit from fog buffering and ocean
+temperature moderation - Inland sites likely experience higher VPD,
+higher maximum temperatures, lower humidity - Challenges simple "coastal
+= stressful (salt/wind)" assumption
 
 **To be tested in results**
 
----
+------------------------------------------------------------------------
 
 # Data Quality Issues & Solutions
 
 ## Issue 1: Pt. Conception Sensor Failure (CRITICAL)
 
-**Problem:** Temperature/RH sensor at Pt. Conception failed before Block 3 collection period (sensor stopped July 8, 2025; Block 3 sampled July 2-5).
+**Problem:** Temperature/RH sensor at Pt. Conception failed before Block
+3 collection period (sensor stopped July 8, 2025; Block 3 sampled July
+2-5).
 
-**Impact:** Cannot calculate VPD or temperature metrics for Pt. Conception Block 3.
+**Impact:** Cannot calculate VPD or temperature metrics for Pt.
+Conception Block 3.
 
-**Solution:**
-- **IMMEDIATE ACTION NEEDED:** Obtain backup sensor data to replace `Pt_Con_rhtemp_2025.csv`
-- Currently excluding Pt. Conception from Block 3 trait-microclimate analyses
-- Code structured so filter can be easily removed when data obtained
-- Sample sizes: Blocks 1-2 have all 4 pops; Block 3 has only 3 pops
+**Solution:** - **IMMEDIATE ACTION NEEDED:** Obtain backup sensor data
+to replace `Pt_Con_rhtemp_2025.csv` - Currently excluding Pt. Conception
+from Block 3 trait-microclimate analyses - Code structured so filter can
+be easily removed when data obtained - Sample sizes: Blocks 1-2 have all
+4 pops; Block 3 has only 3 pops
 
 **Code location:** Filter in petal data loading section:
-```r
+
+``` r
 filter(!(population == "Pt. Conception" & block == "3"))
 ```
 
 ## Issue 2: Percos Deployment Delay
 
-**Problem:** Equipment failure delayed Percos RH/temp sensor deployment until March 22 (vs. March 5-7 for other sites).
+**Problem:** Equipment failure delayed Percos RH/temp sensor deployment
+until March 22 (vs. March 5-7 for other sites).
 
-**Impact:** Missing first 17 days of monitoring, but all three collection blocks covered.
+**Impact:** Missing first 17 days of monitoring, but all three
+collection blocks covered.
 
-**Solution:** 
-- Document in Methods "Data Quality and Limitations" section
-- No exclusions needed
+**Solution:** - Document in Methods "Data Quality and Limitations"
+section - No exclusions needed
 
 ## Issue 3: PAR Sensor Noise
 
-**Problem:** 
-- Negative PAR values (physically impossible) at all sites
-- Cojo had extreme outliers >125,000 µmol/m²/s (normal max ~2,500)
-- Pt. Conception had 5,612 negative values
+**Problem:** - Negative PAR values (physically impossible) at all
+sites - Cojo had extreme outliers \>125,000 µmol/m²/s (normal max
+\~2,500) - Pt. Conception had 5,612 negative values
 
-**Solution:**
-- Set negative values to 0 (sensor noise)
-- Filter Cojo PAR > 3000 µmol/m²/s to NA
-- Applied to all sites in data loading
+**Solution:** - Set negative values to 0 (sensor noise) - Filter Cojo
+PAR \> 3000 µmol/m²/s to NA - Applied to all sites in data loading
 
-**Code location:** PAR quality control section in `load-all-microclimate` chunk
+**Code location:** PAR quality control section in
+`load-all-microclimate` chunk
 
 ## Issue 4: Model Convergence Problems
 
-**Problem:** GLMMs with binomial family (DMC, RWC models) failing to converge with bobyqa optimizer, particularly the PAR predictor model.
+**Problem:** GLMMs with binomial family (DMC, RWC models) failing to
+converge with bobyqa optimizer, particularly the PAR predictor model.
 
-**Solution:**
-- Increased maximum iterations: `optCtrl = list(maxfun = 100000)`
-- PAR model wrapped in `tryCatch()` with Nelder_Mead optimizer as backup
-- If PAR model fails, exclude from AIC comparison rather than crash analysis
-- Simplified full models to avoid overparameterization
+**Solution:** - Increased maximum iterations:
+`optCtrl = list(maxfun = 100000)` - PAR model wrapped in `tryCatch()`
+with Nelder_Mead optimizer as backup - If PAR model fails, exclude from
+AIC comparison rather than crash analysis - Simplified full models to
+avoid overparameterization
 
----
+------------------------------------------------------------------------
 
 # Analysis Structure (Manuscript Flow)
 
 ## Current Organization
 
-1. **Introduction** → Research questions focused on microclimate
-2. **Methods** → Including data quality section
-3. **Results:**
-   - **Section 1:** Comprehensive microclimate characterization (March-October, all 4 sites)
-     - Summary statistics by site
-     - Time series: Temperature, humidity, VPD, PAR
-     - Monthly comparisons
-     - PCA of microclimate differentiation
-   - **Section 2:** Microclimate summary by collection period (7-day windows)
-   - **Section 3:** Petal trait variation
-     - Summary statistics
-     - PCA of traits (identifying physiological strategies)
-     - Seasonal trends
-   - **Section 4:** Temporal window comparison (3, 7, 14 days)
-   - **Section 5:** Petal size responses to microclimate
-   - **Section 6:** Tissue economics traits (DMC, RWC) and microclimate
-   - **Section 7:** Mixed effects models
-     - Fresh weight models
-     - Dry weight models
-     - DMC models
-     - RWC models
-     - Model summary table
-4. **Discussion** (to be written)
-5. **Conclusions** (to be written)
+1.  **Introduction** → Research questions focused on microclimate
+2.  **Methods** → Including data quality section
+3.  **Results:**
+    -   **Section 1:** Comprehensive microclimate characterization
+        (March-October, all 4 sites)
+        -   Summary statistics by site
+        -   Time series: Temperature, humidity, VPD, PAR
+        -   Monthly comparisons
+        -   PCA of microclimate differentiation
+    -   **Section 2:** Microclimate summary by collection period (7-day
+        windows)
+    -   **Section 3:** Petal trait variation
+        -   Summary statistics
+        -   PCA of traits (identifying physiological strategies)
+        -   Seasonal trends
+    -   **Section 4:** Temporal window comparison (3, 7, 14 days)
+    -   **Section 5:** Petal size responses to microclimate
+    -   **Section 6:** Tissue economics traits (DMC, RWC) and
+        microclimate
+    -   **Section 7:** Mixed effects models
+        -   Fresh weight models
+        -   Dry weight models
+        -   DMC models
+        -   RWC models
+        -   Model summary table
+4.  **Discussion** (to be written)
+5.  **Conclusions** (to be written)
 
----
+------------------------------------------------------------------------
 
 # Key Microclimate Variables
 
 ## Calculated Metrics
 
-**Temperature:**
-- Daily maximum, minimum, mean
-- Daily temperature range (max - min)
-- Temperature variability (SD)
+**Temperature:** - Daily maximum, minimum, mean - Daily temperature
+range (max - min) - Temperature variability (SD)
 
-**Humidity and water stress:**
-- Daily minimum RH
-- Mean VPD
-- Maximum VPD
-- Midday VPD (11am-3pm) - **primary water stress indicator**
-- Nighttime RH (8pm-6am) - recovery conditions
-- Fog hours (RH > 95%)
+**Humidity and water stress:** - Daily minimum RH - Mean VPD - Maximum
+VPD - Midday VPD (11am-3pm) - **primary water stress indicator** -
+Nighttime RH (8pm-6am) - recovery conditions - Fog hours (RH \> 95%)
 
-**Light:**
-- Daily integrated PAR (mol/m²/day)
-- Maximum PAR
-- Hours of high light (PAR > 1000 µmol/m²/s)
+**Light:** - Daily integrated PAR (mol/m²/day) - Maximum PAR - Hours of
+high light (PAR \> 1000 µmol/m²/s)
 
 ## VPD Calculation
 
 $$VPD = VPD_{sat} \times (1 - RH/100)$$
 
-where 
+where
 
 $$VPD_{sat} = 0.611 \times e^{(17.27 \times T)/(T + 237.3)}$$
 
 and T is temperature in °C.
 
----
+------------------------------------------------------------------------
 
 # File Structure & Paths
 
@@ -286,72 +299,85 @@ and T is temperature in °C.
 **Location:** `../data/` (relative to scripts directory)
 
 **Files:**
-- `petal_weight.csv` - Petal fresh/dry weights, collection dates
-- `Cojo_rhtemp_2025.csv` - Cojo temperature/RH
-- `Perry_rhtemp_2025.csv` - Perry temperature/RH
-- `Percos_rhtemp_2025.csv` - Percos temperature/RH
-- `Pt_Con_rhtemp_2025.csv` - Pt. Conception temperature/RH (NEEDS REPLACEMENT)
-- `Cojo_PAR_2025.csv` - Cojo PAR
-- `Perry_PAR_2025.csv` - Perry PAR
-- `Percos_PAR_2025.csv` - Percos PAR
-- `Pt_con_PAR_2025.csv` - Pt. Conception PAR
+
+`-petal_weight.csv` - Petal fresh/dry weights, collection dates
+
+\- `Cojo_rhtemp_2025.csv` - Cojo temperature/RH
+
+\- `Perry_rhtemp_2025.csv` - Perry temperature/RH
+
+\- `Percos_rhtemp_2025.csv` - Percos temperature/RH
+
+\- `Pt_Con_rhtemp_2025.csv` - Pt. Conception temperature/RH (NEEDS
+REPLACEMENT)
+
+\- `Cojo_PAR_2025.csv` - Cojo PAR
+
+\- `Perry_PAR_2025.csv` - Perry PAR
+
+\- `Percos_PAR_2025.csv` - Percos PAR
+
+\- `Pt_con_PAR_2025.csv` - Pt. Conception PAR
 
 ## Analysis File
 
 **Main analysis:** `petal_microclimate_analysis.qmd`
 
-**Working directory:** Assumes data files are in `../data/` relative to script location
+**Working directory:** Assumes data files are in `../data/` relative to
+script location
 
----
+------------------------------------------------------------------------
 
 # Outstanding Tasks
 
 ## Immediate (Before Final Analysis)
 
-- [ ] **CRITICAL:** Obtain and integrate backup Pt. Conception temperature/RH data for Block 3
-- [ ] Remove exclusion filter once Pt. Conception data obtained
-- [ ] Verify PAR filtering produces reasonable patterns
+-   [ ] **CRITICAL:** Obtain and integrate backup Pt. Conception
+    temperature/RH data for Block 3
+-   [ ] Remove exclusion filter once Pt. Conception data obtained
+-   [ ] Verify PAR filtering produces reasonable patterns
 
 ## Analysis Completion
 
-- [ ] Review all model convergence and results
-- [ ] Write Discussion section with interpretations:
-  - Microclimate as mechanistic driver
-  - Percos anomaly explained
-  - Implications for coastal plant ecophysiology
-- [ ] Write Conclusions
-- [ ] Add variance partitioning analysis (site vs. microclimate vs. block)
-- [ ] Consider population × microclimate interaction models
+-   [ ] Review all model convergence and results
+-   [ ] Write Discussion section with interpretations:
+    -   Microclimate as mechanistic driver
+    -   Percos anomaly explained
+    -   Implications for coastal plant ecophysiology
+-   [ ] Write Conclusions
+-   [ ] Add variance partitioning analysis (site vs. microclimate vs.
+    block)
+-   [ ] Consider population × microclimate interaction models
 
 ## Manuscript Preparation
 
-- [ ] Add references to bibliography file
-- [ ] Create supplementary figures:
-  - Data availability timeline
-  - Additional microclimate comparisons
-- [ ] Review all figure captions and table legends
-- [ ] Add acknowledgments
-- [ ] Proofread for consistency
+-   [ ] Add references to bibliography file
+-   [ ] Create supplementary figures:
+    -   Data availability timeline
+    -   Additional microclimate comparisons
+-   [ ] Review all figure captions and table legends
+-   [ ] Add acknowledgments
+-   [ ] Proofread for consistency
 
----
+------------------------------------------------------------------------
 
 # Key R Packages Required
 
-- `tidyverse` - Data manipulation and plotting
-- `lubridate` - Date/time handling
-- `lme4` - Mixed effects models
-- `lmerTest` - P-values for mixed models
-- `vegan` - Multivariate analyses (PCA, Mantel tests)
-- `corrplot` - Correlation matrices
-- `knitr` - Document generation
-- `kableExtra` - Table formatting
-- `gridExtra` - Multiple plot layouts
+-   `tidyverse` - Data manipulation and plotting
+-   `lubridate` - Date/time handling
+-   `lme4` - Mixed effects models
+-   `lmerTest` - P-values for mixed models
+-   `vegan` - Multivariate analyses (PCA, Mantel tests)
+-   `corrplot` - Correlation matrices
+-   `knitr` - Document generation
+-   `kableExtra` - Table formatting
+-   `gridExtra` - Multiple plot layouts
 
----
+------------------------------------------------------------------------
 
 # Color Palette (for consistency)
 
-```r
+``` r
 population_colors <- c(
   "Cojo" = "#F18F01",      # Orange - inland
   "Perry" = "#C73E1D",     # Red-orange - inland
@@ -360,68 +386,202 @@ population_colors <- c(
 )
 ```
 
----
+------------------------------------------------------------------------
 
 # Notes for Future Iterations
 
 ## Potential Additional Analyses
 
-1. **Path analysis:** Test whether microclimate → size → tissue economics
-2. **Genotype × environment:** Do populations respond differently to same microclimate?
-3. **Trait correlations within populations:** Do correlation structures differ among sites?
-4. **Seasonal microclimate integration:** Cumulative degree days, water deficit indices
-5. **Substrate × microclimate:** Separate effects of sand vs. shale
+1.  **Path analysis:** Test whether microclimate → size → tissue
+    economics
+2.  **Genotype × environment:** Do populations respond differently to
+    same microclimate?
+3.  **Trait correlations within populations:** Do correlation structures
+    differ among sites?
+4.  **Seasonal microclimate integration:** Cumulative degree days, water
+    deficit indices
+5.  **Substrate × microclimate:** Separate effects of sand vs. shale
 
 ## Student Learning Objectives
 
-This analysis demonstrates:
-- Integration of continuous microclimate data with physiological measurements
-- Temporal matching of environmental and trait data
-- Mixed effects modeling for hierarchical data
-- Model selection via AIC
-- Data quality control in field studies
-- Multivariate analysis (PCA) of both predictors and responses
-- Reproducible research with Quarto
+This analysis demonstrates: - Integration of continuous microclimate
+data with physiological measurements - Temporal matching of
+environmental and trait data - Mixed effects modeling for hierarchical
+data - Model selection via AIC - Data quality control in field studies -
+Multivariate analysis (PCA) of both predictors and responses -
+Reproducible research with Quarto
 
----
+------------------------------------------------------------------------
 
 # Session Notes
 
 ## Session 1-3: Initial Framework
-- Established microclimate as primary question
-- Identified need for comprehensive microclimate characterization
-- Decided on analysis structure (microclimate first, then traits)
+
+-   Established microclimate as primary question
+-   Identified need for comprehensive microclimate characterization
+-   Decided on analysis structure (microclimate first, then traits)
 
 ## Session 4-5: Temporal Windows & Size
-- Added multiple temporal window comparison
-- Decided to analyze petal size as response variable
-- Recognized dramatic seasonal size decline
+
+-   Added multiple temporal window comparison
+-   Decided to analyze petal size as response variable
+-   Recognized dramatic seasonal size decline
 
 ## Session 6-7: Mixed Models
-- Designed mixed effects model structure
-- Added population random effects
-- Created model selection framework
+
+-   Designed mixed effects model structure
+-   Added population random effects
+-   Created model selection framework
 
 ## Session 8: Data Quality
-- Comprehensive cross-site QC check
-- Identified Pt. Conception Block 3 gap
-- Implemented PAR filtering
-- Addressed convergence issues
+
+-   Comprehensive cross-site QC check
+-   Identified Pt. Conception Block 3 gap
+-   Implemented PAR filtering
+-   Addressed convergence issues
 
 ## Session 9: Final Debugging
-- Fixed file paths for local analysis
-- Resolved model convergence problems
-- Finalized code structure
 
----
+-   Fixed file paths for local analysis
+-   Resolved model convergence problems
+-   Finalized code structure
+
+------------------------------------------------------------------------
 
 # Contact & Version Control
 
-**Analyst:** Gretchen LeBuhn  
-**Consultant:** Claude (Anthropic)  
-**Project Repository:** [Add GitHub link if applicable]  
-**Analysis Date:** December 2025  
+**Analyst:** Gretchen LeBuhn\
+**Consultant:** Claude (Anthropic)\
+**Project Repository:** \[Add GitHub link if applicable\]\
+**Analysis Date:** December 2025
 
----
+------------------------------------------------------------------------
 
-*This document should be updated as new decisions are made, analyses are refined, or results inform new directions.*
+*28 March 2026*
+
+**Decision log —**
+
+Prompt: Here are three older R scripts that I started this work with. 
+Let's
+simplify and create a new script that just plots the appropriate xy
+relationships for each population.   Use these scripts to understand
+where the data is and how to clean it up.    for every decision you
+make, identify the choices and explain the decision.
+
+**Scripts:**
+
+1.  petal_microclimate_analysis.qmd
+2.  petal_microclimate_analysis_2.qmd
+3.  petal_physiology.qmd
+
+**1. Which file is the data source?**
+Script 1 reads `petal_weight.csv`; script 3 reads
+`petal_weight_2025.csv`. Script 3 is the more recent version (it also
+has the more complete microclimate pipeline). I'll use
+`petal_weight_2025.csv` as the filename and note it with a comment so
+you can correct it if the actual file on disk differs.
+
+**2. Do we need the microclimate pipeline at all?**
+No. The goal is XY plots of petal traits per population. The
+microclimate loading, 4-day window calculations, mixed models, and ICC
+tables are all dropped. This is the biggest simplification.
+
+**3. The flagged outlier — keep or remove?**
+Both scripts consistently remove Cojo plant 1 block 1. We keep that
+filter. It is documented in a comment explaining *why*, not just *what*.
+
+**4. The `petal_flower == "petal"` filter — keep?**
+Yes. The raw file contains both petal and flower-level records. We must
+keep this filter or the weight calculations are meaningless.
+
+**5. Pt. Conception Block 3 — include or exclude?**
+The scripts drop it only for microclimate-joined analyses (no RH/temp
+sensor). For pure petal trait plots there is no reason to drop it — the
+petal weights are valid. I'll use `petal_data_all` (which retains it)
+rather than `petal_data`. This is a deliberate change from the old
+scripts, noted in a comment.
+
+**6. Trait calculations — which ones?**
+From the scripts: RWC, DMC, water per dry mass. From our conversation:
+petal area unlocks fresh mass per area, dry mass per area, water mass
+per area. I'll include area-derived traits with a clear note that they
+require the area column to be present, and a defensive
+`if ("area_cm2" %in% names(petal_raw))` guard so the script doesn't
+break if the column name differs.
+**7. Trait scales — raw proportions or logit?**
+The old scripts use logit transforms for modelling but plot on raw
+scales in exploratory work. For a plotting-focused script, raw
+proportions (0–1) for RWC and DMC are more interpretable. Log scale for
+weights and area-normalized traits. No logit in this script.
+
+**8. Population color palette — how many colors, which?**
+Four populations, fixed assignment. I'll use a colorblind-safe palette
+(Okabe-Ito) with named vector so the mapping is explicit and consistent
+across all plots.
+
+**9. Block encoding — color or shape?**
+Population is the primary grouping (color). Block is secondary (point
+shape: circle/triangle/square for blocks 1/2/3). This lets you see both
+dimensions simultaneously without faceting.
+
+**10. Regression lines — per population or overall?**
+`geom_smooth(method = "lm")` per population, with `se = TRUE`. This
+shows whether the trait relationships differ in slope across
+populations, which is the key biological question. A single pooled line
+would obscure population differences.
+
+**11. Output format — one file or many?**
+One clean `.qmd` file that produces a single PDF with all plots in
+sequence. No tables, no models.
+
+**12. `petal_area` column name assumption.**
+The scripts never show the area column name. I'll assume `area_cm2` and
+add a comment to adjust if needed.
+
+Viewed a file, created a file, read a file
+
+Viewed a file, created a file, read a file
+
+Here's a summary of every decision made and why:
+
+**What was removed from the old scripts.** The entire microclimate
+pipeline (loading, QC, 4-day windows, VPD calculation), all mixed
+models, all ICC variance partitioning, all `kableExtra` tables,
+`corrplot`, `lme4`, `lmerTest`, and `purrr` — none of those are needed
+for plotting XY relationships and they were the source of most of the
+complexity.
+
+**Pt. Conception Block 3 is now retained.** The old scripts dropped it
+only because it had no RH/temp sensor data, making microclimate-joined
+analyses impossible. The petal weights are perfectly valid. Since we're
+no longer joining to microclimate, dropping it would be an unnecessary
+loss of data.
+
+**The outlier filter is kept** exactly as it appears in all three
+scripts (Cojo plant 1 block 1), with a comment flagging that the
+original reason isn't documented and should be recorded somewhere.
+
+**A new filter was added** that drops rows where `dry_wgt >= wet_wgt`.
+None of the old scripts caught this impossible condition; it would
+produce RWC ≤ 0 or negative values silently, which would distort the
+trade-off plots.
+
+**Traits are plotted on raw proportion scales**, not logit. Logit is
+appropriate for modelling but makes exploratory scatter plots harder to
+read. The logit transform is trivial to add back when you move to
+modelling.
+
+**Petal area traits are guarded** with
+`has_area <- area_col %in% names(petal_raw)` and `eval=has_area` chunk
+options, so the script renders cleanly even before you confirm the exact
+column name. Change `area_col <- "area_cm2"` at the top if the column is
+named differently.
+
+**Population color and block shape are defined once** in named vectors
+at the top and applied via `pop_scales` to every plot, so all figures
+are visually consistent with no repeated code.
+
+**Per-population regression lines** are used throughout rather than a
+single pooled line, because whether coastal and inland populations have
+different slopes is the biological question — a pooled line would erase
+that signal entirely.
