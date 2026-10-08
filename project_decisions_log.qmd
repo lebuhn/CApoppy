@@ -33,10 +33,10 @@ across four populations within a 2 km radius.
 **Does microclimate variation (not just geographic location) drive petal
 tissue economics traits?**
 
--   Hypothesis: Microclimate variables (particularly VPD, temperature
-    extremes, and light availability) explain population-level variation
-    in tissue economics strategies better than simple coastal/inland
-    classifications.
+- Hypothesis: Microclimate variables (particularly VPD, temperature
+  extremes, and light availability) explain population-level variation
+  in tissue economics strategies better than simple coastal/inland
+  classifications.
 
 ## Secondary Questions
 
@@ -239,28 +239,27 @@ avoid overparameterization
 1.  **Introduction** → Research questions focused on microclimate
 2.  **Methods** → Including data quality section
 3.  **Results:**
-    -   **Section 1:** Comprehensive microclimate characterization
-        (March-October, all 4 sites)
-        -   Summary statistics by site
-        -   Time series: Temperature, humidity, VPD, PAR
-        -   Monthly comparisons
-        -   PCA of microclimate differentiation
-    -   **Section 2:** Microclimate summary by collection period (7-day
-        windows)
-    -   **Section 3:** Petal trait variation
-        -   Summary statistics
-        -   PCA of traits (identifying physiological strategies)
-        -   Seasonal trends
-    -   **Section 4:** Temporal window comparison (3, 7, 14 days)
-    -   **Section 5:** Petal size responses to microclimate
-    -   **Section 6:** Tissue economics traits (DMC, RWC) and
-        microclimate
-    -   **Section 7:** Mixed effects models
-        -   Fresh weight models
-        -   Dry weight models
-        -   DMC models
-        -   RWC models
-        -   Model summary table
+    - **Section 1:** Comprehensive microclimate characterization
+      (March-October, all 4 sites)
+      - Summary statistics by site
+      - Time series: Temperature, humidity, VPD, PAR
+      - Monthly comparisons
+      - PCA of microclimate differentiation
+    - **Section 2:** Microclimate summary by collection period (7-day
+      windows)
+    - **Section 3:** Petal trait variation
+      - Summary statistics
+      - PCA of traits (identifying physiological strategies)
+      - Seasonal trends
+    - **Section 4:** Temporal window comparison (3, 7, 14 days)
+    - **Section 5:** Petal size responses to microclimate
+    - **Section 6:** Tissue economics traits (DMC, RWC) and microclimate
+    - **Section 7:** Mixed effects models
+      - Fresh weight models
+      - Dry weight models
+      - DMC models
+      - RWC models
+      - Model summary table
 4.  **Discussion** (to be written)
 5.  **Conclusions** (to be written)
 
@@ -332,46 +331,46 @@ script location
 
 ## Immediate (Before Final Analysis)
 
--   [ ] **CRITICAL:** Obtain and integrate backup Pt. Conception
-    temperature/RH data for Block 3
--   [ ] Remove exclusion filter once Pt. Conception data obtained
--   [ ] Verify PAR filtering produces reasonable patterns
+- [ ] **CRITICAL:** Obtain and integrate backup Pt. Conception
+  temperature/RH data for Block 3
+- [ ] Remove exclusion filter once Pt. Conception data obtained
+- [ ] Verify PAR filtering produces reasonable patterns
 
 ## Analysis Completion
 
--   [ ] Review all model convergence and results
--   [ ] Write Discussion section with interpretations:
-    -   Microclimate as mechanistic driver
-    -   Percos anomaly explained
-    -   Implications for coastal plant ecophysiology
--   [ ] Write Conclusions
--   [ ] Add variance partitioning analysis (site vs. microclimate vs.
-    block)
--   [ ] Consider population × microclimate interaction models
+- [ ] Review all model convergence and results
+- [ ] Write Discussion section with interpretations:
+  - Microclimate as mechanistic driver
+  - Percos anomaly explained
+  - Implications for coastal plant ecophysiology
+- [ ] Write Conclusions
+- [ ] Add variance partitioning analysis (site vs. microclimate vs.
+  block)
+- [ ] Consider population × microclimate interaction models
 
 ## Manuscript Preparation
 
--   [ ] Add references to bibliography file
--   [ ] Create supplementary figures:
-    -   Data availability timeline
-    -   Additional microclimate comparisons
--   [ ] Review all figure captions and table legends
--   [ ] Add acknowledgments
--   [ ] Proofread for consistency
+- [ ] Add references to bibliography file
+- [ ] Create supplementary figures:
+  - Data availability timeline
+  - Additional microclimate comparisons
+- [ ] Review all figure captions and table legends
+- [ ] Add acknowledgments
+- [ ] Proofread for consistency
 
 ------------------------------------------------------------------------
 
 # Key R Packages Required
 
--   `tidyverse` - Data manipulation and plotting
--   `lubridate` - Date/time handling
--   `lme4` - Mixed effects models
--   `lmerTest` - P-values for mixed models
--   `vegan` - Multivariate analyses (PCA, Mantel tests)
--   `corrplot` - Correlation matrices
--   `knitr` - Document generation
--   `kableExtra` - Table formatting
--   `gridExtra` - Multiple plot layouts
+- `tidyverse` - Data manipulation and plotting
+- `lubridate` - Date/time handling
+- `lme4` - Mixed effects models
+- `lmerTest` - P-values for mixed models
+- `vegan` - Multivariate analyses (PCA, Mantel tests)
+- `corrplot` - Correlation matrices
+- `knitr` - Document generation
+- `kableExtra` - Table formatting
+- `gridExtra` - Multiple plot layouts
 
 ------------------------------------------------------------------------
 
@@ -417,34 +416,34 @@ Reproducible research with Quarto
 
 ## Session 1-3: Initial Framework
 
--   Established microclimate as primary question
--   Identified need for comprehensive microclimate characterization
--   Decided on analysis structure (microclimate first, then traits)
+- Established microclimate as primary question
+- Identified need for comprehensive microclimate characterization
+- Decided on analysis structure (microclimate first, then traits)
 
 ## Session 4-5: Temporal Windows & Size
 
--   Added multiple temporal window comparison
--   Decided to analyze petal size as response variable
--   Recognized dramatic seasonal size decline
+- Added multiple temporal window comparison
+- Decided to analyze petal size as response variable
+- Recognized dramatic seasonal size decline
 
 ## Session 6-7: Mixed Models
 
--   Designed mixed effects model structure
--   Added population random effects
--   Created model selection framework
+- Designed mixed effects model structure
+- Added population random effects
+- Created model selection framework
 
 ## Session 8: Data Quality
 
--   Comprehensive cross-site QC check
--   Identified Pt. Conception Block 3 gap
--   Implemented PAR filtering
--   Addressed convergence issues
+- Comprehensive cross-site QC check
+- Identified Pt. Conception Block 3 gap
+- Implemented PAR filtering
+- Addressed convergence issues
 
 ## Session 9: Final Debugging
 
--   Fixed file paths for local analysis
--   Resolved model convergence problems
--   Finalized code structure
+- Fixed file paths for local analysis
+- Resolved model convergence problems
+- Finalized code structure
 
 ------------------------------------------------------------------------
 
@@ -462,9 +461,8 @@ Reproducible research with Quarto
 **Decision log —**
 
 Prompt: Here are three older R scripts that I started this work with. 
-Let's
-simplify and create a new script that just plots the appropriate xy
-relationships for each population.   Use these scripts to understand
+Let's simplify and create a new script that just plots the appropriate
+xy relationships for each population.   Use these scripts to understand
 where the data is and how to clean it up.    for every decision you
 make, identify the choices and explain the decision.
 
@@ -474,54 +472,52 @@ make, identify the choices and explain the decision.
 2.  petal_microclimate_analysis_2.qmd
 3.  petal_physiology.qmd
 
-**1. Which file is the data source?**
-Script 1 reads `petal_weight.csv`; script 3 reads
-`petal_weight_2025.csv`. Script 3 is the more recent version (it also
-has the more complete microclimate pipeline). I'll use
+**1. Which file is the data source?** Script 1 reads `petal_weight.csv`;
+script 3 reads `petal_weight_2025.csv`. Script 3 is the more recent
+version (it also has the more complete microclimate pipeline). I'll use
 `petal_weight_2025.csv` as the filename and note it with a comment so
 you can correct it if the actual file on disk differs.
 
-**2. Do we need the microclimate pipeline at all?**
-No. The goal is XY plots of petal traits per population. The
-microclimate loading, 4-day window calculations, mixed models, and ICC
-tables are all dropped. This is the biggest simplification.
+**2. Do we need the microclimate pipeline at all?** No. The goal is XY
+plots of petal traits per population. The microclimate loading, 4-day
+window calculations, mixed models, and ICC tables are all dropped. This
+is the biggest simplification.
 
-**3. The flagged outlier — keep or remove?**
-Both scripts consistently remove Cojo plant 1 block 1. We keep that
-filter. It is documented in a comment explaining *why*, not just *what*.
+**3. The flagged outlier — keep or remove?** Both scripts consistently
+remove Cojo plant 1 block 1. We keep that filter. It is documented in a
+comment explaining *why*, not just *what*.
 
-**4. The `petal_flower == "petal"` filter — keep?**
-Yes. The raw file contains both petal and flower-level records. We must
-keep this filter or the weight calculations are meaningless.
+**4. The `petal_flower == "petal"` filter — keep?** Yes. The raw file
+contains both petal and flower-level records. We must keep this filter
+or the weight calculations are meaningless.
 
-**5. Pt. Conception Block 3 — include or exclude?**
-The scripts drop it only for microclimate-joined analyses (no RH/temp
-sensor). For pure petal trait plots there is no reason to drop it — the
-petal weights are valid. I'll use `petal_data_all` (which retains it)
-rather than `petal_data`. This is a deliberate change from the old
-scripts, noted in a comment.
+**5. Pt. Conception Block 3 — include or exclude?** The scripts drop it
+only for microclimate-joined analyses (no RH/temp sensor). For pure
+petal trait plots there is no reason to drop it — the petal weights are
+valid. I'll use `petal_data_all` (which retains it) rather than
+`petal_data`. This is a deliberate change from the old scripts, noted in
+a comment.
 
-**6. Trait calculations — which ones?**
-From the scripts: RWC, DMC, water per dry mass. From our conversation:
-petal area unlocks fresh mass per area, dry mass per area, water mass
-per area. I'll include area-derived traits with a clear note that they
-require the area column to be present, and a defensive
-`if ("area_cm2" %in% names(petal_raw))` guard so the script doesn't
-break if the column name differs.
-**7. Trait scales — raw proportions or logit?**
-The old scripts use logit transforms for modelling but plot on raw
-scales in exploratory work. For a plotting-focused script, raw
-proportions (0–1) for RWC and DMC are more interpretable. Log scale for
-weights and area-normalized traits. No logit in this script.
+**6. Trait calculations — which ones?** From the scripts: RWC, DMC,
+water per dry mass. From our conversation: petal area unlocks fresh mass
+per area, dry mass per area, water mass per area. I'll include
+area-derived traits with a clear note that they require the area column
+to be present, and a defensive `if ("area_cm2" %in% names(petal_raw))`
+guard so the script doesn't break if the column name differs. **7. Trait
+scales — raw proportions or logit?** The old scripts use logit
+transforms for modelling but plot on raw scales in exploratory work. For
+a plotting-focused script, raw proportions (0–1) for RWC and DMC are
+more interpretable. Log scale for weights and area-normalized traits. No
+logit in this script.
 
-**8. Population color palette — how many colors, which?**
-Four populations, fixed assignment. I'll use a colorblind-safe palette
+**8. Population color palette — how many colors, which?** Four
+populations, fixed assignment. I'll use a colorblind-safe palette
 (Okabe-Ito) with named vector so the mapping is explicit and consistent
 across all plots.
 
-**9. Block encoding — color or shape?**
-Population is the primary grouping (color). Block is secondary (point
-shape: circle/triangle/square for blocks 1/2/3). This lets you see both
+**9. Block encoding — color or shape?** Population is the primary
+grouping (color). Block is secondary (point shape:
+circle/triangle/square for blocks 1/2/3). This lets you see both
 dimensions simultaneously without faceting.
 
 **10. Regression lines — per population or overall?**
@@ -530,13 +526,12 @@ shows whether the trait relationships differ in slope across
 populations, which is the key biological question. A single pooled line
 would obscure population differences.
 
-**11. Output format — one file or many?**
-One clean `.qmd` file that produces a single PDF with all plots in
-sequence. No tables, no models.
+**11. Output format — one file or many?** One clean `.qmd` file that
+produces a single PDF with all plots in sequence. No tables, no models.
 
-**12. `petal_area` column name assumption.**
-The scripts never show the area column name. I'll assume `area_cm2` and
-add a comment to adjust if needed.
+**12. `petal_area` column name assumption.** The scripts never show the
+area column name. I'll assume `area_cm2` and add a comment to adjust if
+needed.
 
 Viewed a file, created a file, read a file
 

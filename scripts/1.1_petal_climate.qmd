@@ -1,0 +1,1486 @@
+---
+title: "California poppy petal morphology, physiology, and 4-day microclimate"
+subtitle: "Simplified FAIR analysis: Petal 1, Blocks 1–3"
+author: ""
+date: last-modified
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-fold: false
+    embed-resources: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  freeze: false
+params:
+  approve_expected_row_removals: true
+---
+
+
+
+**Pre-specified analysis rules**
+
+
+- Restrict the primary biological analysis to **Petal 1** and **Blocks 1–3**.
+- Treat **population** and **block** as categorical factors for plant-level population comparisons.
+- Use the terms **wet weight** and **dry weight** throughout.
+- Calculate **percent dry mass** as `100 × dry weight / wet weight`.
+- Calculate **petal mass per area** as dry mass per unit petal area.
+- Calculate **water mass per area** as `(wet weight − dry weight) / petal area`.
+- Retain the previously defined **4-day pre-collection microclimate window**, from four days before collection through one day before collection.
+- For climate–trait analyses, aggregate petal traits to the **population × block** level before relating them to the corresponding 4-day climate summaries. This avoids treating multiple plants that share the same climate window as independent climate replicates.
+- No multivariable climate-driver models, PCA, AIC model selection, or variance-partitioning analyses are used here.
+
+## Audit rule for row removal
+
+Every transformation prints its row count and the number of `NA` and zero values in the key response variable(s). A transformation that reduces the number of rows prints the excluded rows and the stated reason.
+
+By default, `params$approve_expected_row_removals` is `false`, so the document **stops at the first row-removing transformation after reporting the affected rows**. This makes exclusion review explicit. After the reported exclusions are reviewed, set the parameter to `true` to allow only the explicitly coded, documented exclusions to proceed. Unexpected row loss always stops the analysis.
+
+# Reproducible setup
+
+```{r}
+#| label: setup
+
+library(readr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(lubridate)
+library(purrr)
+library(broom)
+library(knitr)
+library(scales)
+library(emmeans)
+
+options(
+  dplyr.summarise.inform = FALSE,
+  contrasts = c("contr.treatment", "contr.poly")
+)
+
+set.seed(20260921)
+
+# Locate the project root by walking upward until a data/ directory is found.
+find_project_root <- function(start = getwd()) {
+  current <- normalizePath(start, winslash = "/", mustWork = TRUE)
+  repeat {
+    if (dir.exists(file.path(current, "data"))) return(current)
+    parent <- dirname(current)
+    if (identical(parent, current)) {
+      stop("Could not find a project root containing a data/ directory.")
+    }
+    current <- parent
+  }
+}
+
+project_root <- find_project_root()
+
+master_file <- file.path(project_root, "data", "processed", "petal_area_master.csv")
+rhtemp_dir  <- file.path(project_root, "data", "raw", "rh_temp")
+par_dir     <- file.path(project_root, "data", "raw", "Apogee_PAR")
+output_dir  <- file.path(project_root, "outputs", "simple_petal_analysis")
+
+dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+
+required_files <- c(
+  master_file,
+  file.path(rhtemp_dir, "Cojo_rhtemp_2025.csv"),
+  file.path(rhtemp_dir, "Perry_rhtemp_2025.csv"),
+  file.path(rhtemp_dir, "Percos_rhtemp_2025.csv"),
+  file.path(rhtemp_dir, "Pt_Con_rhtemp_2025.csv"),
+  file.path(par_dir, "Cojo_PAR_2025.csv"),
+  file.path(par_dir, "Perry_PAR_2025.csv"),
+  file.path(par_dir, "Percos_PAR_2025.csv"),
+  file.path(par_dir, "Pt_con_PAR_2025.csv")
+)
+
+missing_files <- required_files[!file.exists(required_files)]
+if (length(missing_files) > 0) {
+  stop(
+    "Required original project file(s) are missing:\n",
+    paste(missing_files, collapse = "\n")
+  )
+}
+
+cat("Project root:", project_root, "\n")
+cat("Master data:", master_file, "\n")
+cat("Output directory:", output_dir, "\n")
+cat("Expected row removals approved:", params$approve_expected_row_removals, "\n")
+```
+
+## Audit helper functions
+
+```{r}
+#| label: audit-functions
+
+row_id_vars <- c(
+  "date", "block", "population", "plant", "petal_flower", "petal_number"
+)
+
+print_key_counts <- function(data, step_name, key_vars) {
+  key_vars <- intersect(key_vars, names(data))
+
+  cat("\n--- AUDIT:", step_name, "---\n")
+  cat("Rows:", nrow(data), "\n")
+
+  if (length(key_vars) == 0) {
+    cat("No requested key response variables exist at this step.\n")
+    return(invisible(data))
+  }
+
+  n_na <- integer(length(key_vars))
+  n_zero <- rep(NA_integer_, length(key_vars))
+
+  for (i in seq_along(key_vars)) {
+    v <- key_vars[i]
+    x <- data[[v]]
+    n_na[i] <- sum(is.na(x))
+
+    if (is.numeric(x)) {
+      n_zero[i] <- sum(!is.na(x) & x == 0)
+    }
+  }
+
+  counts <- tibble(
+    variable = key_vars,
+    n_na = n_na,
+    n_zero = n_zero
+  )
+
+  print(counts)
+  invisible(data)
+}
+
+report_excluded_rows <- function(
+    excluded, before_n, after_n, step_name, reason,
+    approved = FALSE, expected = FALSE) {
+
+  if (nrow(excluded) == 0) {
+    return(invisible(NULL))
+  }
+
+  cat("\nROW REMOVAL DETECTED\n")
+  cat("Step:", step_name, "\n")
+  cat("Rows before:", before_n, "\n")
+  cat("Rows after:", after_n, "\n")
+  cat("Rows removed:", nrow(excluded), "\n")
+  cat("Reason:", reason, "\n\n")
+
+  display_cols <- intersect(
+    c(
+      row_id_vars, "site", "datetime",
+      "wet_wgt_g", "dry_wgt_g", "area_cm2",
+      "temp", "rh", "par",
+      "notes", "image_file_used"
+    ),
+    names(excluded)
+  )
+
+  print(excluded[, display_cols, drop = FALSE], n = Inf)
+
+  if (!expected) {
+    stop("Unexpected row removal. Analysis stopped for review.")
+  }
+
+  if (!approved) {
+    stop(
+      paste0(
+        "Expected rows were removed and have been reported above. ",
+        "Review them before continuing. To proceed after review, render with ",
+        "params: approve_expected_row_removals: true."
+      )
+    )
+  }
+
+  invisible(NULL)
+}
+
+check_no_row_loss <- function(before, after, step_name) {
+  if (nrow(after) != nrow(before)) {
+    stop(
+      paste0(
+        "Unexpected row-count change in step: ", step_name,
+        ". Rows before = ", nrow(before),
+        "; rows after = ", nrow(after), "."
+      )
+    )
+  }
+
+  invisible(after)
+}
+
+analysis_complete_cases <- function(data, vars, analysis_name) {
+  missing_flag <- !complete.cases(data[, vars, drop = FALSE])
+  excluded <- data[missing_flag, , drop = FALSE]
+  out <- data[!missing_flag, , drop = FALSE]
+
+  if (nrow(excluded) > 0) {
+    report_excluded_rows(
+      excluded = excluded,
+      before_n = nrow(data),
+      after_n = nrow(out),
+      step_name = paste0("Complete-case preparation: ", analysis_name),
+      reason = paste(
+        "Rows lack one or more variables required by this analysis:",
+        paste(vars, collapse = ", ")
+      ),
+      approved = params$approve_expected_row_removals,
+      expected = TRUE
+    )
+  }
+
+  print_key_counts(
+    out,
+    paste0(analysis_name, " analysis dataset"),
+    vars
+  )
+
+  out
+}
+```
+
+# 1. Master petal data and audited analysis scope
+
+## 1.1 Read the master data unchanged
+
+```{r}
+#| label: read-master
+
+petal_master_raw <- read_csv(master_file, show_col_types = FALSE)
+
+print_key_counts(
+  petal_master_raw,
+  "Raw master file",
+  c("wet_wgt_g", "dry_wgt_g", "area_cm2")
+)
+
+cat("Columns in master file:\n")
+print(names(petal_master_raw))
+```
+
+## 1.2 Standardize types without removing rows
+
+```{r}
+#| label: standardize-master-types
+
+before <- petal_master_raw
+
+petal_master <- petal_master_raw |>
+  mutate(
+    date = mdy(date),
+    block = as.integer(block),
+    plant = as.integer(plant),
+    petal_number = as.numeric(petal_number),
+    wet_wgt_g = as.numeric(wet_wgt_g),
+    dry_wgt_g = as.numeric(dry_wgt_g),
+    area_cm2 = as.numeric(area_cm2)
+  )
+
+check_no_row_loss(before, petal_master, "Standardize master-data types")
+print_key_counts(
+  petal_master,
+  "Master data after type standardization",
+  c("wet_wgt_g", "dry_wgt_g", "area_cm2")
+)
+```
+
+## 1.3 Restrict to Petal 1 and Blocks 1–3
+
+These are pre-specified study inclusion criteria, not data-quality exclusions. The first render reports every source row outside this scope and stops for review unless expected row removals have been explicitly approved.
+
+```{r}
+#| label: define-analysis-scope
+
+before <- petal_master
+
+in_scope <- (
+  petal_master$block %in% 1:3 &
+  petal_master$petal_flower == "petal" &
+  petal_master$petal_number == 1
+)
+
+excluded_scope <- petal_master[!in_scope | is.na(in_scope), , drop = FALSE]
+petal_scoped <- petal_master[in_scope & !is.na(in_scope), , drop = FALSE]
+
+report_excluded_rows(
+  excluded = excluded_scope,
+  before_n = nrow(before),
+  after_n = nrow(petal_scoped),
+  step_name = "Define primary analysis scope",
+  reason = "Pre-specified inclusion criteria: Petal 1 only and Blocks 1–3 only.",
+  approved = params$approve_expected_row_removals,
+  expected = TRUE
+)
+
+print_key_counts(
+  petal_scoped,
+  "Petal 1, Blocks 1–3",
+  c("wet_wgt_g", "dry_wgt_g", "area_cm2")
+)
+```
+
+## 1.4 Check and reconcile duplicated plant/date records
+
+A unique biological record is defined as `date × block × population × plant × petal_number`. Duplicate rows are not silently discarded. For a duplicated identity, the script first verifies that non-missing measurements do not conflict, then coalesces complementary measurements from the original rows into one record. This is a provenance-preserving reconciliation of values already present in the master file; no external values are introduced.
+
+```{r}
+#| label: reconcile-duplicates
+
+biological_key <- c("date", "block", "population", "plant", "petal_number")
+measurement_cols <- c("wet_wgt_g", "dry_wgt_g", "area_cm2")
+
+duplicate_rows <- petal_scoped |>
+  group_by(across(all_of(biological_key))) |>
+  filter(n() > 1) |>
+  ungroup()
+
+cat("Duplicated scoped rows:", nrow(duplicate_rows), "\n")
+
+if (nrow(duplicate_rows) > 0) {
+  print(
+    duplicate_rows |>
+      select(any_of(c(
+        biological_key,
+        measurement_cols,
+        "notes",
+        "image_file_used"
+      )))
+  )
+}
+
+# For a duplicated biological record, prefer the row with both wet and dry weight.
+# Stop if the rule does not identify exactly one preferred row within a duplicate.
+petal_ranked <- petal_scoped |>
+  mutate(
+    complete_weight = !is.na(wet_wgt_g) & !is.na(dry_wgt_g)
+  ) |>
+  group_by(across(all_of(biological_key))) |>
+  mutate(
+    n_in_group = n(),
+    n_complete_weight = sum(complete_weight)
+  ) |>
+  ungroup()
+
+ambiguous_duplicates <- petal_ranked |>
+  filter(n_in_group > 1, n_complete_weight != 1)
+
+if (nrow(ambiguous_duplicates) > 0) {
+  print(
+    ambiguous_duplicates |>
+      select(any_of(c(
+        biological_key,
+        measurement_cols,
+        "complete_weight",
+        "notes",
+        "image_file_used"
+      )))
+  )
+  stop(
+    paste0(
+      "A duplicated biological record does not contain exactly one row ",
+      "with complete wet and dry weight. Review before continuing."
+    )
+  )
+}
+
+before <- petal_scoped
+
+keep_duplicate_rule <- petal_ranked$n_in_group == 1 | petal_ranked$complete_weight
+excluded_duplicate <- petal_ranked[!keep_duplicate_rule, , drop = FALSE]
+
+petal_unique <- petal_ranked[keep_duplicate_rule, , drop = FALSE] |>
+  select(-complete_weight, -n_in_group, -n_complete_weight)
+
+report_excluded_rows(
+  excluded = excluded_duplicate,
+  before_n = nrow(before),
+  after_n = nrow(petal_unique),
+  step_name = "Resolve duplicate plant/date/petal records",
+  reason = paste(
+    "For duplicated biological records, retain the single source row",
+    "containing both wet and dry weight; no values are imputed or combined."
+  ),
+  approved = params$approve_expected_row_removals,
+  expected = TRUE
+)
+
+print_key_counts(
+  petal_unique,
+  "Unique Petal-1 records after duplicate resolution",
+  c("wet_wgt_g", "dry_wgt_g", "area_cm2")
+)
+```
+
+## 1.5 Confirm the population × block design
+
+```{r}
+#| label: sample-size-table
+
+sample_sizes <- petal_unique |>
+  count(block, population, name = "n_records") |>
+  arrange(block, population)
+
+kable(sample_sizes, caption = "Unique Petal-1 records by population and time block.")
+
+write_csv(sample_sizes, file.path(output_dir, "sample_sizes_population_block.csv"))
+```
+
+## 1.6 Derive simple petal physiology traits without removing rows
+
+```{r}
+#| label: derive-traits
+
+before <- petal_unique
+
+petal_traits <- petal_unique |>
+  mutate(
+    population = factor(
+      population,
+      levels = c("Cojo", "Percos", "Perry", "Pt. Conception")
+    ),
+    block = factor(block, levels = c(1, 2, 3)),
+    pct_dry_mass = if_else(
+      !is.na(wet_wgt_g) & wet_wgt_g > 0 & !is.na(dry_wgt_g),
+      100 * dry_wgt_g / wet_wgt_g,
+      NA_real_
+    ),
+    petal_mass_per_area_mg_cm2 = if_else(
+      !is.na(area_cm2) & area_cm2 > 0 & !is.na(dry_wgt_g),
+      1000 * dry_wgt_g / area_cm2,
+      NA_real_
+    ),
+    water_mass_per_area_mg_cm2 = if_else(
+      !is.na(area_cm2) & area_cm2 > 0 &
+        !is.na(wet_wgt_g) & !is.na(dry_wgt_g),
+      1000 * (wet_wgt_g - dry_wgt_g) / area_cm2,
+      NA_real_
+    )
+  )
+
+check_no_row_loss(before, petal_traits, "Derive percent dry mass and mass-per-area traits")
+
+print_key_counts(
+  petal_traits,
+  "Petal traits after derivation",
+  c(
+    "wet_wgt_g", "dry_wgt_g", "area_cm2",
+    "pct_dry_mass", "petal_mass_per_area_mg_cm2",
+    "water_mass_per_area_mg_cm2"
+  )
+)
+
+
+```
+
+# 2. Basic relationships among petal size and weights
+
+The primary XY plots use individual plants. Population is shown by color and time block by point shape. The fitted black line is the pooled simple linear relationship and is descriptive; no population-specific slopes are estimated in the primary analysis.
+
+## 2.1 Petal area vs wet weight
+
+```{r}
+#| label: area-vs-wet
+#| fig-cap: "Petal area versus wet weight for Petal 1 in Blocks 1–3. Points are individual plants; color denotes population and shape denotes time block."
+
+area_wet <- analysis_complete_cases(
+  petal_traits,
+  c("area_cm2", "wet_wgt_g", "population", "block"),
+  "Petal area vs wet weight"
+)
+
+p_area_wet <- ggplot(area_wet, aes(area_cm2, wet_wgt_g, color = population, shape = block)) +
+  geom_point(size = 2, alpha = 0.75) +
+  geom_smooth(
+  aes(group = population, color = population),
+  method = "lm",
+  se = TRUE
+) +
+  labs(
+    x = "Petal area (cm²)",
+    y = "Wet weight (g)",
+    color = "Population",
+    shape = "Block"
+  ) +
+  theme_bw()
+
+p_area_wet
+
+m_area_wet <- lm(wet_wgt_g ~ area_cm2, data = area_wet, na.action = na.fail)
+print(tidy(m_area_wet, conf.int = TRUE))
+print(glance(m_area_wet))
+```
+
+## 2.2 Petal area vs dry weight
+
+```{r}
+#| label: area-vs-dry
+#| fig-cap: "Petal area versus dry weight for Petal 1 in Blocks 1–3."
+
+area_dry <- analysis_complete_cases(
+  petal_traits,
+  c("area_cm2", "dry_wgt_g", "population", "block"),
+  "Petal area vs dry weight"
+)
+
+p_area_dry <- ggplot(area_dry, aes(area_cm2, dry_wgt_g, color = population, shape = block)) +
+  geom_point(size = 2, alpha = 0.75) +
+  geom_smooth(
+  aes(group = population, color = population),
+  method = "lm",
+  se = TRUE
+) +
+  labs(
+    x = "Petal area (cm²)",
+    y = "Dry weight (g)",
+    color = "Population",
+    shape = "Block"
+  ) +
+  theme_bw()
+
+p_area_dry
+
+m_area_dry <- lm(dry_wgt_g ~ area_cm2, data = area_dry, na.action = na.fail)
+print(tidy(m_area_dry, conf.int = TRUE))
+print(glance(m_area_dry))
+```
+
+## 2.3 Wet weight vs dry weight
+
+```{r}
+#| label: wet-vs-dry
+#| fig-cap: "Wet weight versus dry weight for Petal 1 in Blocks 1–3."
+
+wet_dry <- analysis_complete_cases(
+  petal_traits,
+  c("wet_wgt_g", "dry_wgt_g", "population", "block"),
+  "Wet weight vs dry weight"
+)
+
+p_wet_dry <- ggplot(wet_dry, aes(wet_wgt_g, dry_wgt_g, color = population, shape = block)) +
+  geom_point(size = 2, alpha = 0.75) +
+  geom_smooth(
+  aes(group = population, color = population),
+  method = "lm",
+  se = TRUE
+) +
+  labs(
+    x = "Wet weight (g)",
+    y = "Dry weight (g)",
+    color = "Population",
+    shape = "Block"
+  ) +
+  theme_bw()
+
+p_wet_dry
+
+m_wet_dry <- lm(dry_wgt_g ~ wet_wgt_g, data = wet_dry, na.action = na.fail)
+print(tidy(m_wet_dry, conf.int = TRUE))
+print(glance(m_wet_dry))
+```
+
+# 3. Population differences in basic petal size and weights
+
+The primary model for each plant-level trait is:
+
+`trait ~ population + block`
+
+This tests population differences while accounting for the three broad seasonal sampling blocks. Population × block interactions are not included in the primary models. Population × block patterns are displayed graphically so temporal consistency can be evaluated without spending additional degrees of freedom on an interaction by default.
+
+```{r}
+#| label: population-model-functions
+
+mean_ci_t <- function(x) {
+  x <- x[!is.na(x)]
+  n <- length(x)
+  m <- mean(x)
+  if (n < 2) return(data.frame(y = m, ymin = NA_real_, ymax = NA_real_))
+  se <- sd(x) / sqrt(n)
+  crit <- qt(0.975, df = n - 1)
+  data.frame(y = m, ymin = m - crit * se, ymax = m + crit * se)
+}
+
+plot_population_trait <- function(data, response, y_label, title) {
+  ggplot(data, aes(population, .data[[response]], color = population)) +
+    geom_jitter(aes(shape = block), width = 0.12, alpha = 0.55, size = 1.7) +
+    stat_summary(fun = mean, geom = "point", size = 3.5, color = "black", shape = 18) +
+    stat_summary(
+      fun.data = mean_ci_t,
+      geom = "errorbar",
+      width = 0.12,
+      color = "black"
+    ) +
+    labs(x = NULL, y = y_label, title = title, color = "Population", shape = "Block") +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 20, hjust = 1))
+}
+
+fit_population_model <- function(data, response, label) {
+  model_data <- analysis_complete_cases(
+    data,
+    c(response, "population", "block"),
+    label
+  )
+  form <- as.formula(paste(response, "~ population * block"))
+  model <- lm(form, data = model_data, na.action = na.fail)
+
+  cat("\nModel:", deparse(form), "\n")
+  cat("\nPartial F tests (each term adjusted for the other):\n")
+  print(drop1(model, test = "F"))
+  cat("\nCoefficient estimates with 95% confidence intervals:\n")
+  print(tidy(model, conf.int = TRUE))
+
+  list(data = model_data, model = model)
+}
+```
+
+## 3.1 Petal area
+
+```{r}
+#| label: population-area
+
+res_area <- fit_population_model(petal_traits, "area_cm2", "Population comparison: petal area")
+plot_population_trait(
+  res_area$data,
+  "area_cm2",
+  "Petal area (cm²)",
+  "Petal area among populations"
+)
+```
+
+## 3.2 Wet weight
+
+```{r}
+#| label: population-wet-weight
+
+res_wet <- fit_population_model(petal_traits, "wet_wgt_g", "Population comparison: wet weight")
+plot_population_trait(res_wet$data, "wet_wgt_g", "Wet weight (g)", "Wet weight among populations")
+```
+
+## 3.3 Dry weight
+
+```{r}
+#| label: population-dry-weight
+
+res_dry <- fit_population_model(petal_traits, "dry_wgt_g", "Population comparison: dry weight")
+plot_population_trait(res_dry$data, "dry_wgt_g", "Dry weight (g)", "Dry weight among populations")
+```
+
+## 3.4 Population × block descriptive means
+
+```{r}
+#| label: basic-trait-block-means
+
+before <- petal_traits
+
+basic_block_means <- petal_traits |>
+  group_by(population, block) |>
+  summarise(
+    n_area = sum(!is.na(area_cm2)),
+    petal_area_mean = mean(area_cm2, na.rm = TRUE),
+    n_wet = sum(!is.na(wet_wgt_g)),
+    wet_weight_mean = mean(wet_wgt_g, na.rm = TRUE),
+    n_dry = sum(!is.na(dry_wgt_g)),
+    dry_weight_mean = mean(dry_wgt_g, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Summarisation intentionally changes the unit of analysis rather than deleting
+# biological records. It is reported explicitly and is not used as a silent filter.
+cat("\n--- AUDIT: Population × block summary of basic traits ---\n")
+cat("Input plant rows:", nrow(before), "\n")
+cat("Output population × block rows:", nrow(basic_block_means), "\n")
+print_key_counts(
+  basic_block_means,
+  "Population × block basic-trait means",
+  c("petal_area_mean", "wet_weight_mean", "dry_weight_mean")
+)
+
+kable(basic_block_means, digits = 4)
+write_csv(basic_block_means, file.path(output_dir, "basic_traits_population_block.csv"))
+```
+
+# 4. Four-day pre-collection microclimate
+
+The 4-day window is retained from the original analyses. For each population × block, the window begins four days before the collection date and ends one day before collection.
+
+## 4.1 Collection dates
+
+```{r}
+#| label: collection-dates
+
+collection_date_check <- petal_traits |>
+  group_by(population, block) |>
+  summarise(
+    n_collection_dates = n_distinct(date),
+    collection_dates = paste(sort(unique(date)), collapse = ", "),
+    .groups = "drop"
+  )
+
+kable(collection_date_check, caption = "Observed collection dates within each population × block.")
+
+# Each population × block should have one collection date for climate matching.
+if (any(collection_date_check$n_collection_dates != 1)) {
+  print(collection_date_check |> filter(n_collection_dates != 1))
+  stop("A population × block contains more than one collection date. Review the climate-window definition before continuing.")
+}
+
+collection_dates <- petal_traits |>
+  distinct(population, block, date) |>
+  rename(collection_date = date) |>
+  mutate(
+    start_date = collection_date - days(4),
+    end_date = collection_date - days(1)
+  )
+
+print_key_counts(collection_dates, "4-day window date table", c("collection_date"))
+kable(collection_dates)
+write_csv(collection_dates, file.path(output_dir, "four_day_collection_windows.csv"))
+```
+
+## 4.2 Load original RH/temperature and PAR files
+
+```{r}
+#| label: climate-load-functions
+
+load_rhtemp <- function(site_name, file_path) {
+  raw <- read_csv(file_path, show_col_types = FALSE)
+  cols <- names(raw)
+  time_col <- cols[grepl("Time|time", cols)][1]
+  temp_col <- cols[grepl("Celsius|Temp|temp", cols, ignore.case = TRUE)][1]
+  rh_col   <- cols[grepl("Humidity|RH|rh", cols, ignore.case = TRUE)][1]
+
+  if (any(is.na(c(time_col, temp_col, rh_col)))) {
+    stop("Could not identify time, temperature, or RH column in ", file_path)
+  }
+
+  parsed <- raw |>
+    transmute(
+      time = .data[[time_col]],
+      temp = as.numeric(.data[[temp_col]]),
+      rh = as.numeric(.data[[rh_col]]),
+      datetime = mdy_hm(.data[[time_col]]),
+      site = site_name
+    ) |>
+    mutate(date = as_date(datetime), hour = hour(datetime))
+
+  print_key_counts(parsed, paste("Parsed RH/temp:", site_name), c("temp", "rh"))
+
+  valid <- !is.na(parsed$datetime) & !is.na(parsed$temp) & !is.na(parsed$rh)
+  excluded <- parsed[!valid, , drop = FALSE]
+  out <- parsed[valid, , drop = FALSE]
+  report_excluded_rows(
+    excluded = excluded,
+    before_n = nrow(parsed),
+    after_n = nrow(out),
+    step_name = paste("Valid RH/temp records:", site_name),
+    reason = "Original loading rule requires parsable datetime, temperature, and RH.",
+    approved = params$approve_expected_row_removals,
+    expected = TRUE
+  )
+  print_key_counts(out, paste("Loaded valid RH/temp:", site_name), c("temp", "rh"))
+  out
+}
+
+load_par <- function(site_name, file_path) {
+  raw <- read_csv(file_path, show_col_types = FALSE)
+  if (ncol(raw) < 2) stop("PAR file has fewer than two columns: ", file_path)
+  time_col <- names(raw)[1]
+  par_col <- names(raw)[2]
+
+  parsed <- raw |>
+    transmute(
+      date_raw = .data[[time_col]],
+      par = as.numeric(gsub(",", "", .data[[par_col]])),
+      datetime = mdy_hms(.data[[time_col]]),
+      site = site_name
+    ) |>
+    mutate(date = as_date(datetime), hour = hour(datetime))
+
+  print_key_counts(parsed, paste("Parsed PAR:", site_name), c("par"))
+
+  valid <- !is.na(parsed$datetime) & !is.na(parsed$par)
+  excluded <- parsed[!valid, , drop = FALSE]
+  out <- parsed[valid, , drop = FALSE]
+  report_excluded_rows(
+    excluded = excluded,
+    before_n = nrow(parsed),
+    after_n = nrow(out),
+    step_name = paste("Valid PAR records:", site_name),
+    reason = "Original loading rule requires parsable datetime and PAR.",
+    approved = params$approve_expected_row_removals,
+    expected = TRUE
+  )
+  print_key_counts(out, paste("Loaded valid PAR:", site_name), c("par"))
+  out
+}
+
+calculate_vpd <- function(temp, rh) {
+  vp_sat <- 0.611 * exp((17.27 * temp) / (temp + 237.3))
+  vp_actual <- vp_sat * (rh / 100)
+  vp_sat - vp_actual
+}
+```
+
+```{r}
+#| label: load-climate-files
+
+rhtemp_cojo   <- load_rhtemp("Cojo", file.path(rhtemp_dir, "Cojo_rhtemp_2025.csv"))
+rhtemp_perry  <- load_rhtemp("Perry", file.path(rhtemp_dir, "Perry_rhtemp_2025.csv"))
+rhtemp_percos <- load_rhtemp("Percos", file.path(rhtemp_dir, "Percos_rhtemp_2025.csv"))
+rhtemp_pt     <- load_rhtemp("Pt. Conception", file.path(rhtemp_dir, "Pt_Con_rhtemp_2025.csv"))
+
+# Preserve the original documented Pt. Conception sensor QC exclusion.
+pt_bad_datetime <- ymd_hms("2025-07-08 17:23:00")
+before <- rhtemp_pt
+remove_pt_bad <- !is.na(rhtemp_pt$datetime) & rhtemp_pt$datetime == pt_bad_datetime
+excluded_pt_bad <- rhtemp_pt[remove_pt_bad, , drop = FALSE]
+rhtemp_pt_qc <- rhtemp_pt[!remove_pt_bad, , drop = FALSE]
+report_excluded_rows(
+  excluded = excluded_pt_bad,
+  before_n = nrow(before),
+  after_n = nrow(rhtemp_pt_qc),
+  step_name = "Pt. Conception RH/temp QC",
+  reason = "Original analysis identified 2025-07-08 17:23:00 as a clearly bad sensor point.",
+  approved = params$approve_expected_row_removals,
+  expected = TRUE
+)
+print_key_counts(rhtemp_pt_qc, "Pt. Conception RH/temp after documented QC", c("temp", "rh"))
+
+rhtemp_all <- bind_rows(rhtemp_cojo, rhtemp_perry, rhtemp_percos, rhtemp_pt_qc) |>
+  mutate(vpd = calculate_vpd(temp, rh))
+print_key_counts(rhtemp_all, "Combined RH/temp with VPD", c("temp", "rh", "vpd"))
+
+par_cojo   <- load_par("Cojo", file.path(par_dir, "Cojo_PAR_2025.csv"))
+par_perry  <- load_par("Perry", file.path(par_dir, "Perry_PAR_2025.csv"))
+par_percos <- load_par("Percos", file.path(par_dir, "Percos_PAR_2025.csv"))
+par_pt     <- load_par("Pt. Conception", file.path(par_dir, "Pt_con_PAR_2025.csv"))
+```
+
+## 4.3 Apply only the documented PAR quality-control rules
+
+Negative PAR values are set to zero. Cojo PAR values above 3000 µmol m^-2^ s^-1^ are set to `NA`. These transformations do not remove rows.
+
+```{r}
+#| label: par-qc
+
+fix_par <- function(df, site_name) {
+  before <- df
+  out <- df |>
+    mutate(
+      par = if_else(!is.na(par) & par < 0, 0, par),
+      par = if_else(site_name == "Cojo" & !is.na(par) & par > 3000, NA_real_, par)
+    )
+  check_no_row_loss(before, out, paste("PAR QC:", site_name))
+  print_key_counts(out, paste("PAR after QC:", site_name), c("par"))
+  out
+}
+
+par_all <- bind_rows(
+  fix_par(par_cojo, "Cojo"),
+  fix_par(par_perry, "Perry"),
+  fix_par(par_percos, "Percos"),
+  fix_par(par_pt, "Pt. Conception")
+)
+
+print_key_counts(par_all, "Combined PAR after documented QC", c("par"))
+```
+
+## 4.4 Restrict climate records to the original common monitoring period
+
+The original 4-day workflow first identified, for each population, the first date with both RH/temperature and PAR data; the latest of those site-specific dates defines a shared monitoring start. Climate records are then restricted to that shared start through 1 October 2025. This rule is retained here exactly so the 4-day summaries remain comparable to the original analysis.
+
+```{r}
+#| label: climate-common-period
+
+first_rh_dates <- rhtemp_all |>
+  group_by(site) |>
+  summarise(first_rh = min(date, na.rm = TRUE), .groups = "drop")
+
+first_par_dates <- par_all |>
+  group_by(site) |>
+  summarise(first_par = min(date, na.rm = TRUE), .groups = "drop")
+
+first_all_dates <- first_rh_dates |>
+  left_join(first_par_dates, by = "site") |>
+  mutate(first_both = pmax(first_rh, first_par, na.rm = TRUE))
+
+global_start <- max(first_all_dates$first_both, na.rm = TRUE)
+global_end <- as_date("2025-10-01")
+
+cat("Shared climate monitoring start:", as.character(global_start), "\n")
+cat("Climate monitoring end used in original analysis:", as.character(global_end), "\n")
+kable(first_all_dates, caption = "First RH/temperature and PAR dates by population.")
+
+before_rh <- rhtemp_all
+rh_in_period <- !is.na(rhtemp_all$date) & rhtemp_all$date >= global_start & rhtemp_all$date <= global_end
+excluded_rh_period <- rhtemp_all[!rh_in_period, , drop = FALSE]
+rhtemp_analysis <- rhtemp_all[rh_in_period, , drop = FALSE]
+report_excluded_rows(
+  excluded = excluded_rh_period,
+  before_n = nrow(before_rh),
+  after_n = nrow(rhtemp_analysis),
+  step_name = "Restrict RH/temp to shared monitoring period",
+  reason = "Original analysis used the common start date when all sites had both RH/temp and PAR, through 2025-10-01.",
+  approved = params$approve_expected_row_removals,
+  expected = TRUE
+)
+print_key_counts(rhtemp_analysis, "RH/temp in shared monitoring period", c("temp", "rh", "vpd"))
+
+before_par <- par_all
+par_in_period <- !is.na(par_all$date) & par_all$date >= global_start & par_all$date <= global_end
+excluded_par_period <- par_all[!par_in_period, , drop = FALSE]
+par_analysis <- par_all[par_in_period, , drop = FALSE]
+report_excluded_rows(
+  excluded = excluded_par_period,
+  before_n = nrow(before_par),
+  after_n = nrow(par_analysis),
+  step_name = "Restrict PAR to shared monitoring period",
+  reason = "Original analysis used the common start date when all sites had both RH/temp and PAR, through 2025-10-01.",
+  approved = params$approve_expected_row_removals,
+  expected = TRUE
+)
+print_key_counts(par_analysis, "PAR in shared monitoring period", c("par"))
+```
+
+## 4.5 Calculate the four-day microclimate metrics
+
+The simplified analysis retains four biologically distinct descriptors:
+
+- mean midday VPD (11:00–15:00),
+- mean daily maximum temperature,
+- mean nighttime RH (20:00–06:00), and
+- mean daily integrated PAR.
+
+Fog hours are in the exported table, but they are descriptive rather than a primary climate predictor here.
+
+```{r}
+#| label: four-day-climate-function
+
+safe_mean <- function(x) if (all(is.na(x))) NA_real_ else mean(x, na.rm = TRUE)
+safe_max  <- function(x) if (all(is.na(x))) NA_real_ else max(x, na.rm = TRUE)
+safe_min  <- function(x) if (all(is.na(x))) NA_real_ else min(x, na.rm = TRUE)
+
+calc_microclimate_metrics <- function(site_name, start_date, end_date) {
+  rh_subset <- rhtemp_analysis |>
+    filter(site == site_name, date >= start_date, date <= end_date)
+  par_subset <- par_analysis |>
+    filter(site == site_name, date >= start_date, date <= end_date)
+
+  # No rows are silently removed after subsetting to the explicitly requested window.
+  cat("\nClimate window:", site_name, as.character(start_date), "to", as.character(end_date), "\n")
+  cat("RH/temp records in requested window:", nrow(rh_subset), "\n")
+  cat("PAR records in requested window:", nrow(par_subset), "\n")
+  print_key_counts(rh_subset, paste("RH/temp window", site_name), c("temp", "rh", "vpd"))
+  print_key_counts(par_subset, paste("PAR window", site_name), c("par"))
+
+  daily_rh <- rh_subset |>
+    group_by(date) |>
+    summarise(
+      temp_max = safe_max(temp),
+      temp_min = safe_min(temp),
+      temp_mean = safe_mean(temp),
+      rh_min = safe_min(rh),
+      rh_mean = safe_mean(rh),
+      vpd_mean = safe_mean(vpd),
+      vpd_max = safe_max(vpd),
+      vpd_midday = safe_mean(vpd[hour >= 11 & hour <= 15]),
+      rh_night = safe_mean(rh[hour >= 20 | hour <= 6]),
+      fog_hours = sum(rh > 95, na.rm = TRUE) * 0.5,
+      .groups = "drop"
+    ) |>
+    mutate(temp_range = temp_max - temp_min)
+
+  daily_par <- par_subset |>
+    group_by(date) |>
+    summarise(
+      par_integrated = if (all(is.na(par))) NA_real_ else sum(par, na.rm = TRUE) * (5 / 60) * (1 / 1e6),
+      par_max = safe_max(par),
+      high_light_hours = if (all(is.na(par))) NA_real_ else sum(par > 1000, na.rm = TRUE) * (5 / 60),
+      .groups = "drop"
+    )
+
+  daily <- full_join(daily_rh, daily_par, by = "date")
+
+  tibble(
+    population = site_name,
+    start_date = start_date,
+    end_date = end_date,
+    n_rhtemp_days = sum(!is.na(daily$temp_max)),
+    n_par_days = sum(!is.na(daily$par_integrated)),
+    temp_max_mean = safe_mean(daily$temp_max),
+    temp_range_mean = safe_mean(daily$temp_range),
+    rh_night_mean = safe_mean(daily$rh_night),
+    vpd_midday_mean = safe_mean(daily$vpd_midday),
+    fog_hours_total = if (all(is.na(daily$fog_hours))) NA_real_ else sum(daily$fog_hours, na.rm = TRUE),
+    par_integrated_mean = safe_mean(daily$par_integrated)
+  )
+}
+```
+
+```{r}
+#| label: calculate-four-day-climate
+
+microclimate_by_period <- pmap_dfr(
+  collection_dates,
+  function(population, block, collection_date, start_date, end_date) {
+    out <- calc_microclimate_metrics(
+      site_name = as.character(population),
+      start_date = start_date,
+      end_date = end_date
+    )
+    out$block <- as.character(block)
+    out$collection_date <- collection_date
+    out
+  }
+) |>
+  mutate(
+    population = factor(population, levels = levels(petal_traits$population)),
+    block = factor(block, levels = levels(petal_traits$block))
+  ) |>
+  select(population, block, collection_date, start_date, end_date, everything())
+
+print_key_counts(
+  microclimate_by_period,
+  "Four-day microclimate summaries",
+  c("vpd_midday_mean", "temp_max_mean", "rh_night_mean", "par_integrated_mean")
+)
+
+kable(microclimate_by_period, digits = 3)
+write_csv(microclimate_by_period, file.path(output_dir, "four_day_microclimate_population_block.csv"))
+```
+
+## 4.6 Descriptive comparison of four-day microclimate among populations
+
+Because each population is represented by one logger rather than replicated independent climate stations, these plots are descriptive and do not use an inferential population ANOVA.
+
+```{r}
+#| label: plot-four-day-climate
+#| fig-width: 9
+#| fig-height: 7
+
+climate_long <- microclimate_by_period |>
+  select(
+    population, block,
+    `Midday VPD (kPa)` = vpd_midday_mean,
+    `Daily maximum temperature (°C)` = temp_max_mean,
+    `Nighttime RH (%)` = rh_night_mean,
+    `Integrated PAR (mol m^-2 d^-1)` = par_integrated_mean
+  ) |>
+  pivot_longer(
+    -c(population, block),
+    names_to = "climate_metric",
+    values_to = "value"
+  )
+
+print_key_counts(climate_long, "Long-format four-day climate table", c("value"))
+
+ggplot(climate_long, aes(population, value, color = population, shape = block)) +
+  geom_point(size = 3) +
+  facet_wrap(~ climate_metric, scales = "free_y", ncol = 2) +
+  labs(x = NULL, y = NULL, color = "Population", shape = "Block") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 20, hjust = 1))
+```
+
+# 5. Population differences in petal physiology
+
+Three nonredundant derived traits are analyzed:
+
+1. **Percent dry mass** = `100 × dry weight / wet weight`.
+2. **Petal mass per area** = dry mass per unit display area, reported as mg cm^-2^.
+3. **Water mass per area** = `(wet weight − dry weight) / area`, reported as mg cm^-2^.
+
+The same primary model is used for each trait: `trait ~ population + block`.
+
+## 5.1 Percent dry mass
+
+```{r}
+#| label: percent-dry-mass
+
+res_pct_dry <- fit_population_model(
+  petal_traits,
+  "pct_dry_mass",
+  "Population comparison: percent dry mass"
+)
+plot_population_trait(
+  res_pct_dry$data,
+  "pct_dry_mass",
+  "Dry mass (% of wet weight)",
+  "Percent dry mass among populations"
+)
+
+
+emm_pop <- emmeans(res_pct_dry$model, ~ population | block)
+pairs(emm_pop, adjust = "tukey")
+
+emm_block <- emmeans(res_pct_dry$model, ~ block | population)
+pairs(emm_block, adjust = "tukey")
+```
+
+## 5.2 Petal mass per area
+
+```{r}
+#| label: petal-mass-per-area
+
+res_pma <- fit_population_model(
+  petal_traits,
+  "petal_mass_per_area_mg_cm2",
+  "Population comparison: petal mass per area"
+)
+plot_population_trait(
+  res_pma$data,
+  "petal_mass_per_area_mg_cm2",
+  "Petal mass per area (mg cm^-2)",
+  "Petal mass per area among populations"
+)
+
+ggplot(
+  res_pma$data,
+  aes(
+    x = block,
+    y = petal_mass_per_area_mg_cm2,
+    color = population,
+    group = population
+  )
+) +
+  stat_summary(
+    fun = mean,
+    geom = "point",
+    size = 3
+  ) +
+  stat_summary(
+    fun = mean,
+    geom = "line",
+    linewidth = 0.8
+  ) +
+  stat_summary(
+    fun.data = mean_ci_t,
+    geom = "errorbar",
+    width = 0.08
+  ) +
+  labs(
+    x = "Block",
+    y = "Petal mass per area (mg cm⁻²)",
+    color = "Population",
+    title = "Petal mass per area across populations and time blocks"
+  ) +
+  theme_bw()
+
+
+
+
+
+
+
+
+
+
+emm_pop <- emmeans(res_pma$model, ~ population | block)
+pairs(emm_pop, adjust = "tukey")
+
+emm_block <- emmeans(res_pma$model, ~ block | population)
+pairs(emm_block, adjust = "tukey")
+```
+
+## 5.3 Water mass per area
+
+```{r}
+#| label: water-mass-per-area
+
+res_wma <- fit_population_model(
+  petal_traits,
+  "water_mass_per_area_mg_cm2",
+  "Population comparison: water mass per area"
+)
+plot_population_trait(
+  res_wma$data,
+  "water_mass_per_area_mg_cm2",
+  "Water mass per area (mg cm^-2)",
+  "Water mass per area among populations"
+)
+ggplot(
+  res_wma$data,
+  aes(
+    x = block,
+    y = water_mass_per_area_mg_cm2,
+    color = population,
+    group = population
+  )
+) +
+  geom_jitter(
+    aes(shape = population),
+    width = 0.06,
+    alpha = 0.25,
+    size = 1.3
+  ) +
+  stat_summary(
+    fun = mean,
+    geom = "point",
+    size = 3
+  ) +
+  stat_summary(
+    fun = mean,
+    geom = "line",
+    linewidth = 0.8
+  ) +
+  stat_summary(
+    fun.data = mean_ci_t,
+    geom = "errorbar",
+    width = 0.08
+  ) +
+  labs(
+    x = "Block",
+    y = "Water mass per area (mg cm⁻²)",
+    color = "Population",
+    shape = "Population",
+    title = "Water mass per area across populations and time blocks"
+  ) +
+  theme_bw()
+```
+
+# 6. Four-day climate–physiology relationships
+
+Climate exposure is shared by all plants within a population × block window. Therefore plant traits are first summarized to the same **population × block** scale as climate before any climate–trait relationship is estimated.
+
+## 6.1 Aggregate traits to population × block
+
+```{r}
+#| label: physiology-block-means
+
+physiology_block_means <- petal_traits |>
+  group_by(population, block) |>
+  summarise(
+    n_pct_dry = sum(!is.na(pct_dry_mass)),
+    pct_dry_mass = mean(pct_dry_mass, na.rm = TRUE),
+    n_pma = sum(!is.na(petal_mass_per_area_mg_cm2)),
+    petal_mass_per_area_mg_cm2 = mean(petal_mass_per_area_mg_cm2, na.rm = TRUE),
+    n_wma = sum(!is.na(water_mass_per_area_mg_cm2)),
+    water_mass_per_area_mg_cm2 = mean(water_mass_per_area_mg_cm2, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+cat("\n--- AUDIT: Population × block physiology summary ---\n")
+cat("Input plant rows:", nrow(petal_traits), "\n")
+cat("Output population × block rows:", nrow(physiology_block_means), "\n")
+print_key_counts(
+  physiology_block_means,
+  "Population × block physiology means",
+  c("pct_dry_mass", "petal_mass_per_area_mg_cm2", "water_mass_per_area_mg_cm2")
+)
+
+write_csv(physiology_block_means, file.path(output_dir, "physiology_population_block.csv"))
+```
+
+## 6.2 Join physiology means to the four-day climate summaries
+
+A left join is used so that the full set of population × block physiology records remains visible even when a climate window is missing.
+
+```{r}
+#| label: join-climate-physiology
+
+before <- physiology_block_means
+
+climate_physiology <- physiology_block_means |>
+  left_join(
+    microclimate_by_period |>
+      select(
+        population, block,
+        vpd_midday_mean, temp_max_mean,
+        rh_night_mean, par_integrated_mean
+      ),
+    by = c("population", "block")
+  )
+
+check_no_row_loss(before, climate_physiology, "Join physiology means to 4-day climate")
+
+print_key_counts(
+  climate_physiology,
+  "Joined population × block climate–physiology table",
+  c(
+    "pct_dry_mass", "petal_mass_per_area_mg_cm2", "water_mass_per_area_mg_cm2",
+    "vpd_midday_mean", "temp_max_mean", "rh_night_mean", "par_integrated_mean"
+  )
+)
+
+kable(climate_physiology, digits = 3)
+write_csv(climate_physiology, file.path(output_dir, "climate_physiology_population_block.csv"))
+```
+
+## 6.3 Exploratory one-predictor climate–trait relationships
+
+These analyses are intentionally simple. Each model contains one climate predictor and one population × block trait mean. They are exploratory associations, not independent causal tests of climate drivers.
+
+```{r}
+#| label: climate-trait-functions
+
+trait_labels <- c(
+  pct_dry_mass = "Dry mass (% of wet weight)",
+  petal_mass_per_area_mg_cm2 = "Petal mass per area (mg cm^-2)",
+  water_mass_per_area_mg_cm2 = "Water mass per area (mg cm^-2)"
+)
+
+climate_labels <- c(
+  vpd_midday_mean = "Midday VPD (kPa)",
+  temp_max_mean = "Daily maximum temperature (°C)",
+  rh_night_mean = "Nighttime RH (%)",
+  par_integrated_mean = "Integrated PAR (mol m^-2 d^-1)"
+)
+
+fit_simple_climate_trait <- function(data, trait, climate) {
+  analysis_name <- paste(trait_labels[[trait]], "vs", climate_labels[[climate]])
+  model_data <- analysis_complete_cases(
+    data,
+    c(trait, climate, "population", "block"),
+    analysis_name
+  )
+
+  form <- reformulate(climate, response = trait)
+  model <- lm(form, data = model_data, na.action = na.fail)
+
+  tibble(
+    trait = trait,
+    climate = climate,
+    n = nrow(model_data),
+    slope = coef(model)[[2]],
+    slope_conf_low = confint(model)[2, 1],
+    slope_conf_high = confint(model)[2, 2],
+    r_squared = summary(model)$r.squared,
+    p_value = coef(summary(model))[2, 4]
+  )
+}
+```
+
+```{r}
+#| label: climate-trait-models
+
+model_grid <- crossing(
+  trait = names(trait_labels),
+  climate = names(climate_labels)
+)
+
+climate_trait_results <- pmap_dfr(
+  model_grid,
+  ~ fit_simple_climate_trait(climate_physiology, ..1, ..2)
+)
+
+climate_trait_results <- climate_trait_results |>
+  mutate(
+    trait_label = recode(trait, !!!trait_labels),
+    climate_label = recode(climate, !!!climate_labels)
+  ) |>
+  select(trait_label, climate_label, n, slope, slope_conf_low, slope_conf_high, r_squared, p_value)
+
+kable(
+  climate_trait_results,
+  digits = 4,
+  caption = "Exploratory one-predictor relationships between population × block physiology means and 4-day pre-collection climate."
+)
+
+write_csv(climate_trait_results, file.path(output_dir, "exploratory_four_day_climate_trait_models.csv"))
+```
+
+## 6.4 Exploratory climate–physiology plots
+
+```{r}
+#| label: climate-trait-plots
+#| fig-width: 10
+#| fig-height: 10
+
+climate_trait_long <- climate_physiology |>
+  pivot_longer(
+    cols = all_of(names(trait_labels)),
+    names_to = "trait",
+    values_to = "trait_value"
+  ) |>
+  pivot_longer(
+    cols = all_of(names(climate_labels)),
+    names_to = "climate",
+    values_to = "climate_value"
+  ) |>
+  mutate(
+    trait_label = recode(trait, !!!trait_labels),
+    climate_label = recode(climate, !!!climate_labels)
+  )
+
+print_key_counts(
+  climate_trait_long,
+  "Long-format climate–physiology plot table",
+  c("trait_value", "climate_value")
+)
+
+ggplot(
+  climate_trait_long,
+  aes(climate_value, trait_value, color = population, shape = block)
+) +
+  geom_point(size = 2.8) +
+  geom_smooth(aes(group = 1), method = "lm", se = TRUE, color = "black") +
+  facet_grid(trait_label ~ climate_label, scales = "free") +
+  labs(x = NULL, y = NULL, color = "Population", shape = "Block") +
+  theme_bw() +
+  theme(
+    strip.text.x = element_text(size = 8),
+    strip.text.y = element_text(size = 8)
+  )
+```
+
+# 7. Export analysis-ready data and model summaries
+
+The exports below preserve the analysis inputs and derived variables needed to reproduce the figures and statistical results without modifying the original source files.
+
+```{r}
+#| label: exports
+
+write_csv(petal_traits, file.path(output_dir, "petal1_blocks1_3_analysis_data.csv"), na = "")
+
+population_model_summaries <- bind_rows(
+  tidy(res_area$model, conf.int = TRUE) |> mutate(response = "petal_area_cm2"),
+  tidy(res_wet$model, conf.int = TRUE) |> mutate(response = "wet_weight_g"),
+  tidy(res_dry$model, conf.int = TRUE) |> mutate(response = "dry_weight_g"),
+  tidy(res_pct_dry$model, conf.int = TRUE) |> mutate(response = "percent_dry_mass"),
+  tidy(res_pma$model, conf.int = TRUE) |> mutate(response = "petal_mass_per_area_mg_cm2"),
+  tidy(res_wma$model, conf.int = TRUE) |> mutate(response = "water_mass_per_area_mg_cm2")
+)
+
+write_csv(
+  population_model_summaries,
+  file.path(output_dir, "population_block_model_coefficients.csv")
+)
+
+cat("Exported analysis products to:", output_dir, "\n")
+```
+
+# 8. Reproducibility and FAIR provenance
+
+This section records the analysis environment and the exact source-file paths used by the workflow. Original data files are read-only; derived files are written to the analysis output directory.
+
+```{r}
+#| label: provenance
+
+provenance <- tibble(
+  role = c(
+    "Master petal measurements",
+    "Cojo RH/temperature", "Perry RH/temperature", "Percos RH/temperature", "Pt. Conception RH/temperature",
+    "Cojo PAR", "Perry PAR", "Percos PAR", "Pt. Conception PAR"
+  ),
+  file = required_files,
+  exists = file.exists(required_files),
+  size_bytes = file.info(required_files)$size,
+  modified = as.character(file.info(required_files)$mtime)
+)
+
+kable(provenance, caption = "Source-file provenance for this analysis.")
+write_csv(provenance, file.path(output_dir, "source_file_provenance.csv"))
+
+cat("\nR session information:\n")
+print(sessionInfo())
+```
+
+# Interpretation guardrails
+
+- Population comparisons use individual plants as biological observations and account for sampling block.
+- Four-day climate comparisons are descriptive because each population has one logger rather than replicated independent climate stations.
+- Climate–physiology analyses use population × block means so plants sharing a climate window are not treated as independent climate replicates.
+- The climate–trait regressions are exploratory one-predictor associations and should not be interpreted as identifying independent causal climate drivers.
+- Missing data are never silently dropped: model preparation is audited, and models use `na.action = na.fail`.

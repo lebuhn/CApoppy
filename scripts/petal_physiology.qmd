@@ -41,8 +41,32 @@ We use all available core petal traits and physiologically relevant climate metr
 ```{r}
 #| label: load-petal-data
 
-# Path may need adjustment
-petal_raw <- read_csv("../data/raw/plant/petal_weight_2025.csv")
+# ------------------------------------------------------------
+# DATA FILE
+# Decision: use data/processed/petal_area_master.csv, the
+# integrated weight + hand-area + segmented-area table (built by
+# scripts/07-13), instead of the old raw petal_weight_2025.csv.
+# Master carries one row per petal rather than one row per plant,
+# because scripts/09-11 split out per-petal area measurements for
+# the 4-petals-per-image buckets. We collapse back to one row per
+# plant/date by keeping only "petal 1" -- the petal that was
+# actually weighed. Where petal_number is blank on a "petal" row,
+# that row predates the per-petal split and IS the one weighed
+# petal for that plant, so it is identified as petal 1.
+# Edge case: 2025-05-22 Cojo plant 1 has two such blank "petal"
+# rows (scripts/12 couldn't tell them apart either -- see its
+# "ambiguous, not guessed" skip logic), so both become
+# petal_number 1 here. In practice this doesn't create a
+# duplicate below: one of the two is missing dry_wgt and gets
+# dropped by this chunk's own missing-data filter, leaving one.
+# ------------------------------------------------------------
+petal_master <- read_csv("../data/processed/petal_area_master.csv")
+
+petal_raw <- petal_master %>%
+  mutate(petal_number = if_else(petal_flower == "petal" & is.na(petal_number),
+                                1, petal_number)) %>%
+  filter(petal_flower != "petal" | petal_number == 1) %>%
+  rename(wet_wgt = wet_wgt_g, dry_wgt = dry_wgt_g)
 
 petal_data_all <- petal_raw %>%
   # Remove flagged outlier
@@ -50,7 +74,10 @@ petal_data_all <- petal_raw %>%
   # Keep petals only
   filter(petal_flower == "petal") %>%
   mutate(
-    date       = mdy(date),
+    # petal_area_master.csv's date format isn't stable across pipeline
+    # reruns (seen as both ISO YYYY-MM-DD and M/D/YY) -- try both rather
+    # than assuming one.
+    date       = coalesce(ymd(date, quiet = TRUE), mdy(date, quiet = TRUE)),
     block      = as.factor(block),
     population = as.factor(population),
     wet_wgt    = as.numeric(wet_wgt),

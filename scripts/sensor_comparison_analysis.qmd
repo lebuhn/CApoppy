@@ -1124,20 +1124,20 @@ knitr::kable(comparison_table, digits = 2,
 
 5.  **Method Comparison**:
 
-    -   **Hourly Aggregation**: Smooths out short-term fluctuations and provides more robust estimates when sampling times differ
-    -   **Nearest Timestamp Matching**: Preserves original measurement characteristics but may include temporal mismatches (see mean/median time differences)
-    -   The comparison table shows which method yields lower error metrics for each location/variable combination
+    - **Hourly Aggregation**: Smooths out short-term fluctuations and provides more robust estimates when sampling times differ
+    - **Nearest Timestamp Matching**: Preserves original measurement characteristics but may include temporal mismatches (see mean/median time differences)
+    - The comparison table shows which method yields lower error metrics for each location/variable combination
 
 ### Recommendations:
 
 Based on the statistical metrics from both methods:
 
--   **High correlation (r \> 0.9)** and **low RMSE** suggest new sensors can substitute for old ones
--   **Systematic bias** can be corrected using the regression equations if needed
--   **Large scatter** or **low correlation** would indicate caution in substitution
--   Consider the **temporal resolution** of your research questions when choosing between methods:
-    -   Use hourly aggregation for analyses requiring consistent time intervals
-    -   Use nearest timestamp matching when preserving original measurement timing is critical
+- **High correlation (r \> 0.9)** and **low RMSE** suggest new sensors can substitute for old ones
+- **Systematic bias** can be corrected using the regression equations if needed
+- **Large scatter** or **low correlation** would indicate caution in substitution
+- Consider the **temporal resolution** of your research questions when choosing between methods:
+  - Use hourly aggregation for analyses requiring consistent time intervals
+  - Use nearest timestamp matching when preserving original measurement timing is critical
 
 The regression models from both methods provide conversion equations if you need to adjust new sensor values to match the old sensor scale. The coefficients should be similar between methods if sensors track well.
 

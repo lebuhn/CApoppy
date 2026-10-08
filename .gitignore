@@ -52,3 +52,8 @@ outputs/
 *.html
 *_files/
 *.pdf
+.positai
+# Python virtual environment for image-segmentation scripts (see scripts/segmentation/requirements.txt)
+.venv/
+__pycache__/
+*.pyc

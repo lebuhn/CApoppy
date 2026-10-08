@@ -1,0 +1,2 @@
+image_path,area_cm2,feret_cm,feret_x,feret_y,feret_angle,min_feret_cm,method_note
+2025_03_26/IMG_20250326_0009.png,11.986,4.376,1328,1394,38.108,3.878,Wand tool click on thresholded petal (isolates connected region only) - corrected after first attempt (Analyze Particles without crop) measured 486.891 cm2 (the whole page)

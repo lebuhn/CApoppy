@@ -1,0 +1,2 @@
+comparison,hand_mean_cm2,hand_min_cm2,hand_max_cm2,auto_mean_cm2,auto_min_cm2,auto_max_cm2,hand_mean_within_auto_range
+hand (n=0) vs otsu_chroma primary-candidate-per-image (n=15),,,,15.128,11.521,19.621,False
