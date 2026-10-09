@@ -37,9 +37,8 @@ library(ggplot2)
 # that row predates the per-petal split and IS the one weighed
 # petal for that plant, so it is identified as petal 1.
 # Edge case: 2025-05-22 Cojo plant 1 has two such blank "petal"
-# rows (scripts/12 couldn't tell them apart either -- see its
-# "ambiguous, not guessed" skip logic), so both become
-# petal_number 1 here. In practice this doesn't create a
+# rows), so both become
+# petal_number 1 here. This doesn't create a
 # duplicate below: one of the two is missing dry_wgt and gets
 # dropped by this chunk's own missing-data filter, leaving one.
 # ------------------------------------------------------------

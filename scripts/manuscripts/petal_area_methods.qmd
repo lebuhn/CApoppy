@@ -5,7 +5,7 @@ title: "Methods draft: petal area measurement"
 <!--
 Working draft of a Methods subsection for petal area quantification,
 written for submission to Evolution. Drafted 2026-09-14 alongside
-scripts/07_segment_petal_area.py — keep this text and that script's
+scripts/segmentation/07_segment_petal_area.py — keep this text and that script's
 docstring in sync if the pipeline changes (thresholds, package versions,
 validation approach, etc.).
 

@@ -1,4 +1,4 @@
-# Pinned dependencies for scripts/07_segment_petal_area.py
+# Pinned dependencies for scripts/segmentation/07_segment_petal_area.py
 # Create the environment with:
 #   python3 -m venv .venv
 #   .venv/bin/pip install -r scripts/segmentation/requirements.txt

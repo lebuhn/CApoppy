@@ -3,7 +3,7 @@
 # Applies the completed plant-ID checklist
 # (data/processed/petal_scan_visual_check_list_plant_id.csv) to
 # petal_area_master.csv for the 9 buckets that were still unresolved after
-# scripts/03-05 (2025-03-26, 04-17, 05-20, 05-22, 05-23 x2, 07-02 x2,
+# scripts/segmentation/03-05 (2025-03-26, 04-17, 05-20, 05-22, 05-23 x2, 07-02 x2,
 # 09-13). Researcher-confirmed 2026-09-14:
 #   - Cards showing 4 petals together label PETAL POSITION (1-4) within
 #     that one flower, not plant identity — those numbers are NOT used

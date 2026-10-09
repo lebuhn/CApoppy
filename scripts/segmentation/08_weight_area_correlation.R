@@ -2,7 +2,7 @@
 #
 # Purpose: test the relationship between petal wet weight (wet_wgt_g,
 # measured on a balance) and petal area (area_cm2, from automated image
-# segmentation in scripts/07_segment_petal_area.py) using
+# segmentation in scripts/segmentation/07_segment_petal_area.py) using
 # data/processed/petal_area_master.csv.
 #
 # Scope note: only plant rows with an UNAMBIGUOUS single-petal-per-image
@@ -10,7 +10,7 @@
 # 2025-07-05, where 5 plants share one scan and per-plant region
 # assignment hasn't been resolved yet) are excluded rather than guessed —
 # see area_flag. As more images are identity-resolved and measured
-# (scripts/07), re-running this script will pick up more rows
+# (scripts/segmentation/07), re-running this script will pick up more rows
 # automatically; no changes needed here.
 #
 # READ-ONLY on petal_area_master.csv. Writes only to data/processed/ and
@@ -42,7 +42,7 @@ cat("Excluded (multi-plant scan, area not yet assigned to a specific plant):",
 
 if (nrow(analysis_set) < 4) {
   stop("Fewer than 4 petals have both area and weight measured — not enough to ",
-       "test a correlation yet. Run scripts/07_segment_petal_area.py on more ",
+       "test a correlation yet. Run scripts/segmentation/07_segment_petal_area.py on more ",
        "identity-resolved images first.")
 }
 

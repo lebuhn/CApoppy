@@ -73,7 +73,7 @@ Outputs (all new files, under data/processed/segmentation/)
 
 Usage
 -----
-    .venv/bin/python3 scripts/07_segment_petal_area.py
+    .venv/bin/python3 scripts/segmentation/07_segment_petal_area.py
 
 Run from the project root (paths below are relative to it, resolved via
 the script's own location so it works regardless of the caller's cwd).
@@ -129,7 +129,7 @@ COLUMN_DICTIONARY = {
     "centroid_col": "Region centroid column (x, pixels) in the RAW image, before any orientation correction.",
     "image_height_px": "Raw image height in pixels (as scanned, before any orientation correction) — needed to convert centroid_row to an orientation-corrected quadrant.",
     "image_width_px": "Raw image width in pixels, as above.",
-    "orientation_upright": "True if the scan is right-side-up (detected from the handwritten date/population label block's vertical position — every scan reviewed in this project places that label in the upper portion when upright), False if rotated 180 degrees, None if no text block was confidently found. Used by scripts/09_assign_petal_numbers.py to map detected regions to the correct physical quadrant.",
+    "orientation_upright": "True if the scan is right-side-up (detected from the handwritten date/population label block's vertical position — every scan reviewed in this project places that label in the upper portion when upright), False if rotated 180 degrees, None if no text block was confidently found. Used by scripts/segmentation/09_assign_petal_numbers.py to map detected regions to the correct physical quadrant.",
     "orientation_confidence": "Fraction of image area occupied by the detected label-text block used for the orientation call. Not a statistical confidence — a bigger, clearer block is generally more trustworthy, but always spot-check via the QC overlay before trusting an automated call on this.",
     "orientation_note": "Human-readable detail behind the orientation_upright call (label block's row position vs. image height).",
 }
@@ -514,7 +514,7 @@ def save_qc_overlay(rgb: np.ndarray, mask: np.ndarray,
 
 
 # ---------------------------------------------------------------------------
-# Paired comparison (identity confirmed as of scripts/06 for 2025-03-26)
+# Paired comparison (identity confirmed as of scripts/segmentation/06 for 2025-03-26)
 # ---------------------------------------------------------------------------
 
 def paired_hand_vs_automated(master_path: Path) -> pd.DataFrame:
@@ -546,7 +546,7 @@ def compare_to_hand_measurements(results: pd.DataFrame, master_path: Path) -> pd
     """Distribution-level comparison: do the hand values fall within the
     range the automated methods produce for this batch? Superseded by
     paired_hand_vs_automated() now that 2025-03-26 identity is resolved
-    (scripts/06) — kept here only as a fallback pattern for a future batch
+    (scripts/segmentation/06) — kept here only as a fallback pattern for a future batch
     that has hand measurements but unresolved identity.
     """
     master = pd.read_csv(master_path)
@@ -605,7 +605,7 @@ def write_run_metadata(out_dir: Path, n_images: int) -> None:
 
     import numpy, skimage, pandas, PIL, matplotlib as mpl
     metadata = {
-        "script": "scripts/07_segment_petal_area.py",
+        "script": "scripts/segmentation/07_segment_petal_area.py",
         "run_timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "git_commit": commit,
         "python_version": sys.version,
@@ -634,7 +634,7 @@ def write_run_metadata(out_dir: Path, n_images: int) -> None:
 # ---------------------------------------------------------------------------
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = SCRIPT_DIR.parent
+PROJECT_ROOT = SCRIPT_DIR.parent.parent
 SCANS_DIR = PROJECT_ROOT / "Petal_scans"
 OUT_DIR = PROJECT_ROOT / "data" / "processed" / "segmentation"
 QC_DIR = OUT_DIR / "qc_overlays"
@@ -644,14 +644,14 @@ MASTER_PATH = PROJECT_ROOT / "data" / "processed" / "petal_area_master.csv"
 #
 # RESOLVED_IMAGES: every image with a confirmed plant identity already
 # recorded in petal_area_master.csv's image_file_used column (filled in by
-# scripts/03, 04, 05, 06, from the researcher's visual reading of each
+# scripts/segmentation/03, 04, 05, 06, from the researcher's visual reading of each
 # card). These get their measurements written BACK into
 # petal_area_master.csv, keyed on image_file_used, per plant row.
 #
 # VALIDATION_IMAGES (2025_03_26/): any image in that folder NOT already
 # covered by RESOLVED_IMAGES. Originally this was all 15 files (identity
 # unresolved, so only a distribution-level hand-measurement check was
-# possible). As of scripts/06, 2025-03-26 identity IS resolved, so this
+# possible). As of scripts/segmentation/06, 2025-03-26 identity IS resolved, so this
 # list is computed as a set difference and should normally be empty —
 # kept as a fallback so nothing silently goes unmeasured if identity for
 # some file in this folder is ever un-resolved again.
@@ -700,7 +700,7 @@ def write_back_to_master(results: pd.DataFrame, master_path: Path) -> pd.DataFra
     # 155 genuinely single-plant images into false "multi-plant" cases
     # (e.g. 2025-05-22 Cojo: 2 rows/plant -> wrongly read as 2 plants
     # sharing an image). This mirrors the same row-vs-plant distinction
-    # scripts/02's bucket audit had to correct for earlier.
+    # scripts/segmentation/02's bucket audit had to correct for earlier.
     plant_keys = master[["date", "population", "plant", "image_file_used"]].drop_duplicates()
     sharing_counts = plant_keys["image_file_used"].value_counts()
 
@@ -711,7 +711,7 @@ def write_back_to_master(results: pd.DataFrame, master_path: Path) -> pd.DataFra
             continue  # this image isn't linked to any master row (shouldn't happen, but don't guess)
 
         # If this image has already been split into per-petal rows downstream
-        # (scripts/09 + 11, for the 4-petal buckets), mask matches all of
+        # (scripts/segmentation/09 + 11, for the 4-petal buckets), mask matches all of
         # those rows even though n_sharing (distinct PLANTS) is still 1 —
         # don't blanket-overwrite each petal's individually resolved area
         # with one whole-image "primary candidate" value. Leave already-split
@@ -721,7 +721,7 @@ def write_back_to_master(results: pd.DataFrame, master_path: Path) -> pd.DataFra
             continue
 
         # Same idea for images where several DISTINCT PLANTS share one scan
-        # (e.g. 2025-07-05, 5 plants/scan): scripts/10 already assigns each
+        # (e.g. 2025-07-05, 5 plants/scan): scripts/segmentation/10 already assigns each
         # plant its own region by position. If that already happened
         # (area_flag moved off the MULTI_PLANT_IMAGE_NOT_ASSIGNED
         # placeholder), don't reset it back to the placeholder here.
@@ -742,13 +742,13 @@ def write_back_to_master(results: pd.DataFrame, master_path: Path) -> pd.DataFra
             master.loc[mask, "area_cm2"] = area_otsu
             master.loc[mask, "n_petals_in_image"] = 1
             master.loc[mask, "area_flag"] = "; ".join(shape_notes) if shape_notes else "OK"
-            master.loc[mask, "measured_by"] = "automated: otsu_chroma (scripts/07_segment_petal_area.py)"
+            master.loc[mask, "measured_by"] = "automated: otsu_chroma (scripts/segmentation/07_segment_petal_area.py)"
             master.loc[mask, "date_measured"] = today
         else:
             all_otsu = group[group["method"] == "otsu_chroma"]["area_cm2"].tolist()
             master.loc[mask, "n_petals_in_image"] = n_sharing
             master.loc[mask, "area_flag"] = "MULTI_PLANT_IMAGE_NOT_ASSIGNED"
-            master.loc[mask, "measured_by"] = "automated: otsu_chroma (scripts/07_segment_petal_area.py)"
+            master.loc[mask, "measured_by"] = "automated: otsu_chroma (scripts/segmentation/07_segment_petal_area.py)"
             master.loc[mask, "date_measured"] = today
             existing_notes = master.loc[mask, "notes"].fillna("")
             addendum = (f" [{n_sharing} plants share this scan; per-plant region assignment not yet "

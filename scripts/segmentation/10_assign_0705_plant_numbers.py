@@ -10,7 +10,7 @@ per plant, laid out in a single left-to-right row with a numbered card
 beneath), assign each segmented region to its specific plant and write
 area_cm2 into petal_area_master.csv — replacing the
 MULTI_PLANT_IMAGE_NOT_ASSIGNED placeholder written by
-scripts/07_segment_petal_area.py.
+scripts/segmentation/07_segment_petal_area.py.
 
 The left-to-right plant order for each of the 6 images was read directly
 off the card in each scan (not inferred from filename or region order —
@@ -35,7 +35,7 @@ from pathlib import Path
 import pandas as pd
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = SCRIPT_DIR.parent
+PROJECT_ROOT = SCRIPT_DIR.parent.parent
 OUT_DIR = PROJECT_ROOT / "data" / "processed" / "segmentation"
 MASTER_PATH = PROJECT_ROOT / "data" / "processed" / "petal_area_master.csv"
 RESULTS_PATH = OUT_DIR / "petal_area_segmentation_results.csv"
@@ -60,7 +60,7 @@ def main() -> None:
 
     # Matched by parsed date, not a raw string/substring check — the "date"
     # column's on-disk format has drifted between M/D/YY and ISO before
-    # (see scripts/11's docstring: an Excel save reverts it to M/D/YY), and
+    # (see scripts/segmentation/11's docstring: an Excel save reverts it to M/D/YY), and
     # a substring check like "7/5" in the date string only matches one of
     # those formats.
     is_0705 = pd.to_datetime(master["date"], format="mixed", dayfirst=False) == pd.Timestamp("2025-07-05")
@@ -96,7 +96,7 @@ def main() -> None:
             master.loc[mask, "n_petals_in_image"] = 5
             master.loc[mask, "area_flag"] = "OK"
             master.loc[mask, "measured_by"] = ("automated: otsu_chroma "
-                                                "(scripts/07 + scripts/10_assign_0705_plant_numbers.py)")
+                                                "(scripts/segmentation/07 + scripts/segmentation/10_assign_0705_plant_numbers.py)")
             existing_notes = master.loc[mask, "notes"].fillna("").iloc[0]
             addendum = (f" [plant number read directly from the numbered card in {image_path} "
                         f"(5 plants share this scan); region matched by left-to-right position.]")

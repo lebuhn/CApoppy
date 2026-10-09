@@ -321,9 +321,9 @@ print_key_counts(
 )
 ```
 
-## 1.4 Check and reconcile duplicated plant/date records
+## 1.4 Resolve duplicated plant/date/petal records
 
-A unique biological record is defined as `date × block × population × plant × petal_number`. Duplicate rows are not silently discarded. For a duplicated identity, the script first verifies that non-missing measurements do not conflict, then coalesces complementary measurements from the original rows into one record. This is a provenance-preserving reconciliation of values already present in the master file; no external values are introduced.
+A unique biological record is defined as `date × block × population × plant × petal_number`. Duplicate rows are not silently discarded. For a duplicated identity, the script retains the single source row that contains both wet and dry weight and excludes the other rows, reporting each exclusion. If a duplicated identity does not contain exactly one such row, the script stops for manual review. Values are not imputed or combined across rows, and no external values are introduced.
 
 ```{r}
 #| label: reconcile-duplicates

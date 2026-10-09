@@ -31,7 +31,7 @@ import openpyxl
 import pandas as pd
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 XLSX_PATH = ROOT / "data" / "raw" / "plant" / "petal_weight_3.xlsx"
 MASTER_PATH = ROOT / "data" / "processed" / "petal_area_master.csv"
 

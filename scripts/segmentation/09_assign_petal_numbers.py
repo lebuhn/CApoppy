@@ -21,7 +21,7 @@ are labeled at all) — so this convention is applied by PHYSICAL LAYOUT
 POSITION, not by reading a number off every image.
 
 Orientation matters: some scans in this dataset are stored upright, some
-rotated 180 degrees (see scripts/07_segment_petal_area.py's
+rotated 180 degrees (see scripts/segmentation/07_segment_petal_area.py's
 detect_orientation — uses the handwritten date/population label block's
 vertical position as the cue, since every reviewed scan places that label
 in the upper portion when upright). Quadrant assignment below is always
@@ -41,7 +41,7 @@ petals genuinely cluster on one side — since that's a real ambiguity, not
 a measurement artifact.
 
 This script does NOT re-run segmentation — it reads the region-level
-output already produced by scripts/07_segment_petal_area.py
+output already produced by scripts/segmentation/07_segment_petal_area.py
 (petal_area_segmentation_results.csv, which must include centroid_row/
 centroid_col/orientation_upright/image_height_px/image_width_px — run
 07 after pulling this script if those columns are missing).
@@ -92,7 +92,7 @@ from pathlib import Path
 import pandas as pd
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = SCRIPT_DIR.parent
+PROJECT_ROOT = SCRIPT_DIR.parent.parent
 OUT_DIR = PROJECT_ROOT / "data" / "processed" / "segmentation"
 MASTER_PATH = PROJECT_ROOT / "data" / "processed" / "petal_area_master.csv"
 RESULTS_PATH = OUT_DIR / "petal_area_segmentation_results.csv"
@@ -230,7 +230,7 @@ def main() -> None:
     if missing:
         raise SystemExit(
             f"petal_area_segmentation_results.csv is missing {missing} — "
-            "re-run scripts/07_segment_petal_area.py first (it now writes these columns)."
+            "re-run scripts/segmentation/07_segment_petal_area.py first (it now writes these columns)."
         )
 
     # Which images belong to the 4-petal buckets, via master's identity link.
@@ -238,7 +238,7 @@ def main() -> None:
     # — several dates record more than one master row per plant (a "petal"
     # row and a "flower" row, or several "petal N" rows), which would
     # otherwise look like multiple PLANTS sharing one image (the same
-    # row-vs-plant bug already fixed once in scripts/07's
+    # row-vs-plant bug already fixed once in scripts/segmentation/07's
     # write_back_to_master).
     bucket_master = master[master.apply(
         lambda r: (r["date"], r["population"]) in FOUR_PETAL_BUCKETS, axis=1

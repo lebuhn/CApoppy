@@ -4,19 +4,19 @@
 
 Crosscheck: does petal_area_master.csv still agree with the raw weight
 source it was originally built from, data/raw/plant/petal_weight_2025.csv?
-petal_area_master.csv has since been reshaped by scripts/09-13 (per-petal
+petal_area_master.csv has since been reshaped by scripts/segmentation/09-13 (per-petal
 splitting, segmentation-area integration, petal-1 identification, hand-area
 corrections), so a naive row-count or row-order comparison is meaningless.
 This script reconstructs a matching key instead.
 
-Key reconstruction (mirrors scripts/11 and scripts/12 exactly, so the join
+Key reconstruction (mirrors scripts/segmentation/11 and scripts/segmentation/12 exactly, so the join
 lines up with what master actually did):
   1. Parse "petal N" out of petal_flower into petal_number, normalizing
-     petal_flower back to "petal" (scripts/11 step 1).
+     petal_flower back to "petal" (scripts/segmentation/11 step 1).
   2. In the four known 4-petals-per-image buckets, a base "petal" row with
      petal_number still blank is petal 1 -- but ONLY when it's the single
      such row for that plant. Ambiguous plants (>1 candidate) are left
-     unresolved, exactly as scripts/12 leaves them in master (it reports
+     unresolved, exactly as scripts/segmentation/12 leaves them in master (it reports
      them rather than guessing).
   3. Dates normalized to ISO (raw source is M/D/YY; master is already ISO).
 
@@ -28,7 +28,7 @@ What gets reported:
   - Master rows carrying weight data with no matching weight row: also
     should not happen.
   - Master rows with no weight data and no matching weight row: expected
-    -- these are the area-only rows scripts/09+11 added for petals that
+    -- these are the area-only rows scripts/segmentation/09+11 added for petals that
     were imaged but never individually weighed.
   - For every matched pair, each shared measurement field is compared
     numerically (water_% is parsed from "89%" text to a 0-1 fraction
@@ -37,7 +37,7 @@ What gets reported:
 Known, expected source of hand_area_cm2 mismatches: the raw "area" column
 in petal_weight_2025.csv is the original hand measurement; master's
 hand_area_cm2 includes the Wand-tool re-measurement corrections applied by
-scripts/13 (see data/processed/petal_area_weight_data_crosscheck_flags.csv
+scripts/segmentation/13 (see data/processed/petal_area_weight_data_crosscheck_flags.csv
 for the earlier version of this same finding, against the xlsx). Those
 rows are expected to differ here and are not a defect in either file --
 they are still surfaced below so the researcher can see the full set.
@@ -53,12 +53,12 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 WEIGHT_PATH = ROOT / "data" / "raw" / "plant" / "petal_weight_2025.csv"
 MASTER_PATH = ROOT / "data" / "processed" / "petal_area_master.csv"
 OUT_PATH = ROOT / "data" / "processed" / "petal_weight_vs_area_master_crosscheck.csv"
 
-# Same four buckets as scripts/12_link_weighed_petal.py.
+# Same four buckets as scripts/segmentation/12_link_weighed_petal.py.
 FOUR_PETAL_BUCKETS = {("2025-05-20", "Perry"), ("2025-05-22", "Cojo"),
                        ("2025-05-23", "Percos"), ("2025-05-23", "Pt. Conception")}
 
@@ -130,7 +130,7 @@ def main() -> None:
     w = w.rename(columns={c: f"w_{c}" for c in w.columns if c not in key_cols})
     m = m.rename(columns={c: f"m_{c}" for c in m.columns if c not in key_cols})
 
-    # A key shared by >1 row on either side (e.g. a plant where scripts/12
+    # A key shared by >1 row on either side (e.g. a plant where scripts/segmentation/12
     # couldn't tell which "petal" row was petal 1, so both were left with
     # petal_number NaN) turns the merge into a cross product for that key --
     # every weight row would get compared against every master row sharing

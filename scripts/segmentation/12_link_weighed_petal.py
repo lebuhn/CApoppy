@@ -10,7 +10,7 @@ petal_number previously blank) was always petal 1.
 For each plant in these buckets:
   - set petal_number = 1 on the base weight row
   - if a separate petal_number=1 row already exists (added by
-    scripts/11_integrate_per_petal_data.py, area only, no weight), copy
+    scripts/segmentation/11_integrate_per_petal_data.py, area only, no weight), copy
     its area_cm2 fields into the (now identified) weight row and drop
     the now-redundant duplicate row
   - if no petal_number=1 area exists yet (image still pending manual
@@ -26,7 +26,7 @@ Output: petal_area_master.csv rewritten in place (derived file).
 import pandas as pd
 from pathlib import Path
 
-MASTER_PATH = Path(__file__).resolve().parent.parent / "data" / "processed" / "petal_area_master.csv"
+MASTER_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "processed" / "petal_area_master.csv"
 
 FOUR_PETAL_BUCKETS = {("2025-05-20", "Perry"), ("2025-05-22", "Cojo"),
                        ("2025-05-23", "Percos"), ("2025-05-23", "Pt. Conception")}

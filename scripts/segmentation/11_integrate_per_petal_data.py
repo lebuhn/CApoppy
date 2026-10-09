@@ -15,7 +15,7 @@ Two changes to petal_area_master.csv, both applied in place:
 
 2. Integrate the per-petal segmentation measurements
    (data/processed/segmentation/petal_area_per_petal.csv — the 4-petals-
-   per-image buckets, petal_number resolved via scripts/09) into master:
+   per-image buckets, petal_number resolved via scripts/segmentation/09) into master:
    - If a master row already exists for that exact (date, population,
      plant, petal_number) — e.g. 2025-05-20 Perry's pre-existing "petal 2"
      weight rows — fill in its area_cm2 fields; don't duplicate it.
@@ -41,7 +41,7 @@ from pathlib import Path
 import pandas as pd
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = SCRIPT_DIR.parent
+PROJECT_ROOT = SCRIPT_DIR.parent.parent
 MASTER_PATH = PROJECT_ROOT / "data" / "processed" / "petal_area_master.csv"
 PER_PETAL_PATH = PROJECT_ROOT / "data" / "processed" / "segmentation" / "petal_area_per_petal.csv"
 
@@ -93,7 +93,7 @@ def main() -> None:
         if mask.sum() == 1:
             master.loc[mask, "area_cm2_otsu_chroma"] = r["area_cm2_otsu_chroma"]
             master.loc[mask, "area_cm2"] = r["area_cm2"]
-            master.loc[mask, "measured_by"] = "automated: otsu_chroma (scripts/07 + scripts/09/11)"
+            master.loc[mask, "measured_by"] = "automated: otsu_chroma (scripts/segmentation/07 + scripts/segmentation/09/11)"
             master.loc[mask, "area_flag"] = "OK"
             n_merged += 1
         else:
@@ -116,7 +116,7 @@ def main() -> None:
             new_row["area_cm2_otsu_chroma"] = r["area_cm2_otsu_chroma"]
             new_row["area_cm2"] = r["area_cm2"]
             new_row["area_flag"] = "OK"
-            new_row["measured_by"] = "automated: otsu_chroma (scripts/07 + scripts/09/11)"
+            new_row["measured_by"] = "automated: otsu_chroma (scripts/segmentation/07 + scripts/segmentation/09/11)"
             new_row["notes"] = (f"New row: petal {int(r['petal_number'])} of 4, measured from "
                                  f"{r['image_path']} (segmentation only; no separate weight recorded "
                                  f"for this specific petal).")
